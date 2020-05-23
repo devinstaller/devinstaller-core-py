@@ -26,6 +26,10 @@ macos:
           command: "zsh --version"
         requires:
           - brew
+          - git-subrepo
+          - fasd
+          - pipenv
+          - private_var
         instructions:
           - 'brew install zsh'
           - 'sudo sh -c "echo /usr/local/bin/zsh >> /etc/shells" && chsh -s $(which zsh)'
@@ -135,12 +139,19 @@ macos:
         instructions:
           - 'git clone git@gitlab.com:justinekizhak/dotfiles.git'
   files:
-    - foo:
-        owner: justinekizhak
-        permission: 755
-        name: "foo.py"
-        parent_dir: "~/dotfiles/scripts/"
-        requires:
-          - curl
+    - private_var:
+        name: "private_env_var.sh"
+        parent_dir: "~/dotfiles/zsh/"
         instructions:
-          - 'curl https://justinekizhak.com/foo.py'
+          - 'touch ~/dotfiles/zsh/private_env_var.sh'
+ubuntu:
+  apps:
+    - git-subrepo:
+      requires:
+        - git
+      instructions:
+        - 'git clone https://github.com/ingydotnet/git-subrepo ~/git-subrepo'
+    - fasd
+    - pipenv
+    
+    
