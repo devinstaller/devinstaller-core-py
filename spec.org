@@ -1,0 +1,63 @@
+* Features
+** Auto generate
+   No need to learn all the syntax
+** Idempotent
+   Run as many times as you want. It doesn't run any instructions if they are not required.
+** Powerful
+   - Each setup instructions is a shell command and can use the full power of shell scripting
+   - Each setup instructions can also be link to actual shell script file. That way they can be even more
+powerful
+   - Can refer to other parts of file. The DRY principle.
+** Implementation independent
+   - Doesn't matter in which programming language is used to implement. As long as they can read YAML file
+all good.
+** Cross platform
+   Plays well with others
+** Easily shareable
+   Just one file to rule them all
+
+* Spec
+
+| Key                                                | Required | Value type | Description                          |
+|----------------------------------------------------+----------+------------+--------------------------------------|
+| =version=                                          | false    | string     |                                      |
+| =defalt=                                           | false    | string     | Reference to platform                |
+| =platform=                                         | true     | dict       |                                      |
+| =platform.check=                                   | false    | dict       |                                      |
+| =platform.check.version=                           | true     | string     |                                      |
+| =platform.check.command=                           | false    | string     |                                      |
+| =platform.presets=                                 | false    | list       |                                      |
+| =platform.presets.preset=                          | true     | list       |                                      |
+| =platform.presets.preset.module=                   | true     | string     | Reference to apps, folders and files |
+| =platform.apps=                                    | false    | list       |                                      |
+| =platform.apps.app=                                | true     | dict       |                                      |
+| =platform.apps.app.check=                          | false    | dict       |                                      |
+| =platform.apps.app.check.version=                  | true     | string     |                                      |
+| =platform.apps.app.check.command=                  | false    | string     |                                      |
+| =platform.apps.app.requires=                       | false    | list       |                                      |
+| =platform.apps.app.requires.require=               | true     | string     | Reference to apps, folders and files |
+| =platform.apps.app.instructions=                   | false    | list       |                                      |
+| =platform.apps.app.instructions.instruction=       | true     | string     | Bash script or link to bash file     |
+| =platform.folders=                                 | false    | list       |                                      |
+| =platform.folders.folder=                          | true     | dict       |                                      |
+| =platform.folders.folder.owner=                    | false    | string     |                                      |
+| =platform.folders.folder.permission=               | false    | string     |                                      |
+| =platform.folders.folder.name=                     | false    | string     |                                      |
+| =platform.folders.folder.parent_dir=               | false    | string     |                                      |
+| =platform.folders.folder.is_empty=                 | false    | bool       |                                      |
+| =platform.folders.folder.requires=                 | false    | list       |                                      |
+| =platform.folders.folder.requires.require=         | true     | string     | Reference to apps, folders and files |
+| =platform.folders.folder.instructions=             | false    | list       |                                      |
+| =platform.folders.folder.instructions.instruction= | true     | string     | Bash script or link to bash file     |
+| =platform.files=                                   | false    | list       |                                      |
+| =platform.files.file=                              | true     | dict       |                                      |
+| =platform.files.file.owner=                        | false    | string     |                                      |
+| =platform.files.file.permission=                   | false    | string     |                                      |
+| =platform.files.file.name=                         | false    | string     |                                      |
+| =platform.files.file.parent_dir=                   | false    | string     |                                      |
+| =platform.files.file.is_empty=                     | false    | bool       |                                      |
+| =platform.files.file.requires=                     | false    | list       |                                      |
+| =platform.files.file.requires.require=             | true     | string     | Reference to apps, folders and files |
+| =platform.files.file.instructions=                 | false    | list       |                                      |
+| =platform.files.file.instructions.instruction=     | true     | string     | Bash script or link to bash file     |
+|                                                    |          |            |                                      |
