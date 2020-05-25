@@ -1,0 +1,94 @@
+version:
+  type: string
+default:
+  type: string
+platforms:
+  type: list
+  schema:
+    type: dict
+    schema:
+      alias: 
+        type: string
+      default:
+        type: string
+      check:
+        type: dict
+        schema:
+          version:
+            type: string
+          command:
+            type: string
+      presets:
+        type: list
+        schema:
+          type: list
+          schema:
+            type: string
+      apps:
+        type: list
+        schema:
+          alias:
+            type: string
+          check:
+            type: dict
+            schema:
+              version:
+                type: string
+              command:
+                type: string
+          requires:
+            type: list
+            schema:
+              type: string
+          steps:
+            type: list
+            schema:
+              type: string
+      folders:
+        type: list
+        schema:
+          type: dict
+          schema:
+            alias:
+              type: string
+            owner:
+              type: string
+            permission:
+              type: string
+            name:
+              type: string
+            parent_dir:
+              type: string
+            is_empty:
+              type: boolean
+            requires:
+              type: list
+              schema:
+                type: string
+            steps:
+              type: list
+              schema:
+                type: string
+      files:
+        type: list
+        schema:
+          type: dict
+          schema:
+            alias:
+              type: string
+            owner:
+              type: string
+            permission:
+              type: string
+            name:
+              type: string
+            parent_dir:
+              type: string
+            requires:
+              type: list
+              schema:
+                type: string
+            steps:
+              type: list
+              schema:
+                type: string

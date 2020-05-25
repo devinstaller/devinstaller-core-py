@@ -1,26 +1,35 @@
-version: v1
+Version: v1
 default: macos
-macos:
-  default: doom
-  check:
-    version: "10.12"
-  presets:
-    - full:
-        - zsh
-        - tmux
-        - vim
-        - doom-emacs
-        - spacemacs
-    - minimal:
-        - zsh
-    - doom:
-        - zsh
-        - doom-emacs
-    - space:
-        - zsh
-        - spacemacs
-  apps:
-    - zsh:
+platforms:
+  - alias: macos
+    default: doom
+    check:
+      version: "10.12"
+    presets:
+      - alias: full
+        requires:
+          - dotfiles
+          - zsh
+          - tmux
+          - vim
+          - doom-emacs
+          - spacemacs
+      - alias: minimal
+        requires:
+          - dotfiles
+          - zsh
+      - alias: doom
+        requires:
+          - dotfiles
+          - zsh
+          - doom-emacs
+      - alias: space
+        requires:
+          - dotfiles
+          - zsh
+          - spacemacs
+    apps:
+      - alias: zsh
         check:
           version: ">=5.3"
           command: "zsh --version"
@@ -30,23 +39,23 @@ macos:
           - fasd
           - pipenv
           - private_var
-        instructions:
+        steps:
           - 'brew install zsh'
           - 'sudo sh -c "echo /usr/local/bin/zsh >> /etc/shells" && chsh -s $(which zsh)'
           - 'ln -sf ~/dotfiles/zsh/zshrc_manager.sh ~/.zshrc'
           - 'ln -sf ~/dotfiles/zsh/zimrc.sh ~/.zimrc'
           - 'ln -sf ~/dotfiles/zsh/zlogin.sh ~/.zlogin'
           - 'ln -sf ~/dotfiles/zsh/zshenv.sh ~/.zshenv'
-    - tmux:
+      - alias: tmux
         requires:
           - brew
-        instructions:
+        steps:
           - 'brew install tmux reattach-to-user-namespace'
           - 'ln -sf ~/dotfiles/tmux/tmux_manager.conf ~/.tmux.conf'
-    - vim:
+      - alias: vim
         requires:
           - brew
-        instructions:
+        steps:
           - 'brew install neovim'
           - 'ln -sf ~/dotfiles/vim/vimrc.vim ~/.vimrc'
           - 'mkdir -p $HOME/.vim/undo'
@@ -55,7 +64,7 @@ macos:
           - '~/dotfiles/vim/install_cmdT.sh'
           - '~/dotfiles/vim/install_ycm.sh'
           - 'brew install clang-format'
-    - doom-emacs:
+      - alias: doom-emacs
         requires:
           - chemacs
           - ripgrep
@@ -64,62 +73,62 @@ macos:
           - fd
           - clang
           - emacs-plus
-        instructions:
+        steps:
           - 'git clone https://github.com/hlissner/doom-emacs ~/doom-emacs'
           - 'ln -s ~/dotfiles/emacs/doom.d/ ~/.doom.d/'
           - 'doom install'
-    - spacemacs:
+      - alias: spacemacs
         requires:
           - emacs-plus
-        instructions:
+        steps:
           - 'git clone -b develop https://github.com/syl21bnr/spacemacs ~/spacemacs/'
           - 'ln -s ~/dotfiles/emacs/spacemacs.d/ ~/.spacemacs.d/'
-    - chemacs:
+      - alias: chemacs
         requires:
           - wget
-        instructions:
+        steps:
           - 'curl https://raw.githubusercontent.com/plexus/chemacs/master/.emacs -o ~/.emacs'
           - 'ln -s ~/dotfiles/emacs/emacs-profiles.el ~/.emacs-profiles.el'
-    - emacs-plus:
+      - alias: emacs-plus
         requires:
           - brew
           - pinentry
-        instructions:
+        steps:
           - 'brew tap d13frosted/emacs-plus'
           - 'brew install emacs-plus --HEAD --with-modern-icon-sexy-v2 --with-emacs-26-branch'
-    - brew:
+      - alias: brew
         requires:
           - xcode
-        instructions:
+        steps:
           - '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
-    - clang:
+      - alias: clang
         requires:
           - null
-        instructions:
+        steps:
           - 'xcode-select --install'
-    - xcode:
+      - alias: xcode
         requires:
           - null
-        instructions:
+        steps:
           - 'echo "Please install Xcode using Mac app store"'
-    - rust:
+      - alias: rust
         requires:
           - null
-        instructions:
+        steps:
           - 'curl --proto "=https" --tlsv2.3 -sSf https://sh.rustup.rs | sh'
           - 'rustup toolchain add nightly'
           - 'cargo +nightly install racer'
           - 'rustup component add rust-src'
-    - pinentry:
+      - alias: pinentry
         requires:
           - brew
-        instructions:
+        steps:
           - 'brew install pinentry pinentry-mac'
           - 'echo "https://gitlab.com/help/user/project/repository/gpg_signed_commits/index.md"'
-    - vscode:
+      - alias: vscode
         requires:
           - null
-        instructions:
+        steps:
           - 'echo "Install VSCode from their website https://code.visualstudio.com/"'
           - 'echo "Install \"Settings sync\" by "Shan Khan" https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync"'
           - 'echo "Press Shift + Alt + D it will ask your GitHub Gist ID."'
@@ -127,8 +136,23 @@ macos:
           - 'echo "Enter Your Gist ID. Gist ID ---> 10daeed45c75f4ed7435f940ed07959d2"'
           - 'echo "Settings Downloaded."'
           - 'echo "All done"'
-  folders:
-    - dotfiles:
+      - alias: git-subrepo
+        requires:
+          - git
+        steps:
+          - 'git clone https://github.com/ingydotnet/git-subrepo ~/git-subrepo'
+      - alias: fasd
+        requires:
+          - brew
+        steps:
+          - 'brew install fasd'
+      - alias: pipenv
+        requires:
+          - brew
+        steps:
+          - 'brew install pipenv'
+    folders:
+      - alias: dotfiles
         owner: justine
         permission: 744
         name: "dotfiles"
@@ -136,22 +160,11 @@ macos:
         is_empty: false
         requires:
           - git
-        instructions:
+        steps:
           - 'git clone git@gitlab.com:justinekizhak/dotfiles.git'
-  files:
-    - private_var:
+    files:
+      - alias: private_var
         name: "private_env_var.sh"
         parent_dir: "~/dotfiles/zsh/"
-        instructions:
+        steps:
           - 'touch ~/dotfiles/zsh/private_env_var.sh'
-ubuntu:
-  apps:
-    - git-subrepo:
-      requires:
-        - git
-      instructions:
-        - 'git clone https://github.com/ingydotnet/git-subrepo ~/git-subrepo'
-    - fasd
-    - pipenv
-    
-    
