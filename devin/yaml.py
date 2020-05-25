@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Mon 25 May 2020 17:54:59 IST
+# Created: Mon 25 May 2020 15:40:37 IST
+# Last-Updated: Mon 25 May 2020 15:42:28 IST
 #
-# schema.py is part of devin
+# yaml.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
 # Description:
 #
-# Copyright (c) 2020, Justine Kizhakkinedath
+# Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -32,38 +32,11 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-import cerberus
+import yaml
 
-def validate(document, schema):
-    v = cerberus.Validator(schema)
-    response = {
-        "is_valid": v.validate(document),
-        "errors": v.errors
-    }
-    return response
-
-def _list_to_dict(input_data, key):
-    response = {}
-    for i in input_data[key]:
-        response[_get_name(i)] = i
-    return response
-
-def _get_name(input_data):
-    if "alias" in input_data:
-        return input_data["alias"]
-    else:
-        return input_data["name"]
-
-
-def _generate_dependency(input_data):
-    response = {}
-    response.update(_list_to_dict(input_data, "apps"))
-    response.update(_list_to_dict(input_data, "folders"))
-    response.update(_list_to_dict(input_data, "files"))
-    return response
-
-def generate_dependency(input_data):
-    response = {}
-    for i in input_data["platforms"]:
-        response[_get_name(i)] = _generate_dependency(i)
-    return response
+def read(file_path):
+    with open(file_path, 'r') as stream:
+        try:
+            return yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)

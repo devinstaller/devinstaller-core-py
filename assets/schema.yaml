@@ -7,7 +7,12 @@ platforms:
   schema:
     type: dict
     schema:
-      alias: 
+      alias:
+        type: string
+      name:
+        type: string
+        required: True
+      display:
         type: string
       default:
         type: string
@@ -21,29 +26,54 @@ platforms:
       presets:
         type: list
         schema:
-          type: list
+          type: dict
           schema:
-            type: string
+            alias:
+              type: string
+            name:
+              type: string
+              required: True
+            display:
+              type: string
+            requires:
+              type: list
+              schema:
+                type: string
+            optionals:
+              type: list
+              schema:
+                type: string
       apps:
         type: list
         schema:
-          alias:
-            type: string
-          check:
-            type: dict
-            schema:
-              version:
-                type: string
-              command:
-                type: string
-          requires:
-            type: list
-            schema:
+          type: dict
+          schema:
+            alias:
               type: string
-          steps:
-            type: list
-            schema:
+            name:
               type: string
+              required: True
+            display:
+              type: string
+            check:
+              type: dict
+              schema:
+                version:
+                  type: string
+                command:
+                  type: string
+            requires:
+              type: list
+              schema:
+                type: string
+            optionals:
+              type: list
+              schema:
+                type: string
+            steps:
+              type: list
+              schema:
+                type: string
       folders:
         type: list
         schema:
@@ -51,17 +81,24 @@ platforms:
           schema:
             alias:
               type: string
+            name:
+              type: string
+              required: True
+            display:
+              type: string
             owner:
               type: string
             permission:
-              type: string
-            name:
               type: string
             parent_dir:
               type: string
             is_empty:
               type: boolean
             requires:
+              type: list
+              schema:
+                type: string
+            optionals:
               type: list
               schema:
                 type: string
@@ -82,9 +119,14 @@ platforms:
               type: string
             name:
               type: string
+              required: True
             parent_dir:
               type: string
             requires:
+              type: list
+              schema:
+                type: string
+            optionals:
               type: list
               schema:
                 type: string

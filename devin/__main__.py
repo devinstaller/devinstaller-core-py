@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Mon 25 May 2020 15:15:44 IST
+# Last-Updated: Mon 25 May 2020 20:02:21 IST
 #
 # __main__.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
 # Description: Main entrypoint
 #
-# Copyright (c) 2020, HomeServer
+# Copyright (c) 2020, Justine Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -32,8 +32,48 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
+from . import schema as s
+from . import yaml as y
+from . import commands as c
 
+import click
 
-
+@click.group()
 def main():
-    print("Hello world")
+    pass
+
+SCHEMA_FILE_PATH = "assets/schema.yaml"
+DEFAULT_DOC_FILE_PATH = "assets/sample.yml"
+
+@main.command(help="Install the default preset and the modules which it requires.")
+@click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
+@click.option('-p', '--preset', 'preset', help="Name of the preset you want to install. If not provided then the default preset will be installed.")
+@click.option('-m', '--module', 'module', help="Name of the module you want to install. For more information on modules refer the docs.")
+def install(file_name, preset, module):
+    response = _validate_spec(file_name)
+    if response:
+        dependency = s.generate_dependency(document)
+        print(dependency)
+
+
+@main.command(help="List out all the presets and modules available for your OS.")
+@click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
+@click.option('--platform', 'platform', help="Name of the platform for which you want to list out the names of presets and modules")
+@click.option('-p', '--preset', 'preset', help="Name of the preset for which you want to list out the names of modules which will be installed")
+def list(file_name, preset, platform):
+    response = _validate_spec(file_name)
+    if response:
+        dependency = s.generate_dependency(document)
+        print(dependency)
+
+
+def _validate_spec(doc_file_path, schema_file_path=SCHEMA_FILE_PATH):
+    schema = y.read(schema_file_path)
+    document = y.read(doc_file_path)
+    response = s.validate(document, schema)
+    if response["is_valid"]:
+        return True
+    else:
+        print("You have errors in your yaml file")
+        print(response["errors"])
+        return False

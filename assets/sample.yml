@@ -1,12 +1,12 @@
-Version: v1
+version: v1
 default: macos
 platforms:
-  - alias: macos
+  - name: macos
     default: doom
     check:
       version: "10.12"
     presets:
-      - alias: full
+      - name: full
         requires:
           - dotfiles
           - zsh
@@ -14,22 +14,22 @@ platforms:
           - vim
           - doom-emacs
           - spacemacs
-      - alias: minimal
+      - name: minimal
         requires:
           - dotfiles
           - zsh
-      - alias: doom
+      - name: doom
         requires:
           - dotfiles
           - zsh
           - doom-emacs
-      - alias: space
+      - name: space
         requires:
           - dotfiles
           - zsh
           - spacemacs
     apps:
-      - alias: zsh
+      - name: zsh
         check:
           version: ">=5.3"
           command: "zsh --version"
@@ -46,13 +46,13 @@ platforms:
           - 'ln -sf ~/dotfiles/zsh/zimrc.sh ~/.zimrc'
           - 'ln -sf ~/dotfiles/zsh/zlogin.sh ~/.zlogin'
           - 'ln -sf ~/dotfiles/zsh/zshenv.sh ~/.zshenv'
-      - alias: tmux
+      - name: tmux
         requires:
           - brew
         steps:
           - 'brew install tmux reattach-to-user-namespace'
           - 'ln -sf ~/dotfiles/tmux/tmux_manager.conf ~/.tmux.conf'
-      - alias: vim
+      - name: vim
         requires:
           - brew
         steps:
@@ -64,7 +64,7 @@ platforms:
           - '~/dotfiles/vim/install_cmdT.sh'
           - '~/dotfiles/vim/install_ycm.sh'
           - 'brew install clang-format'
-      - alias: doom-emacs
+      - name: doom-emacs
         requires:
           - chemacs
           - ripgrep
@@ -77,57 +77,49 @@ platforms:
           - 'git clone https://github.com/hlissner/doom-emacs ~/doom-emacs'
           - 'ln -s ~/dotfiles/emacs/doom.d/ ~/.doom.d/'
           - 'doom install'
-      - alias: spacemacs
+      - name: spacemacs
         requires:
           - emacs-plus
         steps:
           - 'git clone -b develop https://github.com/syl21bnr/spacemacs ~/spacemacs/'
           - 'ln -s ~/dotfiles/emacs/spacemacs.d/ ~/.spacemacs.d/'
-      - alias: chemacs
+      - name: chemacs
         requires:
           - wget
         steps:
           - 'curl https://raw.githubusercontent.com/plexus/chemacs/master/.emacs -o ~/.emacs'
           - 'ln -s ~/dotfiles/emacs/emacs-profiles.el ~/.emacs-profiles.el'
-      - alias: emacs-plus
+      - name: emacs-plus
         requires:
           - brew
           - pinentry
         steps:
           - 'brew tap d13frosted/emacs-plus'
           - 'brew install emacs-plus --HEAD --with-modern-icon-sexy-v2 --with-emacs-26-branch'
-      - alias: brew
+      - name: brew
         requires:
           - xcode
         steps:
           - '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
-      - alias: clang
-        requires:
-          - null
+      - name: clang
         steps:
           - 'xcode-select --install'
-      - alias: xcode
-        requires:
-          - null
+      - name: xcode
         steps:
           - 'echo "Please install Xcode using Mac app store"'
-      - alias: rust
-        requires:
-          - null
+      - name: rust
         steps:
           - 'curl --proto "=https" --tlsv2.3 -sSf https://sh.rustup.rs | sh'
           - 'rustup toolchain add nightly'
           - 'cargo +nightly install racer'
           - 'rustup component add rust-src'
-      - alias: pinentry
+      - name: pinentry
         requires:
           - brew
         steps:
           - 'brew install pinentry pinentry-mac'
           - 'echo "https://gitlab.com/help/user/project/repository/gpg_signed_commits/index.md"'
-      - alias: vscode
-        requires:
-          - null
+      - name: vscode
         steps:
           - 'echo "Install VSCode from their website https://code.visualstudio.com/"'
           - 'echo "Install \"Settings sync\" by "Shan Khan" https://marketplace.visualstudio.com/items?itemName=Shan.code-settings-sync"'
@@ -136,17 +128,17 @@ platforms:
           - 'echo "Enter Your Gist ID. Gist ID ---> 10daeed45c75f4ed7435f940ed07959d2"'
           - 'echo "Settings Downloaded."'
           - 'echo "All done"'
-      - alias: git-subrepo
+      - name: git-subrepo
         requires:
           - git
         steps:
           - 'git clone https://github.com/ingydotnet/git-subrepo ~/git-subrepo'
-      - alias: fasd
+      - name: fasd
         requires:
           - brew
         steps:
           - 'brew install fasd'
-      - alias: pipenv
+      - name: pipenv
         requires:
           - brew
         steps:
@@ -154,7 +146,7 @@ platforms:
     folders:
       - alias: dotfiles
         owner: justine
-        permission: 744
+        permission: "744"
         name: "dotfiles"
         parent_dir: "~/"
         is_empty: false

@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 pyyaml = "*"
+devin = {editable = true,path = "."}
+cerberus = "*"
+click = "*"
 
 [dev-packages]
 

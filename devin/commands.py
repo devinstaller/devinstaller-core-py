@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Mon 25 May 2020 17:54:59 IST
+# Created: Mon 25 May 2020 16:55:05 IST
+# Last-Updated: Mon 25 May 2020 17:00:07 IST
 #
-# schema.py is part of devin
+# commands.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
 # Description:
 #
-# Copyright (c) 2020, Justine Kizhakkinedath
+# Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -32,38 +32,7 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-import cerberus
+import subprocess
 
-def validate(document, schema):
-    v = cerberus.Validator(schema)
-    response = {
-        "is_valid": v.validate(document),
-        "errors": v.errors
-    }
-    return response
-
-def _list_to_dict(input_data, key):
-    response = {}
-    for i in input_data[key]:
-        response[_get_name(i)] = i
-    return response
-
-def _get_name(input_data):
-    if "alias" in input_data:
-        return input_data["alias"]
-    else:
-        return input_data["name"]
-
-
-def _generate_dependency(input_data):
-    response = {}
-    response.update(_list_to_dict(input_data, "apps"))
-    response.update(_list_to_dict(input_data, "folders"))
-    response.update(_list_to_dict(input_data, "files"))
-    return response
-
-def generate_dependency(input_data):
-    response = {}
-    for i in input_data["platforms"]:
-        response[_get_name(i)] = _generate_dependency(i)
-    return response
+def run(args):
+    return subprocess.run(args.split(" "))
