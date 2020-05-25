@@ -31,3 +31,18 @@
 #   otherwise, arising from, out of or in connection with the software or the use
 #   or other dealings in the software. 
 # -----------------------------------------------------------------------------
+
+from devin import schema as s
+from devin import yaml as y
+from devin import commands as c
+
+
+def generate_dependency(file_name):
+    document = y.read(file_name)
+    return s.generate_dependency(document)
+
+
+def validate_spec(doc_file_path, schema_file_path):
+    schema = y.read(schema_file_path)
+    document = y.read(doc_file_path)
+    return s.validate(document, schema)

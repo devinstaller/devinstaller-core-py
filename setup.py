@@ -28,7 +28,7 @@ setup(
 #   no scripts in this example
 #   scripts=['bin/a-script'],
     entry_points={
-        'console_scripts': ['dev=devin.__main__:main'],
+        'console_scripts': ['dev=devin.main:main'],
     },
     include_package_data=True,
     classifiers=[
