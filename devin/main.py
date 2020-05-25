@@ -45,25 +45,22 @@ DEFAULT_DOC_FILE_PATH = os.getenv("DEFAULT_DOC_FILE_PATH")
 
 @main.command(help="Install the default preset and the modules which it requires.")
 @click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
-@click.option('-p', '--preset', 'preset', help="Name of the preset you want to install. If not provided then the default preset will be installed.")
-@click.option('-m', '--module', 'module', help="Name of the module you want to install. For more information on modules refer the docs.")
-def install(file_name, preset, module):
+@click.option('-p', '--platform', 'platform', help="Name of the current platform. If not provided then I'll try to check if you have provided any help in the file. For more information read the docs.")
+@click.option('--preset', 'preset', help="Name of the preset you want to install. If not provided then the default preset will be installed.")
+def install(file_name, platform, preset):
     response = devin.validate_spec(file_name, SCHEMA_FILE_PATH)
     if response["is_valid"]:
-        dependency = devin.generate_dependency(file_name)
-        print(dependency)
+        devin.install(file_name, platform, preset)
     else:
         _print_error(response["errors"])
 
 
 @main.command(help="List out all the presets and modules available for your OS.")
 @click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
-@click.option('--platform', 'platform', help="Name of the platform for which you want to list out the names of presets and modules")
-@click.option('-p', '--preset', 'preset', help="Name of the preset for which you want to list out the names of modules which will be installed")
-def list(file_name, preset, platform):
+def list(file_name):
     response = devin.validate_spec(file_name, SCHEMA_FILE_PATH)
     if response["is_valid"]:
-        print("List")
+        pass
     else:
         _print_error(response["errors"])
 

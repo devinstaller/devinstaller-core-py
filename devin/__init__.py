@@ -37,7 +37,7 @@ from devin import yaml as y
 from devin import commands as c
 
 
-def generate_dependency(file_name):
+def _generate_dependency(file_name):
     document = y.read(file_name)
     return s.generate_dependency(document)
 
@@ -46,3 +46,29 @@ def validate_spec(doc_file_path, schema_file_path):
     schema = y.read(schema_file_path)
     document = y.read(doc_file_path)
     return s.validate(document, schema)
+
+def install(file_name, platform=None, preset=None):
+    raw_document = y.read(file_name)
+    document = __get_platform_document(raw_document, platform)
+    requirements_list = __get_preset_requirements(document, preset)
+
+
+def __get_preset_requirements(document, preset):
+    try:
+        for i in document["presets"]:
+            if preset and i["name"] == preset:
+                return i
+            elif i["name"] == document["default"]:
+                return i
+    except:
+        print("You didn't provide the name of the preset you want to install and I couldn't figure it out either")
+
+def __get_platform_document(document, platform):
+    try:
+        for i in document["platforms"]:
+            if platform and i["name"] == platform:
+                return i
+            elif i["check"]["version"] == c.run["check"]["command"]:
+                return i
+    except:
+        print("You didn't provide the name of the current platform and I couldn't figure it out either")

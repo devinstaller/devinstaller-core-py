@@ -4,7 +4,7 @@
 #
 # commands.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
-# Description:
+# Description: Handles all the required logic to run shell commands
 #
 # Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
