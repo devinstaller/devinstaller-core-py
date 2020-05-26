@@ -1,7 +1,5 @@
 version:
   type: string
-default:
-  type: string
 platforms:
   type: list
   schema:

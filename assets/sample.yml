@@ -1,5 +1,4 @@
 version: v1
-default: macos
 platforms:
   - name: macos
     default: doom
