@@ -1,10 +1,10 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Mon 25 May 2020 17:00:07 IST
+# Last-Updated: Tue 26 May 2020 14:22:25 IST
 #
 # commands.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
-# Description:
+# Description: Handles all the required logic to run shell commands
 #
 # Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
@@ -33,6 +33,7 @@
 # -----------------------------------------------------------------------------
 
 import subprocess
+
 
 def run(args):
     return subprocess.run(args.split(" "))
