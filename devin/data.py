@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Thu 28 May 2020 22:27:58 IST
+# Created: Thu 28 May 2020 23:37:47 IST
+# Last-Updated: Fri 29 May 2020 00:05:37 IST
 #
-# schema.py is part of devin
+# data.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
-# Description:
+# Description: Contains all the app data
 #
-# Copyright (c) 2020, Justine Kizhakkinedath
+# Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -32,35 +32,15 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-import cerberus
 
-def validate(document, schema):
-    v = cerberus.Validator(schema)
-    response = {
-        "is_valid": v.validate(document),
-        "errors": v.errors
-    }
-    return response
+rules = {
+    "100": "Rule 100: You didn't provide the name of the current platform and I couldn't figure it out either.",
+    "101": "Rule 101: You didn't provide the name of the preset you want to install and I didn't found the name of the default preset in the spec.",
+    "102": "Rule 102: The name of the preset you gave through the cli didn't match with any preset in the spec file.",
+    "103": "Rule 103: The name of the default preset present in the spec didn't match with any preset in the file.",
+    "104": "Rule 104: There is an entry missing for a required module."
+}
 
-def _list_to_dict(input_data, key, module_type):
-    response = {}
-    for i in input_data[key]:
-        name = get_name(i)
-        response[name] = i
-        response[name].update({ "installed": False })
-        response[name].update({ "type": module_type })
-    return response
-
-def get_name(input_data):
-    if "alias" in input_data:
-        return input_data["alias"]
-    else:
-        return input_data["name"]
-
-
-def generate_dependency(input_data):
-    response = {}
-    response.update(_list_to_dict(input_data, "modules", "module"))
-    response.update(_list_to_dict(input_data, "folders", "folder"))
-    response.update(_list_to_dict(input_data, "files", "file"))
-    return response
+errors = {
+    "500": "Something went terribly wrong."
+}

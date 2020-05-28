@@ -14,13 +14,17 @@ platforms:
         type: string
       default:
         type: string
-      check:
+      package_manager:
+        type: string
+      version:
         type: dict
         schema:
-          version:
+          identifier:
             type: string
+            required: True
           command:
             type: string
+            required: True
       presets:
         type: list
         schema:
@@ -41,7 +45,7 @@ platforms:
               type: list
               schema:
                 type: string
-      apps:
+      modules:
         type: list
         schema:
           type: dict
@@ -53,13 +57,16 @@ platforms:
               required: True
             display:
               type: string
-            check:
+              nullable: True
+            version:
               type: dict
               schema:
-                version:
+                identifier:
                   type: string
+                  required: True
                 command:
                   type: string
+                  required: True
             requires:
               type: list
               schema:
@@ -68,10 +75,19 @@ platforms:
               type: list
               schema:
                 type: string
-            steps:
+            command:
+              type: string
+              nullable: True
+            init:
               type: list
               schema:
                 type: string
+            config:
+              type: list
+              schema:
+                type: string
+            executable:
+              type: string
       folders:
         type: list
         schema:
@@ -84,14 +100,13 @@ platforms:
               required: True
             display:
               type: string
+              nullable: True
             owner:
               type: string
             permission:
               type: string
             parent_dir:
               type: string
-            is_empty:
-              type: boolean
             requires:
               type: list
               schema:
@@ -100,7 +115,14 @@ platforms:
               type: list
               schema:
                 type: string
-            steps:
+            init:
+              type: list
+              schema:
+                type: string
+            command:
+              type: string
+              nullable: True
+            config:
               type: list
               schema:
                 type: string
@@ -128,7 +150,17 @@ platforms:
               type: list
               schema:
                 type: string
-            steps:
+            display:
+              type: string
+              nullable: True
+            init:
+              type: list
+              schema:
+                type: string
+            command:
+              type: string
+              nullable: True
+            config:
               type: list
               schema:
                 type: string

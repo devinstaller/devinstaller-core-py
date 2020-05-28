@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Tue 26 May 2020 14:22:25 IST
+# Last-Updated: Thu 28 May 2020 23:12:31 IST
 #
 # commands.py is part of devin
 # URL: https://gitlab.com/justinekizhak/devin
@@ -36,4 +36,4 @@ import subprocess
 
 
 def run(args):
-    return subprocess.run(args.split(" "))
+    return subprocess.run(args.split(" "), capture_output=True, check=True)
