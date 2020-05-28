@@ -1,0 +1,7 @@
+* Rules
+** 100
+You didn't provide the name of the current platform and I couldn't figure it out either
+** 101
+You didn't provide the name of the preset you want to install and I couldn't figure it out either
+** 102
+There is an entry missing for a required module.

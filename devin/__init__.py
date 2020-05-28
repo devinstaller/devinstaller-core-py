@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Tue 26 May 2020 14:21:36 IST
+# Last-Updated: Fri 29 May 2020 00:53:43 IST
 #
 # __init__.py is part of somepackge
 # URL: https://github.com/bast/somepackage
@@ -35,12 +35,8 @@
 from devin import schema as s
 from devin import yaml as y
 from devin import commands as c
-
-
-def _generate_dependency(file_name):
-    document = y.read(file_name)
-    return s.generate_dependency(document)
-
+import sys
+from devin import data
 
 def validate_spec(doc_file_path, schema_file_path):
     schema = y.read(schema_file_path)
@@ -52,29 +48,74 @@ def install(file_name, platform=None, preset=None):
     raw_document = y.read(file_name)
     document = __get_platform_document(raw_document, platform)
     requirements_list = __get_preset_requirements(document, preset)
+    dependency_list = s.generate_dependency(document)
+    visited = set()
+    for module_name in requirements_list['requires']:
+        _install(visited, dependency_list, module_name)
 
+
+def _install(visited, dependency_list, module_name):
+    if module_name not in visited:
+        __install(module_name, dependency_list)
+        visited.add(module_name)
+        if _check_key("requires", dependency_list[module_name]):
+            for neighbour in dependency_list[module_name]['requires']:
+                _install(visited, dependency_list, neighbour)
+
+def __install(module_name, dependency_list):
+    if _check_key(module_name, dependency_list):
+        module = dependency_list[module_name]
+        if module['type'] == "module":
+            print(f"Installing module: {module['name']}...")
+            return True
+        elif module['type'] == "folder":
+            print(f"Creating folder: {module['name']}...")
+            return True
+        elif module['type'] == "file":
+            print(f"Creating file: {module['name']}...")
+            return True
+    else:
+        print(f"I was unable to find the module: {module_name}")
+        sys.exit(data.rules["104"])
+
+def _check_key(key, data):
+    if key in data:
+        return True
+    else:
+        return False
 
 def __get_preset_requirements(document, preset):
-    try:
+    if not preset and not _check_key("default", document):
+        sys.exit(data.rules["101"])
+    elif preset:
         for i in document["presets"]:
-            if preset and i["name"] == preset:
+            if i["name"] == preset:
                 return i
-            elif i["name"] == document["default"]:
+        else:
+            print(f"The preset you gave through cli was: {preset}")
+            sys.exit(data.rules["102"])
+    elif _check_key("default", document):
+        for i in document["presets"]:
+            if i["name"] == document["default"]:
                 return i
-    except:
-        print(
-            "You didn't provide the name of the preset you want to install and I couldn't figure it out either"
-        )
+        else:
+            print(f"The default preset I found in the spec was : {document['default']}")
+            sys.exit(data.rules["103"])
 
 
 def __get_platform_document(document, platform):
-    try:
-        for i in document["platforms"]:
-            if platform and i["name"] == platform:
-                return i
-            elif i["check"]["version"] == c.run["check"]["command"]:
-                return i
-    except:
-        print(
-            "You didn't provide the name of the current platform and I couldn't figure it out either"
-        )
+    for i in document["platforms"]:
+        if platform and i["name"] == platform:
+            return i
+        elif _version_compare(i):
+            return i
+    else:
+        sys.exit(data.rules["100"])
+
+
+def _version_compare(data):
+    command_response = c.run(data["version"]["command"])
+    if data["version"]["identifier"] == command_response.stdout.decode("utf-8").rstrip():
+        return True
+    else:
+        return False
