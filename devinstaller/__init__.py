@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Fri 29 May 2020 13:58:49 IST
+# Last-Updated: Fri 29 May 2020 16:45:49 IST
 #
 # __init__.py is part of somepackge
 # URL: https://github.com/bast/somepackage
@@ -32,11 +32,11 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-from devin import schema as s
-from devin import yaml as y
-from devin import commands as c
+from devinstaller import schema as s
+from devinstaller import yaml as y
+from devinstaller import commands as c
 import sys
-from devin import data
+from devinstaller import data
 
 def validate_spec(doc_file_path, schema_file_path):
     schema = y.read(schema_file_path)

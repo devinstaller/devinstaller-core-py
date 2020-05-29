@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Mon 25 May 2020 15:42:28 IST
+# Last-Updated: Fri 29 May 2020 16:47:43 IST
 #
-# yaml.py is part of devin
-# URL: https://gitlab.com/justinekizhak/devin
+# yaml.py is part of devinstaller
+# URL: https://gitlab.com/justinekizhak/devinstaller
 # Description:
 #
 # Copyright (c) 2020, Justin Kizhakkinedath

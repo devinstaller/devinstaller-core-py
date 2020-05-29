@@ -5,12 +5,19 @@ name = "pypi"
 
 [packages]
 pyyaml = "*"
-devin = {editable = true,path = "."}
 cerberus = "*"
 click = "*"
 
 [dev-packages]
 pytest = "*"
+pytest-cov = "*"
+pytest-mock = "*"
+sphinx = "*"
+black = "*"
+sphinx-autobuild = "*"
 
 [requires]
-python_version = "3.8"
+python_version = "3.7"
+
+[pipenv]
+allow_prereleases = true

@@ -1,4 +1,0 @@
-:Author: Justine Kizhakkinedath
-
-Devin
-=====
