@@ -26,9 +26,9 @@ before_script:
 
 test:
   script:
-    - pipenv run pytest
-    - pip install tox flake8  # you can also use tox
-    - tox -e py36,flake8
+    - pytest
+    # - pip install tox flake8  # you can also use tox
+    # - tox -e py36,flake8
 
 # run:
 #   script:
@@ -40,13 +40,13 @@ test:
 #     paths:
 #       - dist/*.whl
 
-pages:
-  script:
-    - pip install sphinx sphinx-rtd-theme
-    - cd doc ; make html
-    - mv build/html/ ../public/
-  artifacts:
-    paths:
-      - public
-  only:
-    - master
+# pages:
+#   script:
+#     - pip install sphinx sphinx-rtd-theme
+#     - cd doc ; make html
+#     - mv build/html/ ../public/
+#   artifacts:
+#     paths:
+#       - public
+#   only:
+#     - master
