@@ -23,14 +23,10 @@ setup(
     keywords="dotfile manager",
     entry_points={"console_scripts": ["dev=devinstaller.main:main"],},
     include_package_data=True,
-    install_requires=[
-        'cerberus',
-        'pyyaml'
-    ],
+    install_requires=["cerberus", "pyyaml", "click"],
     project_urls={
         "Bug Reports": "https://gitlab.com/justinekizhak/devinstaller/issues",
         "Say Thanks!": "https://saythanks.io/to/justine%40kizhak.com",
         "Source": "https://gitlab.com/justinekizhak/devinstaller",
     },
-
 )

@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
 # Created: Fri 29 May 2020 15:10:09 IST
-# Last-Updated: Fri 29 May 2020 15:10:25 IST
+# Last-Updated: Fri 29 May 2020 18:59:46 IST
 #
-# test_app.py is part of devin
-# URL: https://gitlab.com/justinekizhak/devin
+# test_app.py is part of devinstaller
+# URL: https://gitlab.com/justinekizhak/devinstaller
 # Description: Testing
 #
 # Copyright (c) 2020, Justin Kizhakkinedath
@@ -32,7 +32,24 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
+from click.testing import CliRunner
+from devinstaller.main import main
 
 
-def test_app():
-    pass
+def test_install():
+    runner = CliRunner()
+    result = runner.invoke(main, ["install"])
+    assert result.exit_code == 0
+
+
+def test_list():
+    runner = CliRunner()
+    result = runner.invoke(main, ["list"])
+    assert result.exit_code == 0
+
+
+def test_run():
+    runner = CliRunner()
+    result = runner.invoke(main, ["run", "brew install emacs"])
+    assert result.exit_code == 0
+    assert result.output == "All good\n"
