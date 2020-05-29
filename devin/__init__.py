@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Fri 29 May 2020 00:53:43 IST
+# Last-Updated: Fri 29 May 2020 13:58:49 IST
 #
 # __init__.py is part of somepackge
 # URL: https://github.com/bast/somepackage
@@ -49,18 +49,17 @@ def install(file_name, platform=None, preset=None):
     document = __get_platform_document(raw_document, platform)
     requirements_list = __get_preset_requirements(document, preset)
     dependency_list = s.generate_dependency(document)
-    visited = set()
     for module_name in requirements_list['requires']:
-        _install(visited, dependency_list, module_name)
+        _install(dependency_list, module_name)
 
 
-def _install(visited, dependency_list, module_name):
-    if module_name not in visited:
+def _install(dependency_list, module_name):
+    if not dependency_list[module_name]["installed"]:
         __install(module_name, dependency_list)
-        visited.add(module_name)
+        dependency_list[module_name]["installed"] = True
         if _check_key("requires", dependency_list[module_name]):
             for neighbour in dependency_list[module_name]['requires']:
-                _install(visited, dependency_list, neighbour)
+                _install(dependency_list, neighbour)
 
 def __install(module_name, dependency_list):
     if _check_key(module_name, dependency_list):
