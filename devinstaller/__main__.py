@@ -1,9 +1,9 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Thu 28 May 2020 19:41:34 IST
+# Last-Updated: Fri 29 May 2020 16:46:17 IST
 #
-# __main__.py is part of devin
-# URL: https://gitlab.com/justinekizhak/devin
+# __main__.py is part of devinstaller
+# URL: https://gitlab.com/justinekizhak/devinstaller
 # Description: Main entrypoint
 #
 # Copyright (c) 2020, Justine Kizhakkinedath
@@ -32,56 +32,48 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-import devin
+from . import schema as s
+from . import yaml as y
+from . import commands as c
+
 import click
-import os
-import pprint
 
 @click.group()
 def main():
     pass
 
-SCHEMA_FILE_PATH = os.getenv("SCHEMA_FILE_PATH")
-DEFAULT_DOC_FILE_PATH = os.getenv("DEFAULT_DOC_FILE_PATH")
+SCHEMA_FILE_PATH = "assets/schema.yaml"
+DEFAULT_DOC_FILE_PATH = "assets/sample.yml"
 
-@main.command()
+@main.command(help="Install the default preset and the modules which it requires.")
 @click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
-@click.option('-p', '--platform', 'platform', help="Name of the current platform. If not provided then I'll try to check if you have provided any help in the file. For more information read the docs.")
-@click.option('--preset', 'preset', help="Name of the preset you want to install. If not provided then the default preset will be installed.")
-def install(file_name, platform, preset):
-    """Install the default preset and the modules which it requires."""
-    response = devin.validate_spec(file_name, SCHEMA_FILE_PATH)
-    if response["is_valid"]:
-        devin.install(file_name, platform, preset)
-    else:
-        _print_error(response["errors"])
+@click.option('-p', '--preset', 'preset', help="Name of the preset you want to install. If not provided then the default preset will be installed.")
+@click.option('-m', '--module', 'module', help="Name of the module you want to install. For more information on modules refer the docs.")
+def install(file_name, preset, module):
+    response = _validate_spec(file_name)
+    if response:
+        dependency = s.generate_dependency(document)
+        print(dependency)
 
 
-@main.command()
+@main.command(help="List out all the presets and modules available for your OS.")
 @click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
-def list(file_name):
-    """List out all the presets and modules available for your OS."""
-    response = devin.validate_spec(file_name, SCHEMA_FILE_PATH)
+@click.option('--platform', 'platform', help="Name of the platform for which you want to list out the names of presets and modules")
+@click.option('-p', '--preset', 'preset', help="Name of the preset for which you want to list out the names of modules which will be installed")
+def list(file_name, preset, platform):
+    response = _validate_spec(file_name)
+    if response:
+        dependency = s.generate_dependency(document)
+        print(dependency)
+
+
+def _validate_spec(doc_file_path, schema_file_path=SCHEMA_FILE_PATH):
+    schema = y.read(schema_file_path)
+    document = y.read(doc_file_path)
+    response = s.validate(document, schema)
     if response["is_valid"]:
-        pass
+        return True
     else:
-        _print_error(response["errors"])
-
-
-@main.command()
-@click.argument('commands', nargs=-1)
-def run(commands):
-    """where COMMANDS is your regular bash command
-
-    Example: Here `dev run brew install pipenv clang emacs` will install all the packages using brew and add it into the spec automagically.
-    """
-    print(commands)
-
-
-def _print_error(input_data):
-    print("You have errors in your yaml file: ")
-    pprint.pp(input_data)
-
-
-if __name__ == "__main__":
-    main()
+        print("You have errors in your yaml file")
+        print(response["errors"])
+        return False

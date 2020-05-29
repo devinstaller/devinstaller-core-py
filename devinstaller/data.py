@@ -1,10 +1,10 @@
 # -----------------------------------------------------------------------------
-# Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Thu 28 May 2020 23:12:31 IST
+# Created: Thu 28 May 2020 23:37:47 IST
+# Last-Updated: Fri 29 May 2020 16:47:24 IST
 #
-# commands.py is part of devin
-# URL: https://gitlab.com/justinekizhak/devin
-# Description: Handles all the required logic to run shell commands
+# data.py is part of devinstaller
+# URL: https://gitlab.com/justinekizhak/devinstaller
+# Description: Contains all the app data
 #
 # Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
@@ -32,8 +32,15 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-import subprocess
 
+rules = {
+    "100": "Rule 100: You didn't provide the name of the current platform and I couldn't figure it out either.",
+    "101": "Rule 101: You didn't provide the name of the preset you want to install and I didn't found the name of the default preset in the spec.",
+    "102": "Rule 102: The name of the preset you gave through the cli didn't match with any preset in the spec file.",
+    "103": "Rule 103: The name of the default preset present in the spec didn't match with any preset in the file.",
+    "104": "Rule 104: There is an entry missing for a required module."
+}
 
-def run(args):
-    return subprocess.run(args.split(" "), capture_output=True, check=True)
+errors = {
+    "500": "Something went terribly wrong."
+}
