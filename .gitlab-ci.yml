@@ -22,11 +22,10 @@ before_script:
   - python -V  # Print out python version for debugging
   - pip install pipenv
   - pipenv install --dev
-  - pipenv shell
 
 test:
   script:
-    - pytest
+    - pipenv run pytest
     # - pip install tox flake8  # you can also use tox
     # - tox -e py36,flake8
 
