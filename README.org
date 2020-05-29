@@ -1,1 +1,183 @@
-* Devin
+#+TITLE:   Devinstaller
+#+DATE:    May 29, 2020
+#+STARTUP: inlineimages nofold
+#+OPTIONS: toc:nil
+
+* Devinstaller
+
+#+MARKDOWN: [[_TOC_]]
+
+* README.org :noexport:
+
+** Exporting
+Export this file into ~markdown~ format using =M-x org-gfm-export-to-markdown=.
+
+* Table of Contents :TOC_3:noexport:
+- [[#devinstaller][Devinstaller]]
+- [[#usage][Usage]]
+  - [[#basic][Basic]]
+  - [[#specify-platform][Specify platform]]
+  - [[#specify-both-platform-and-desired-preset][Specify both platform and desired preset]]
+- [[#prerequisites][Prerequisites]]
+  - [[#pipenv][Pipenv]]
+- [[#develop][Develop]]
+  - [[#for-developers-install-normal-and-dev-dependencies][For developers install normal and dev dependencies]]
+  - [[#use-pipenv-shell][Use pipenv shell]]
+  - [[#run][Run]]
+  - [[#install-normal-dependencies][Install normal dependencies]]
+  - [[#install-dev-dependencies][Install dev dependencies]]
+- [[#testing-and-code-coverage][Testing and code coverage]]
+  - [[#testing][Testing]]
+  - [[#coverage-report][Coverage report]]
+- [[#facing-any-problems][Facing any problems]]
+  - [[#issue-with-installing-pipenv-packages][Issue with installing pipenv packages]]
+    - [[#copy-paste-this-line-into-your-bash_profile-or-zshrc][Copy paste this line into your =~/.bash_profile= or =~/.zshrc=.]]
+    - [[#reinstall-python-using-brew][Reinstall Python using brew]]
+- [[#git][Git]]
+  - [[#more-information][More information]]
+- [[#changelog][Changelog]]
+  - [[#usage-1][Usage]]
+  - [[#more-information-1][More information]]
+- [[#full-documentation][Full Documentation]]
+
+* Usage
+** Basic
+
+#+BEGIN_SRC sh
+dev install
+#+END_SRC
+
+** Specify platform
+
+#+BEGIN_SRC sh
+dev install --platform macos  # dev install -p macos
+#+END_SRC
+
+** Specify both platform and desired preset
+
+#+BEGIN_SRC sh
+dev install --platform macos --preset doom
+#+END_SRC
+
+* Prerequisites
+** Pipenv
+You will need ~pipenv~ installed in your machine.
+Pipenv is used to manage Python virtualenv and manage the application
+dependencies.
+
+[[https://github.com/pypa/pipenv][Pipenv Github repository]]
+
+Installing using
+
+#+BEGIN_SRC sh
+brew install pipenv
+#+END_SRC
+
+More instructions on their Github repository.
+
+* Develop
+
+Before you git push a new module make sure unit tests are also
+included. Test are to be written using ~pytest~.
+
+For more information look into [[https://www.freecodecamp.org/news/test-driven-development-what-it-is-and-what-it-is-not-41fa6bca02a2/][Test Driven Development]].
+
+** For developers install normal and dev dependencies
+
+#+BEGIN_SRC sh
+pipenv install --dev
+#+END_SRC
+
+** Use pipenv shell
+
+#+BEGIN_SRC sh
+pipenv shell
+#+END_SRC
+
+** Run
+
+To run the app
+
+=cd= to the project root where =app.py= file is present, then run this
+on the terminal
+
+#+BEGIN_SRC sh
+flask run
+#+END_SRC
+
+** Install normal dependencies
+
+#+BEGIN_SRC sh
+pipenv install numpy
+#+END_SRC
+
+** Install dev dependencies
+
+#+BEGIN_SRC sh
+pipenv install pytest --dev
+#+END_SRC
+* Testing and code coverage
+
+** Testing
+
+Pop into pipenv shell and run:
+
+#+BEGIN_SRC sh
+coverage run
+#+END_SRC
+
+** Coverage report
+
+Generate HTML based code coverage report:
+
+#+BEGIN_SRC sh
+coverage html
+#+END_SRC
+
+* Facing any problems
+
+** Issue with installing pipenv packages
+
+Try setting LANG variable for the shell, if its not set.
+
+*** Copy paste this line into your =~/.bash_profile= or =~/.zshrc=.
+
+#+BEGIN_SRC sh
+export $LANG = en_US.UTF-8
+#+END_SRC
+
+After this you might need to reopen the terminal.
+
+*** Reinstall Python using brew
+
+The default python installation from Xcode is not built using SSL support. So
+you may have problem installing packages.
+
+Reinstall python using this command on the terminal:
+
+#+BEGIN_SRC sh
+brew reinstall python
+#+END_SRC
+
+* Git
+
+This project uses the [[https://www.conventionalcommits.org/en/v1.0.0/][Conventional git commit specs]].
+
+** More information
+
+For more information Read the docs.
+
+* Changelog
+
+** Usage
+
+#+BEGIN_SRC sh
+git-chglog -o CHANGELOG.md
+#+END_SRC
+
+** More information
+
+For more information Read the docs.
+
+* Full Documentation
+Read the docs.

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Fri 29 May 2020 16:47:30 IST
+# Last-Updated: Fri 29 May 2020 18:56:32 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,17 +37,35 @@ import click
 import os
 import pprint
 
+
 @click.group()
 def main():
     pass
 
+
 SCHEMA_FILE_PATH = os.getenv("SCHEMA_FILE_PATH")
 DEFAULT_DOC_FILE_PATH = os.getenv("DEFAULT_DOC_FILE_PATH")
 
+
 @main.command()
-@click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
-@click.option('-p', '--platform', 'platform', help="Name of the current platform. If not provided then I'll try to check if you have provided any help in the file. For more information read the docs.")
-@click.option('--preset', 'preset', help="Name of the preset you want to install. If not provided then the default preset will be installed.")
+@click.option(
+    "-f",
+    "--file",
+    "file_name",
+    default=DEFAULT_DOC_FILE_PATH,
+    help="Name of the install file. Default: `install.yaml`",
+)
+@click.option(
+    "-p",
+    "--platform",
+    "platform",
+    help="Name of the current platform. If not provided then I'll try to check if you have provided any help in the file. For more information read the docs.",
+)
+@click.option(
+    "--preset",
+    "preset",
+    help="Name of the preset you want to install. If not provided then the default preset will be installed.",
+)
 def install(file_name, platform, preset):
     """Install the default preset and the modules which it requires."""
     response = devinstaller.validate_spec(file_name, SCHEMA_FILE_PATH)
@@ -58,7 +76,13 @@ def install(file_name, platform, preset):
 
 
 @main.command()
-@click.option('-f', "--file", "file_name", default=DEFAULT_DOC_FILE_PATH, help="Name of the install file. Default: `install.yaml`")
+@click.option(
+    "-f",
+    "--file",
+    "file_name",
+    default=DEFAULT_DOC_FILE_PATH,
+    help="Name of the install file. Default: `install.yaml`",
+)
 def list(file_name):
     """List out all the presets and modules available for your OS."""
     response = devinstaller.validate_spec(file_name, SCHEMA_FILE_PATH)
@@ -69,13 +93,13 @@ def list(file_name):
 
 
 @main.command()
-@click.argument('commands', nargs=-1)
+@click.argument("commands", nargs=-1)
 def run(commands):
     """where COMMANDS is your regular bash command
 
     Example: Here `dev run brew install pipenv clang emacs` will install all the packages using brew and add it into the spec automagically.
     """
-    print(commands)
+    print("All good")
 
 
 def _print_error(input_data):
