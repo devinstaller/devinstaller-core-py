@@ -96,6 +96,46 @@ Generate HTML based code coverage report:
 coverage html
 ```
 
+# Testing using Gitlab runner locally
+
+## Prerequisites
+
+### Docker
+
+You need docker installed, because we will be using the `docker` executor for the gitlab-runner.
+
+## Install `gitlab-runner` locally
+
+### MacOS
+
+1.  Install using brew
+
+    ```
+    brew install gitlab-runner
+    ```
+
+2.  Register it with gitlab
+
+    ```
+    gitlab-runner register
+    ```
+
+3.  Options
+
+    | Option                | Value                               |
+    | --------------------- | ----------------------------------- |
+    | gitlab-ci coordinator | <https://gitlab.com>                |
+    | gitlab-ci description | Enter some description              |
+    | gitlab-ci tags        | Enter some tags                     |
+    | Executer              | `docker`                            |
+    | default docker image  | Enter the name of some docker image |
+
+## Running the tests
+
+```
+gitlab-runner exec docker test
+```
+
 # Facing any problems
 
 ## Issue with installing pipenv packages

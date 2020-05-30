@@ -1,0 +1,46 @@
+[tool.poetry]
+name = "devinstaller"
+version = "0.1.1"
+description = "A Python package to setup your development environment and manage all your dotfiles, software and packages"
+authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
+license = "MIT License"
+readme = "README.md"
+homepage = "https://justine.kizhak.com/projects/devinstaller"
+repository = "https://gitlab.com/justinekizhak/devinstaller"
+documentation = "https://devinstaller.readthedocs.io/en/latest/"
+keywords = [
+  "dotfile manager"
+]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Programming Language :: Python :: 3.7",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+]
+include = [
+  "assets/*"
+]
+
+[tool.poetry.dependencies]
+python = "^3.7"
+pyyaml = "^5.3.1"
+cerberus = "^1.3.2"
+click = "^7.1.2"
+
+[tool.poetry.dev-dependencies]
+sphinx = "^3.0.4"
+pytest = "^5.4.2"
+pytest-cov = "^2.9.0"
+sphinx-autobuild = "^0.7.1"
+
+[tool.poetry.scripts]
+dev = 'devinstaller.main:main'
+
+[tool.poetry.urls]
+"Bug Reports" = "https://gitlab.com/justinekizhak/devinstaller/issues"
+"Say Thanks!" = "https://saythanks.io/to/justine%40kizhak.com"
+
+
+[build-system]
+requires = ["poetry>=0.12"]
+build-backend = "poetry.masonry.api"

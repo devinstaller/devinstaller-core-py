@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Fri 29 May 2020 16:45:49 IST
+# Last-Updated: Sat 30 May 2020 14:11:08 IST
 #
 # __init__.py is part of somepackge
 # URL: https://github.com/bast/somepackage
@@ -48,29 +48,29 @@ def install(file_name, platform=None, preset=None):
     raw_document = y.read(file_name)
     document = __get_platform_document(raw_document, platform)
     requirements_list = __get_preset_requirements(document, preset)
-    dependency_list = s.generate_dependency(document)
+    graph = s.generate_dependency(document)
     for module_name in requirements_list['requires']:
-        _install(dependency_list, module_name)
+        _install(graph, module_name)
 
 
-def _install(dependency_list, module_name):
-    if not dependency_list[module_name]["installed"]:
-        __install(module_name, dependency_list)
-        dependency_list[module_name]["installed"] = True
-        if _check_key("requires", dependency_list[module_name]):
-            for neighbour in dependency_list[module_name]['requires']:
-                _install(dependency_list, neighbour)
+def _install(graph, module_name):
+    if not graph[module_name]["installed"]:
+        install_module(module_name, graph)
+        graph[module_name]["installed"] = True
+        if _check_key("requires", graph[module_name]):
+            for neighbour in graph[module_name]['requires']:
+                _install(graph, neighbour)
 
-def __install(module_name, dependency_list):
-    if _check_key(module_name, dependency_list):
-        module = dependency_list[module_name]
+def install_module(module_name, graph):
+    if _check_key(module_name, graph):
+        module = graph[module_name]
         if module['type'] == "module":
             print(f"Installing module: {module['name']}...")
             return True
         elif module['type'] == "folder":
             print(f"Creating folder: {module['name']}...")
             return True
-        elif module['type'] == "file":
+        else:
             print(f"Creating file: {module['name']}...")
             return True
     else:
