@@ -6,8 +6,13 @@ omit =
     # omit anything in a .local directory anywhere
     */.local/*
     */tests/*
+    */virtualenvs/*
 command_line =
         -m pytest -vv
+
+[paths]
+source =
+    devinstaller/
 
 [report]
 # Regexes for lines to exclude from consideration
@@ -28,3 +33,4 @@ exclude_lines =
     if __name__ == .__main__.:
 
 ignore_errors = True
+fail_under=80
