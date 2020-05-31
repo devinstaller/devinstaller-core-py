@@ -24,16 +24,16 @@ dev install --platform macos --preset doom
 
 # Prerequisites
 
-## Pipenv
+## Poetry
 
-You will need `pipenv` installed in your machine. Pipenv is used to manage Python virtualenv and manage the application dependencies.
+You will need `poetry` installed in your machine. Poetry helps you declare, manage and install dependencies of Python projects, ensuring you have the right stack everywhere.
 
-[Pipenv Github repository](https://github.com/pypa/pipenv)
+[Poetry Github repository](https://github.com/python-poetry/poetry)
 
 Installing using
 
 ```sh
-brew install pipenv
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 ```
 
 More instructions on their Github repository.
@@ -47,42 +47,32 @@ For more information look into [Test Driven Development](https://www.freecodecam
 ## For developers install normal and dev dependencies
 
 ```sh
-pipenv install --dev
+poetry install
 ```
 
-## Use pipenv shell
+## Use poetry shell
 
 ```sh
-pipenv shell
-```
-
-## Run
-
-To run the app
-
-`cd` to the project root where `app.py` file is present, then run this on the terminal
-
-```sh
-flask run
+poetry shell
 ```
 
 ## Install normal dependencies
 
 ```sh
-pipenv install numpy
+poetry add numpy
 ```
 
 ## Install dev dependencies
 
 ```sh
-pipenv install pytest --dev
+poetry add -D pytest
 ```
 
 # Testing and code coverage
 
 ## Testing
 
-Pop into pipenv shell and run:
+Pop into poetry shell and run:
 
 ```sh
 coverage run
@@ -138,7 +128,7 @@ gitlab-runner exec docker test
 
 # Facing any problems
 
-## Issue with installing pipenv packages
+## Issue with installing poetry packages
 
 Try setting LANG variable for the shell, if its not set.
 
@@ -166,9 +156,11 @@ This project uses the [Conventional git commit specs](https://www.conventionalco
 
 ## More information
 
-For more information Read the docs.
+[Read the docs](https://devinstaller.readthedocs.io/en/latest/)
 
 # Changelog
+
+Changelog is generated using `git-chglog`. See [git-chglog](https://github.com/git-chglog/git-chglog).
 
 ## Usage
 
@@ -178,8 +170,10 @@ git-chglog -o CHANGELOG.md
 
 ## More information
 
-For more information Read the docs.
+[Read the docs](https://devinstaller.readthedocs.io/en/latest/)
 
 # Full Documentation
 
-Read the docs.
+[Read the docs](https://devinstaller.readthedocs.io/en/latest/)
+
+Docs are auto generated on new commits on the master branch
