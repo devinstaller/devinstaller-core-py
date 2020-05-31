@@ -19,11 +19,10 @@ Export this file into ~markdown~ format using =M-x org-gfm-export-to-markdown=.
   - [[#specify-platform][Specify platform]]
   - [[#specify-both-platform-and-desired-preset][Specify both platform and desired preset]]
 - [[#prerequisites][Prerequisites]]
-  - [[#pipenv][Pipenv]]
+  - [[#poetry][Poetry]]
 - [[#develop][Develop]]
   - [[#for-developers-install-normal-and-dev-dependencies][For developers install normal and dev dependencies]]
-  - [[#use-pipenv-shell][Use pipenv shell]]
-  - [[#run][Run]]
+  - [[#use-poetry-shell][Use poetry shell]]
   - [[#install-normal-dependencies][Install normal dependencies]]
   - [[#install-dev-dependencies][Install dev dependencies]]
 - [[#testing-and-code-coverage][Testing and code coverage]]
@@ -36,7 +35,7 @@ Export this file into ~markdown~ format using =M-x org-gfm-export-to-markdown=.
     - [[#macos][MacOS]]
   - [[#running-the-tests][Running the tests]]
 - [[#facing-any-problems][Facing any problems]]
-  - [[#issue-with-installing-pipenv-packages][Issue with installing pipenv packages]]
+  - [[#issue-with-installing-poetry-packages][Issue with installing poetry packages]]
     - [[#copy-paste-this-line-into-your-bash_profile-or-zshrc][Copy paste this line into your =~/.bash_profile= or =~/.zshrc=.]]
     - [[#reinstall-python-using-brew][Reinstall Python using brew]]
 - [[#git][Git]]
@@ -66,17 +65,16 @@ dev install --platform macos --preset doom
 #+END_SRC
 
 * Prerequisites
-** Pipenv
-You will need ~pipenv~ installed in your machine.
-Pipenv is used to manage Python virtualenv and manage the application
-dependencies.
+** Poetry
+You will need ~poetry~ installed in your machine.
+Poetry helps you declare, manage and install dependencies of Python projects, ensuring you have the right stack everywhere.
 
-[[https://github.com/pypa/pipenv][Pipenv Github repository]]
+[[https://github.com/python-poetry/poetry][Poetry Github repository]]
 
 Installing using
 
 #+BEGIN_SRC sh
-brew install pipenv
+curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 #+END_SRC
 
 More instructions on their Github repository.
@@ -91,42 +89,31 @@ For more information look into [[https://www.freecodecamp.org/news/test-driven-d
 ** For developers install normal and dev dependencies
 
 #+BEGIN_SRC sh
-pipenv install --dev
+poetry install
 #+END_SRC
 
-** Use pipenv shell
+** Use poetry shell
 
 #+BEGIN_SRC sh
-pipenv shell
-#+END_SRC
-
-** Run
-
-To run the app
-
-=cd= to the project root where =app.py= file is present, then run this
-on the terminal
-
-#+BEGIN_SRC sh
-flask run
+poetry shell
 #+END_SRC
 
 ** Install normal dependencies
 
 #+BEGIN_SRC sh
-pipenv install numpy
+poetry add numpy
 #+END_SRC
 
 ** Install dev dependencies
 
 #+BEGIN_SRC sh
-pipenv install pytest --dev
+poetry add -D pytest
 #+END_SRC
 * Testing and code coverage
 
 ** Testing
 
-Pop into pipenv shell and run:
+Pop into poetry shell and run:
 
 #+BEGIN_SRC sh
 coverage run
@@ -181,7 +168,7 @@ gitlab-runner exec docker test
 
 * Facing any problems
 
-** Issue with installing pipenv packages
+** Issue with installing poetry packages
 
 Try setting LANG variable for the shell, if its not set.
 
@@ -210,7 +197,7 @@ This project uses the [[https://www.conventionalcommits.org/en/v1.0.0/][Conventi
 
 ** More information
 
-For more information Read the docs.
+#+MARKDOWN: For more information [read the full documentation](#markdown-header-full-documentation).
 
 * Changelog
 
@@ -222,7 +209,8 @@ git-chglog -o CHANGELOG.md
 
 ** More information
 
-For more information Read the docs.
+#+MARKDOWN: For more information [read the full documentation](#markdown-header-full-documentation).
 
 * Full Documentation
-Read the docs.
+
+[[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
