@@ -197,9 +197,11 @@ This project uses the [[https://www.conventionalcommits.org/en/v1.0.0/][Conventi
 
 ** More information
 
-#+MARKDOWN: For more information [read the full documentation](#markdown-header-full-documentation).
+[[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
 
 * Changelog
+
+Changelog is generated using =git-chglog=. See [[https://github.com/git-chglog/git-chglog][git-chglog]].
 
 ** Usage
 
@@ -209,8 +211,10 @@ git-chglog -o CHANGELOG.md
 
 ** More information
 
-#+MARKDOWN: For more information [read the full documentation](#markdown-header-full-documentation).
+[[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
 
 * Full Documentation
 
 [[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
+
+Docs are auto generated on new commits on the master branch
