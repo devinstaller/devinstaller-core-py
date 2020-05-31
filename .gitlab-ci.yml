@@ -6,6 +6,7 @@ include:
 stages:
   - test
   - deploy
+  - publish
 
 cache:
   key: ${CI_COMMIT_REF_SLUG}
@@ -36,7 +37,7 @@ build:
     - master
 
 pages:
-  stage: deploy
+  stage: publish
   dependencies:
     - test
   script:
