@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Fri 29 May 2020 16:47:36 IST
+# Last-Updated: Mon  1 Jun 2020 14:23:37 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,24 +34,24 @@
 
 import cerberus
 
+
 def validate(document, schema):
     v = cerberus.Validator(schema)
-    response = {
-        "is_valid": v.validate(document),
-        "errors": v.errors
-    }
+    response = {"is_valid": v.validate(document), "errors": v.errors}
     return response
+
 
 def _list_to_dict(input_data, key, module_type):
     response = {}
     for i in input_data[key]:
-        name = get_name(i)
+        name = _get_name(i)
         response[name] = i
-        response[name].update({ "installed": False })
-        response[name].update({ "type": module_type })
+        response[name].update({"installed": False})
+        response[name].update({"type": module_type})
     return response
 
-def get_name(input_data):
+
+def _get_name(input_data):
     if "alias" in input_data:
         return input_data["alias"]
     else:

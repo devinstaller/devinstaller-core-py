@@ -19,7 +19,6 @@ test:
   script:
     - poetry install
     - poetry run coverage run
-    - poetry run coverage html
     # - pip install tox flake8  # you can also use tox
     # - tox -e py36,flake8
   artifacts:
@@ -36,16 +35,12 @@ build:
   only:
     - master
 
-pages:
+code_cov:
   stage: publish
   dependencies:
     - test
   script:
-    - mv htmlcov/ public/
-  artifacts:
-    paths:
-      - public
-    expire_in: 30 days
+    - bash <(curl -s https://codecov.io/bash)
   only:
     - master
 

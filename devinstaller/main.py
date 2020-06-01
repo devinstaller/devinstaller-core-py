@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Fri 29 May 2020 18:56:32 IST
+# Last-Updated: Tue  2 Jun 2020 01:19:47 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,6 +36,7 @@ import devinstaller
 import click
 import os
 import pprint
+import pkg_resources
 
 
 @click.group()
@@ -43,8 +44,8 @@ def main():
     pass
 
 
-SCHEMA_FILE_PATH = os.getenv("SCHEMA_FILE_PATH")
-DEFAULT_DOC_FILE_PATH = os.getenv("DEFAULT_DOC_FILE_PATH")
+SCHEMA_FILE_PATH = pkg_resources.resource_filename("devinstaller", "data/schema.yml")
+DEFAULT_DOC_FILE_PATH = os.getcwd() + "/sample.devfile.yml"
 
 
 @main.command()
