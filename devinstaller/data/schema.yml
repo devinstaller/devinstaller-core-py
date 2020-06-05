@@ -14,7 +14,7 @@ platforms:
         type: string
       default:
         type: string
-      package_manager:
+      installer:
         type: string
       version:
         type: dict

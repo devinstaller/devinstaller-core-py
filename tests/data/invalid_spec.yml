@@ -4,7 +4,7 @@ platforms:
     version:
       identifier: "1"
       command: "echo 1"
-    installer: "brew install {}"
+    package: "brew install {}"
     default: "minimal"
     presets:
       - name: full

@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Fri  5 Jun 2020 18:24:19 IST
+# Created: Fri  5 Jun 2020 19:29:24 IST
+# Last-Updated: Fri  5 Jun 2020 19:32:14 IST
 #
-# yaml.py is part of devinstaller
+# helpers.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
-# Description: Handles everything yaml related
+# Description:
 #
-# Copyright (c) 2020, Justin Kizhakkinedath
+# Copyright (c) 2020, Justine Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -33,20 +33,16 @@
 # use or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-"""Handles everything yaml"""
-
-import yaml
+"""All the required helper functions"""
 
 
-def read(file_path):
-    """Reads the file at the path and returns the data as dict object
-    :param str file_path: The path to the file
-    :return: Python object
-    :rtype: list or dict
-    :raises `yaml.YAMLError`:
+def check_key(key, input_data):
+    """Check if the key is present in the given data
+    :param str key: The name of field
+    :param obj input_data: The object where the key is to be checked
+    :return: Present or not
+    :rtype: bool
     """
-    with open(file_path, "r") as stream:
-        try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+    if key in input_data:
+        return True
+    return False

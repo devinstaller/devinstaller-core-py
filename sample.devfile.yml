@@ -4,7 +4,7 @@ platforms:
     version:
       identifier: "1"
       command: "echo 1"
-    package_manager: "brew install {}"
+    installer: "brew install {}"
     default: "doom"
     presets:
       - name: full
@@ -42,28 +42,28 @@ platforms:
           - private_var
         config:
           - 'sudo sh -c "echo /usr/local/bin/zsh >> /etc/shells" && chsh -s $(which zsh)'
-          - 'ln -sf ~/dotfiles/zsh/zshrc_manager.sh ~/.zshrc'
-          - 'ln -sf ~/dotfiles/zsh/zimrc.sh ~/.zimrc'
-          - 'ln -sf ~/dotfiles/zsh/zlogin.sh ~/.zlogin'
-          - 'ln -sf ~/dotfiles/zsh/zshenv.sh ~/.zshenv'
+          - "ln -sf ~/dotfiles/zsh/zshrc_manager.sh ~/.zshrc"
+          - "ln -sf ~/dotfiles/zsh/zimrc.sh ~/.zimrc"
+          - "ln -sf ~/dotfiles/zsh/zlogin.sh ~/.zlogin"
+          - "ln -sf ~/dotfiles/zsh/zshenv.sh ~/.zshenv"
       - name: tmux
         requires:
           - brew
         config:
-          - 'brew install reattach-to-user-namespace'
-          - 'ln -sf ~/dotfiles/tmux/tmux_manager.conf ~/.tmux.conf'
+          - "brew install reattach-to-user-namespace"
+          - "ln -sf ~/dotfiles/tmux/tmux_manager.conf ~/.tmux.conf"
       - name: vim
         requires:
           - brew
         command: "brew install neovim"
         config:
-          - 'ln -sf ~/dotfiles/vim/vimrc.vim ~/.vimrc'
-          - 'mkdir -p $HOME/.vim/undo'
-          - 'curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
+          - "ln -sf ~/dotfiles/vim/vimrc.vim ~/.vimrc"
+          - "mkdir -p $HOME/.vim/undo"
+          - "curl -fLo ~/.vim/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim"
           - 'vim -c "PlugInstall" -c "qa!"'
-          - '~/dotfiles/vim/install_cmdT.sh'
-          - '~/dotfiles/vim/install_ycm.sh'
-          - 'brew install clang-format'
+          - "~/dotfiles/vim/install_cmdT.sh"
+          - "~/dotfiles/vim/install_ycm.sh"
+          - "brew install clang-format"
       - name: doom-emacs
         requires:
           - chemacs
@@ -73,35 +73,35 @@ platforms:
           - fd
           - clang
           - emacs-plus
-        command: 'git clone https://github.com/hlissner/doom-emacs ~/doom-emacs'
+        command: "git clone https://github.com/hlissner/doom-emacs ~/doom-emacs"
         config:
-          - 'ln -s ~/dotfiles/emacs/doom.d/ ~/.doom.d/'
-          - 'doom install'
+          - "ln -s ~/dotfiles/emacs/doom.d/ ~/.doom.d/"
+          - "doom install"
       - name: spacemacs
         requires:
           - emacs-plus
-        command: 'git clone -b develop https://github.com/syl21bnr/spacemacs ~/spacemacs/'
+        command: "git clone -b develop https://github.com/syl21bnr/spacemacs ~/spacemacs/"
         config:
-          - 'ln -s ~/dotfiles/emacs/spacemacs.d/ ~/.spacemacs.d/'
+          - "ln -s ~/dotfiles/emacs/spacemacs.d/ ~/.spacemacs.d/"
       - name: chemacs
         requires:
           - wget
-        command: 'curl https://raw.githubusercontent.com/plexus/chemacs/master/.emacs -o ~/.emacs'
+        command: "curl https://raw.githubusercontent.com/plexus/chemacs/master/.emacs -o ~/.emacs"
         config:
-          - 'ln -s ~/dotfiles/emacs/emacs-profiles.el ~/.emacs-profiles.el'
+          - "ln -s ~/dotfiles/emacs/emacs-profiles.el ~/.emacs-profiles.el"
       - name: emacs-plus
         requires:
           - brew
           - pinentry
         init:
-          - 'brew tap d13frosted/emacs-plus'
-        command: 'brew install emacs-plus --HEAD --with-modern-icon-sexy-v2 --with-emacs-26-branch'
+          - "brew tap d13frosted/emacs-plus"
+        command: "brew install emacs-plus --HEAD --with-modern-icon-sexy-v2 --with-emacs-26-branch"
       - name: brew
         requires:
           - xcode
         command: '/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/master/install.sh)"'
       - name: clang
-        command: 'xcode-select --install'
+        command: "xcode-select --install"
       - name: xcode
         command: None
         config:
@@ -110,13 +110,13 @@ platforms:
         command: None
         config:
           - 'curl --proto "=https" --tlsv2.3 -sSf https://sh.rustup.rs | sh'
-          - 'rustup toolchain add nightly'
-          - 'cargo +nightly install racer'
-          - 'rustup component add rust-src'
+          - "rustup toolchain add nightly"
+          - "cargo +nightly install racer"
+          - "rustup component add rust-src"
       - name: pinentry
         requires:
           - brew
-        command: 'brew install pinentry pinentry-mac'
+        command: "brew install pinentry pinentry-mac"
         config:
           - 'echo "https://gitlab.com/help/user/project/repository/gpg_signed_commits/index.md"'
       - name: vscode
@@ -132,7 +132,7 @@ platforms:
       - name: git-subrepo
         requires:
           - git
-        command: 'git clone https://github.com/ingydotnet/git-subrepo ~/git-subrepo'
+        command: "git clone https://github.com/ingydotnet/git-subrepo ~/git-subrepo"
       - name: fasd
         requires:
           - brew
@@ -162,7 +162,7 @@ platforms:
         requires:
           - git
         init:
-          - 'git clone git@gitlab.com:justinekizhak/dotfiles.git'
+          - "git clone git@gitlab.com:justinekizhak/dotfiles.git"
         command: None
     files:
       - alias: private_var

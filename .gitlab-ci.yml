@@ -12,16 +12,10 @@ cache:
 
 test:
   stage: test
-  before_script:
-    - curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
-    - source $HOME/.poetry/env
   script:
-    - poetry install
-    - poetry run pytest --cov=./
-    - poetry run codecov
+    - pip install tox
+    - tox
     # - bash <(curl -s https://codecov.io/bash)
-    # - pip install tox flake8  # you can also use tox
-    # - tox -e py36,flake8
 
 build:
   stage: deploy

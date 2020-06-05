@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "devinstaller"
-version = "0.1.1"
+version = "0.2.0"
 description = "A Python package to setup your development environment and manage all your dotfiles, software and packages"
 authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
 license = "MIT License"
@@ -26,13 +26,11 @@ python = "^3.7"
 pyyaml = "^5.3.1"
 cerberus = "^1.3.2"
 click = "^7.1.2"
+colorama = "^0.4.3"
 
 [tool.poetry.dev-dependencies]
 sphinx = "^3.0.4"
-pytest = "^5.4.2"
-pytest-cov = "^2.9.0"
 sphinx-autobuild = "^0.7.1"
-codecov = "^2.1.3"
 
 [tool.poetry.scripts]
 dev = 'devinstaller.main:main'

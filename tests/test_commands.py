@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Created: Fri 29 May 2020 15:10:09 IST
-# Last-Updated: Fri  5 Jun 2020 13:07:37 IST
+# Created: Wed  3 Jun 2020 03:00:14 IST
+# Last-Updated: Wed  3 Jun 2020 03:42:03 IST
 #
-# test_app.py is part of devinstaller
+# test_commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
-# Description: Testing
+# Description:
 #
-# Copyright (c) 2020, Justin Kizhakkinedath
+# Copyright (c) 2020, Justine Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -32,30 +32,15 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-from click.testing import CliRunner
-from devinstaller.main import main
-import pytest
+from devinstaller import commands as c
+import shlex
 
 
-# @pytest.mark.xfail(raises=AssertionError, reason="Needs investigation")
-@pytest.mark.skip
-def test_install():
-    runner = CliRunner()
-    result = runner.invoke(main, ["install"])
-    assert result.exit_code == 0
-
-
-# @pytest.mark.xfail(raises=AssertionError, reason="Needs investigation")
-@pytest.mark.skip
-def test_list():
-    runner = CliRunner()
-    result = runner.invoke(main, ["list"])
-    assert result.exit_code == 0
-
-
-@pytest.mark.skip
-def test_run():
-    runner = CliRunner()
-    result = runner.invoke(main, ["run", "brew install emacs"])
-    assert result.exit_code == 0
-    assert result.output == "All good\n"
+def test_command_run(fake_process):
+    command = "dev --version"
+    expected_response = "v1.0.0"
+    mock_command = shlex.split(command)
+    mock_response = shlex.split(expected_response)
+    fake_process.register_subprocess(mock_command, stdout=mock_response)
+    response = c.run(command)["stdout"]
+    assert response == expected_response

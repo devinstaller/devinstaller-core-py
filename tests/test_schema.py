@@ -1,12 +1,12 @@
 # -----------------------------------------------------------------------------
-# Created: Fri 29 May 2020 15:10:09 IST
-# Last-Updated: Fri  5 Jun 2020 13:07:37 IST
+# Created: Wed  3 Jun 2020 18:39:27 IST
+# Last-Updated: Fri  5 Jun 2020 17:27:38 IST
 #
-# test_app.py is part of devinstaller
+# test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
-# Description: Testing
+# Description:
 #
-# Copyright (c) 2020, Justin Kizhakkinedath
+# Copyright (c) 2020, Justine Kizhakkinedath
 # All rights reserved
 #
 # Licensed under the terms of The MIT License
@@ -32,30 +32,21 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-from click.testing import CliRunner
-from devinstaller.main import main
+from devinstaller import schema as s
+from devinstaller import yaml_handler as y
+from devinstaller import exceptions as e
 import pytest
 
 
-# @pytest.mark.xfail(raises=AssertionError, reason="Needs investigation")
-@pytest.mark.skip
-def test_install():
-    runner = CliRunner()
-    result = runner.invoke(main, ["install"])
-    assert result.exit_code == 0
+def test_validator_valid():
+    document = y.read("tests/data/test.yml")
+    schema = y.read("devinstaller/data/schema.yml")
+    response = s.validate(document, schema)
+    assert response == document
 
 
-# @pytest.mark.xfail(raises=AssertionError, reason="Needs investigation")
-@pytest.mark.skip
-def test_list():
-    runner = CliRunner()
-    result = runner.invoke(main, ["list"])
-    assert result.exit_code == 0
-
-
-@pytest.mark.skip
-def test_run():
-    runner = CliRunner()
-    result = runner.invoke(main, ["run", "brew install emacs"])
-    assert result.exit_code == 0
-    assert result.output == "All good\n"
+def test_validator_invalid():
+    document = y.read("tests/data/invalid_spec.yml")
+    schema = y.read("devinstaller/data/schema.yml")
+    with pytest.raises(e.SchemaComplianceError):
+        s.validate(document, schema)
