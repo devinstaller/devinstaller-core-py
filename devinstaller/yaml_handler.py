@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Fri  5 Jun 2020 18:24:19 IST
+# Last-Updated: Sat  6 Jun 2020 18:14:18 IST
 #
 # yaml.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,15 +38,22 @@
 import yaml
 
 
-def read(file_path):
+def read(file_path: str) -> dict:
     """Reads the file at the path and returns the data as dict object
-    :param str file_path: The path to the file
-    :return: Python object
-    :rtype: list or dict
-    :raises `yaml.YAMLError`:
+
+    Args:
+        file_path: The path to the file
+
+    Returns:
+        Python object
+
+    Raises:
+        ValueError: If the yaml syntax is invalid
     """
     with open(file_path, "r") as stream:
         try:
             return yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
+        except yaml.YAMLError:
+            raise ValueError(
+                "Couln't load up your devfile. Somethings wrong with your yaml syntax"
+            )

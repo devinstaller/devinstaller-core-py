@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Fri  5 Jun 2020 18:51:12 IST
+# Last-Updated: Sat  6 Jun 2020 18:06:43 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -39,12 +39,15 @@ import cerberus
 from devinstaller import exceptions as e
 
 
-def validate(document, schema):
+def validate(document: dict, schema: dict) -> dict:
     """Validate and returns a sanitised document
-    :param dict document: Python object which has to be validated
-    :param dict schema: Python object against which to be validated
-    :return: Sanitised object
-    :rtype: dict
+
+    Args:
+        document: Python object which has to be validated
+        schema: Python object against which to be validated
+
+    Returns:
+        Sanitised object
     """
     _v = cerberus.Validator(schema)
     if _v.validate(document):
@@ -75,12 +78,15 @@ def _get_name(input_data):
     return input_data["name"]
 
 
-def generate_dependency(input_data):
+def generate_dependency(input_data: dict) -> dict:
     """Generate dependency list(graph) from the data.
     Dependency list houses all the modules and their dependency on each other
-    :param dict input_data: Data from which the graph is to be created
-    :return: Dependency object
-    :rtype: dict
+
+    Args:
+        input_data: Data from which the graph is to be created
+
+    Returns:
+        Dependency object
     """
     response = {}
     response.update(

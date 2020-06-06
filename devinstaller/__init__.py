@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Fri  5 Jun 2020 19:31:52 IST
+# Last-Updated: Sat  6 Jun 2020 18:03:53 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -44,25 +44,28 @@ from devinstaller import helpers as h
 from devinstaller import data
 
 
-def validate_spec(doc_file_path, schema_file_path):
+def validate_spec(doc_file_path: str, schema_file_path: str) -> dict:
     """Validate the spec
-    :param str doc_file_path: The path to the devfile
-    :param str schema_file_path: The path to where the actual schema file lies
-    :return: Valid schema file
-    :rtype: dict
+
+    Args:
+        doc_file_path: The path to the devfile
+        schema_file_path: The path to where the actual schema file lies
+
+    Returns:
+        Valid schema file
     """
     schema = y.read(schema_file_path)
     document = y.read(doc_file_path)
     return s.validate(document, schema)
 
 
-def install(file_name, platform=None, preset=None):
+def install(file_name: str, platform: str=None, preset: str=None) -> None:
     """Entry point for the install function
-    :param str file_name: name of the devfile
-    :param str platform: name of the platform
-    :param str preset: name of the preset
-    :return: None
-    :rtype: None
+
+    Args:
+        file_name: name of the devfile
+        platform: name of the platform
+        preset: name of the preset
     """
     document = _get_platform_document(y.read(file_name), platform)
     graph = s.generate_dependency(document)
@@ -94,13 +97,16 @@ def _get_preset_requirements(document, preset):
     raise e.RuleViolation(101, data.rules[101])
 
 
-def version_compare(input_data):
+def version_compare(input_data: dict) -> bool:
     """Check if the given platform is the one expected.
     It runs the command and checks it with the expected response in the
     devfile. If matches then it returns true else false.
-    :param dict input_data: The platform object in the devfile
-    :return: If present then True
-    :rtype: bool
+
+    Args:
+        input_data: The platform object in the devfile
+
+    Returns:
+        If present then True
     """
     command_response = c.run(input_data["version"]["command"])
     return bool(input_data["version"]["identifier"] == command_response["stdout"])
