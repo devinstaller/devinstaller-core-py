@@ -15,7 +15,14 @@ test:
   script:
     - pip install tox
     - tox
-    # - bash <(curl -s https://codecov.io/bash)
+
+merge_test:
+  stage: test
+  script:
+    - pip install tox
+    - tox
+  only:
+    - merge_requests
 
 build:
   stage: deploy
@@ -27,14 +34,6 @@ build:
     - poetry publish --build -u $PYPI_USERNAME -p $PYPI_PASSWORD
   only:
     - master
-# code_cov:
-#   stage: publish
-#   dependencies:
-#     - test
-#   script:
-#   only:
-#     - master
-
 # code_quality:
 #   after_script:
 #     - cat gl-code-quality-report.json
