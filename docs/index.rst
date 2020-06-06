@@ -1,8 +1,3 @@
-.. Devinstaller documentation master file, created by
-   sphinx-quickstart on Fri May 29 19:17:08 2020.
-   You can adapt this file completely to your liking, but it should at least
-   contain the root `toctree` directive.
-
 Welcome to Devinstaller's documentation!
 ========================================
 
@@ -10,9 +5,14 @@ Welcome to Devinstaller's documentation!
    :maxdepth: 3
    :caption: Table of Contents
 
-   modules
+   commands
+   data
+   exceptions
+   main
+   module_contents
+   schema
+   yaml_handler
 
-.. contents::
 
 .. include:: index_contents.rst
 

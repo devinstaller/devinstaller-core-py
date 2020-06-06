@@ -40,6 +40,9 @@ Export this file into ~markdown~ format using =M-x org-gfm-export-to-markdown=.
     - [[#reinstall-python-using-brew][Reinstall Python using brew]]
 - [[#git][Git]]
   - [[#more-information][More information]]
+- [[#versioning][Versioning]]
+  - [[#commands][Commands]]
+    - [[#to-bump-up-major-version][To bump up major version]]
 - [[#changelog][Changelog]]
   - [[#usage-1][Usage]]
   - [[#more-information-1][More information]]
@@ -113,19 +116,15 @@ poetry add -D pytest
 
 ** Testing
 
-Pop into poetry shell and run:
+Install [[https://tox.readthedocs.io/en/latest/index.html][tox]] on your machine globally or in a separate venv, then run:
 
 #+BEGIN_SRC sh
-coverage run
+tox
 #+END_SRC
 
 ** Coverage report
 
-Generate HTML based code coverage report:
-
-#+BEGIN_SRC sh
-coverage html
-#+END_SRC
+Coverage report is automatically generated for the master branch by [[https://coveralls.io/gitlab/justinekizhak/devinstaller][coveralls.io]]
 
 * Testing using Gitlab runner locally
 
@@ -152,13 +151,13 @@ gitlab-runner register
 
 **** Options
 
-| Option                | Value                               |
-|-----------------------+-------------------------------------|
-| gitlab-ci coordinator | https://gitlab.com                  |
-| gitlab-ci description | Enter some description              |
-| gitlab-ci tags        | Enter some tags                     |
-| Executer              | =docker=                            |
-| default docker image  | Enter the name of some docker image |
+| Option                  | Value                               |
+|-------------------------+-------------------------------------|
+| =gitlab-ci coordinator= | https://gitlab.com                  |
+| =gitlab-ci description= | Enter some description              |
+| =gitlab-ci tags=        | Enter some tags                     |
+| =Executer=              | =docker=                            |
+| =default docker image=  | Enter the name of some docker image |
 
 ** Running the tests
 
@@ -198,6 +197,22 @@ This project uses the [[https://www.conventionalcommits.org/en/v1.0.0/][Conventi
 ** More information
 
 [[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
+
+* Versioning
+
+This project uses [[https://semver.org/][Semver versioning]].
+
+Version management is done using =poetry=.
+
+** Commands
+
+For more command check [[https://python-poetry.org/docs/cli/#version][poetry versioning]].
+
+*** To bump up major version
+
+#+BEGIN_SRC sh
+poetry version major
+#+END_SRC
 
 * Changelog
 

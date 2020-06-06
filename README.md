@@ -72,19 +72,15 @@ poetry add -D pytest
 
 ## Testing
 
-Pop into poetry shell and run:
+Install [tox](https://tox.readthedocs.io/en/latest/index.html) on your machine globally or in a separate venv, then run:
 
 ```sh
-coverage run
+tox
 ```
 
 ## Coverage report
 
-Generate HTML based code coverage report:
-
-```sh
-coverage html
-```
+Coverage report is automatically generated for the master branch by [coveralls.io](https://coveralls.io/gitlab/justinekizhak/devinstaller)
 
 # Testing using Gitlab runner locally
 
@@ -112,13 +108,13 @@ You need docker installed, because we will be using the `docker` executor for th
 
 3.  Options
 
-    | Option                | Value                               |
-    | --------------------- | ----------------------------------- |
-    | gitlab-ci coordinator | <https://gitlab.com>                |
-    | gitlab-ci description | Enter some description              |
-    | gitlab-ci tags        | Enter some tags                     |
-    | Executer              | `docker`                            |
-    | default docker image  | Enter the name of some docker image |
+    | Option                  | Value                               |
+    | ----------------------- | ----------------------------------- |
+    | `gitlab-ci coordinator` | <https://gitlab.com>                |
+    | `gitlab-ci description` | Enter some description              |
+    | `gitlab-ci tags`        | Enter some tags                     |
+    | `Executer`              | `docker`                            |
+    | `default docker image`  | Enter the name of some docker image |
 
 ## Running the tests
 
@@ -157,6 +153,22 @@ This project uses the [Conventional git commit specs](https://www.conventionalco
 ## More information
 
 [Read the docs](https://devinstaller.readthedocs.io/en/latest/)
+
+# Versioning
+
+This project uses [Semver versioning](https://semver.org/).
+
+Version management is done using `poetry`.
+
+## Commands
+
+For more command check [poetry versioning](https://python-poetry.org/docs/cli/#version).
+
+### To bump up major version
+
+```sh
+poetry version major
+```
 
 # Changelog
 
