@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Sat  6 Jun 2020 18:03:53 IST
+# Last-Updated: Sat  6 Jun 2020 19:47:19 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -59,7 +59,7 @@ def validate_spec(doc_file_path: str, schema_file_path: str) -> dict:
     return s.validate(document, schema)
 
 
-def install(file_name: str, platform: str=None, preset: str=None) -> None:
+def install(file_name: str, platform: str = None, preset: str = None) -> None:
     """Entry point for the install function
 
     Args:
