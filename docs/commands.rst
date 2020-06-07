@@ -1,5 +1,8 @@
+==================================
 Commands
-----------------------------
+==================================
+
+:Author: Justine Kizhakkinedath
 
 .. automodule:: devinstaller.commands
    :members:

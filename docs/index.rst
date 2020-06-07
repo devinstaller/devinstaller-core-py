@@ -5,13 +5,8 @@ Welcome to Devinstaller's documentation!
    :maxdepth: 3
    :caption: Table of Contents
 
-   commands
-   data
-   exceptions
-   main
-   module_contents
-   schema
-   yaml_handler
+   modules
+   contributing
 
 
 .. include:: index_contents.rst

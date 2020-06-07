@@ -1,5 +1,6 @@
-Yaml handler
---------------------------------
+==================================
+Yaml
+==================================
 
 .. automodule:: devinstaller.yaml_handler
    :members:

@@ -1,5 +1,6 @@
-Module contents
-------------------------
+==================================
+Devinstaller module
+==================================
 
 .. automodule:: devinstaller
    :members:
