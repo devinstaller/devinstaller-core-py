@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Fri  5 Jun 2020 19:06:58 IST
+# Last-Updated: Sun  7 Jun 2020 17:38:38 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,9 +38,9 @@
 import os
 import click
 import pkg_resources
-from devinstaller import exceptions as e
-import devinstaller as d
 from colorama import init, Fore
+import devinstaller as d
+from devinstaller import exceptions as e
 
 
 SCHEMA_FILE_PATH = pkg_resources.resource_filename("devinstaller", "data/schema.yml")
@@ -92,10 +92,10 @@ def install(file_name, platform, preset):
     try:
         d.validate_spec(file_name, SCHEMA_FILE_PATH)
         d.install(file_name, platform, preset)
-    except e.RuleViolation as e:
-        print(Fore.RED + str(e))
-    except e.SchemaComplianceError as e:
-        print(Fore.RED + str(e))
+    except e.RuleViolation as err:
+        print(Fore.RED + str(err))
+    except e.SchemaComplianceError as err:
+        print(Fore.RED + str(err))
 
 
 @main.command()
