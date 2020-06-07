@@ -227,3 +227,6 @@ $RECYCLE.BIN/
 *.lnk
 
 # End of https://www.gitignore.io/api/linux,macos,emacs,python,windows
+
+# Mypy type checker report
+reports/
