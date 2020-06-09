@@ -29,7 +29,7 @@ platforms:
           - dotfiles
           - zsh
           - spacemacs
-    modules:
+    apps:
       - name: zsh
         version:
           identifier: "5.3"
