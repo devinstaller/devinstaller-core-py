@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Sat  6 Jun 2020 19:47:19 IST
+# Last-Updated: Wed 10 Jun 2020 01:59:03 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -41,7 +41,6 @@ from devinstaller import commands as c
 from devinstaller import schema as s
 from devinstaller import exceptions as e
 from devinstaller import helpers as h
-from devinstaller import data
 
 
 def validate_spec(doc_file_path: str, schema_file_path: str) -> dict:
@@ -77,7 +76,7 @@ def _get_preset_data(document, preset_name, rule_code):
     for preset in document["presets"]:
         if preset["name"] == preset_name:
             return preset
-    raise e.RuleViolation(rule_code, data.rules[rule_code])
+    raise e.RuleViolation(rule_code)
 
 
 def _get_platform_document(document, platform):
@@ -86,7 +85,7 @@ def _get_platform_document(document, platform):
             return _platform
         if version_compare(i):
             return _platform
-    raise e.RuleViolation(100, data.rules[100])
+    raise e.RuleViolation(100)
 
 
 def _get_preset_requirements(document, preset):
@@ -94,7 +93,7 @@ def _get_preset_requirements(document, preset):
         return _get_preset_data(document, preset, 102)
     if h.check_key("default", document):
         return _get_preset_data(document, document["default"], 103)
-    raise e.RuleViolation(101, data.rules[101])
+    raise e.RuleViolation(101)
 
 
 def version_compare(input_data: dict) -> bool:

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Fri  5 Jun 2020 18:42:45 IST
+# Last-Updated: Wed 10 Jun 2020 01:54:11 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,23 +35,47 @@
 
 """Houses all the custom exceptions in the app"""
 
+rules = {
+    100: (
+        "You didn't provide the name of the current platform and I couldn't "
+        "figure it out either."
+    ),
+    101: (
+        "You didn't provide the name of the preset you want to install and I "
+        "didn't found the name of the default preset in the spec."
+    ),
+    102: (
+        "The name of the preset you gave through the cli didn't match with "
+        "any preset in the spec file."
+    ),
+    103: (
+        "The name of the default preset present in the spec didn't match "
+        "with any preset in the file."
+    ),
+    104: ("There is an module record missing in a `required` list of another module."),
+    105: ("There is an error parsing `installer` value"),
+    106: ("You can't skip both the `installer` and `command` field at the same time"),
+}
+
 
 class ParseError(ValueError):
     """Exception when a statement in the yaml field inside the devfile
     is not valid"""
-    def __init__(self, statement, rule, message=""):
-        self.statement = statement
-        self.rule = rule
+
+    def __init__(self, error_statement, rule_code, message=""):
+        self.error_statement = error_statement
+        self.rule_code = rule_code
         super(ParseError, self).__init__(message)
 
     def __str__(self):
         return "Error parsing `{statement}`. Look into: {rule}".format(
-            statement=self.statement, rule=self.rule
+            statement=self.error_statement, rule=rules[self.rule_code]
         )
 
 
 class SchemaComplianceError(Exception):
     """Exception when a yaml field in the devfile is not valid"""
+
     def __init__(self, errors, message=""):
         self.errors = errors
         super(SchemaComplianceError, self).__init__(message)
@@ -62,12 +86,12 @@ class SchemaComplianceError(Exception):
 
 class RuleViolation(Exception):
     """Exception when a runtime rule is violated"""
-    def __init__(self, rule_code, rule_statement, message=""):
+
+    def __init__(self, rule_code, message=""):
         self.rule_code = rule_code
-        self.rule_statement = rule_statement
         super(RuleViolation, self).__init__(message)
 
     def __str__(self):
         return "I found a violation of rule {code}. The rule says: {statement}".format(
-            code=self.rule_code, statement=self.rule_statement
+            code=self.rule_code, statement=rules[self.rule_code]
         )

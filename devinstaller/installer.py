@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Fri  5 Jun 2020 19:31:23 IST
+# Last-Updated: Wed 10 Jun 2020 01:57:23 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,7 +38,6 @@
 from devinstaller import exceptions as e
 from devinstaller import commands as c
 from devinstaller import helpers as h
-from devinstaller import data
 
 
 def main(graph, requirements_list):
@@ -69,7 +68,7 @@ def _execute(module_name, graph):
         module = graph[module_name]
         return function[module["type"]](module)
     print(f"I was unable to find the module: {module_name}")
-    raise e.RuleViolation(104, data.rules[105])
+    raise e.RuleViolation(rule_code=104)
 
 
 def _install_module(module):
@@ -92,7 +91,7 @@ def _install_command(module):
             command = module["installer"].format(name=module["name"])
             return c.run(command)
         except IndexError:
-            raise e.ParseError(module["installer"], data.rules[105])
+            raise e.ParseError(module["installer"], rule_code=105)
 
 
 def _install_steps(module, step_name):
