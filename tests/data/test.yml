@@ -2,7 +2,7 @@ version: v1
 platforms:
   - name: macos
     version:
-      identifier: "1"
+      response: "1"
       command: "echo 1"
     installer: "brew install {}"
     default: "minimal"
@@ -15,10 +15,10 @@ platforms:
         requires:
           - module2
           - file1
-    modules:
+    apps:
       - name: module1
         version:
-          identifier: "v1.0.0"
+          response: "v1.0.0"
           command: "module1 --version"
         requires:
           - module3

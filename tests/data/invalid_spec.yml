@@ -2,9 +2,9 @@ version: v1
 platforms:
   - name: macos
     version:
-      identifier: "1"
+      response: "1"
       command: "echo 1"
-    package: "brew install {}"
+    installer: "brew install {}"
     default: "minimal"
     presets:
       - name: full
@@ -15,10 +15,10 @@ platforms:
         requires:
           - module2
           - file1
-    modules:
+    apps:
       - name: module1
         version:
-          identifier: "v1.0.0"
+          response: "v1.0.0"
           command: "module1 --version"
         requires:
           - module3
@@ -43,7 +43,7 @@ platforms:
           - module4
         init:
           - 'echo "folder1"'
-        command: None
+        command: False
     files:
       - alias: file1
         name: "foo-bar_file1.py"

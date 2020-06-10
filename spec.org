@@ -63,3 +63,13 @@ all good.
 | =platform.files.file.steps=                | false    | list       |                                      |
 | =platform.files.file.steps.step=           | true     | string     | Bash script or link to bash file     |
 |                                            |          |            |                                      |
+
+* Difference between =app module= and =file and folder module=
+
+App module has =VersionBlock= for checking if the app is installed
+
+File and folder module has
+
+| =owner=      |
+| =parent_dir= |
+| =permission= |

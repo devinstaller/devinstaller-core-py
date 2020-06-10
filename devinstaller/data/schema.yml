@@ -19,7 +19,7 @@ platforms:
       version:
         type: dict
         schema:
-          identifier:
+          response:
             type: string
             required: True
           command:
@@ -45,7 +45,7 @@ platforms:
               type: list
               schema:
                 type: string
-      modules:
+      apps:
         type: list
         schema:
           type: dict
@@ -61,7 +61,7 @@ platforms:
             version:
               type: dict
               schema:
-                identifier:
+                response:
                   type: string
                   required: True
                 command:
@@ -76,8 +76,9 @@ platforms:
               schema:
                 type: string
             command:
-              type: string
-              nullable: True
+              type:
+                - string
+                - boolean
             init:
               type: list
               schema:
@@ -120,8 +121,9 @@ platforms:
               schema:
                 type: string
             command:
-              type: string
-              nullable: True
+              type:
+                - string
+                - boolean
             config:
               type: list
               schema:
@@ -158,8 +160,9 @@ platforms:
               schema:
                 type: string
             command:
-              type: string
-              nullable: True
+              type:
+                - string
+                - boolean
             config:
               type: list
               schema:
