@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed 10 Jun 2020 01:55:11 IST
+# Last-Updated: Wed 10 Jun 2020 21:53:26 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,144 +35,34 @@
 
 """All the models including the schema as well as graph models"""
 
-from typing import List, Dict, Optional, Union
-from dataclasses import dataclass, field, InitVar
-from devinstaller import exception as e
-
-
-def _get_value(
-    input_data: Dict[str, str], key: str, default: str = None
-) -> Optional[str]:
-    try:
-        return input_data[key]
-    except KeyError:
-        return default
+from typing import List, Optional
+from devinstaller import exceptions as e
+from pydantic.dataclasses import dataclass
 
 
 @dataclass
-class NameTag:
-    """Class containing the name, alias and display"""
+class VersionBlock:
+    """Class containing the info necessary to get the version info"""
+
+    response: str
+    command: str
+
+
+@dataclass
+class Module:
+    """Common class for all modules"""
 
     name: str
-    alias: str = None
+    type: str
+    installed: bool
+    alias: Optional[str] = None
     display: Optional[str] = None
-
-    def __post_init__(self):
-        if self.alias is None:
-            self.alias = self.name
-
-
-@dataclass
-class BaseModule(NameTag):
-    """Base class for all modules"""
-
-    command: str = None
-    config: Optional[List] = None
-    init: Optional[List] = None
-    optionals: Optional[List] = None
-    requires: Optional[List] = None
-    installer: InitVar[str] = None
-
-    def __post_init__(self, installer):
-        super(BaseModule, self).__post_init__()
-        if self.command is None:
-            if installer is not None:
-                self.command = installer
-            raise e.RuleViolation(rule_code=106)
-
-
-# class AppModule(BaseModule):
-#     """Class representing an app module"""
-
-#     def __init__(self, input_data: Dict[str, str], installer: str):
-#         self.executable = _get_value(input_data, "executable")
-#         self.version = _get_value(input_data, "version")
-#         super(AppModule, self).__init__(input_data, installer)
-
-#     def __repr__(self):
-#         return "This is app class"
-
-
-# class FileFolderBaseModule(BaseModule):
-#     """Base class for file and folder"""
-
-#     def __init__(self, input_data: Dict[str, str], installer: str):
-#         self.owner = _get_value(input_data, "owner")
-#         self.parent_dir = _get_value(input_data, "parent_dir")
-#         self.permission = _get_value(input_data, "permission")
-#         super(FileFolderBaseModule, self).__init__(input_data, installer)
-
-
-# class FileModule(FileFolderBaseModule):
-#     """Class representing an file module"""
-
-#     def __init__(self, input_data: Dict[str, str], installer: str):
-#         super(FileModule, self).__init__(input_data, installer)
-
-
-# class FolderModule(FileFolderBaseModule):
-#     """Class representing an folder module"""
-
-#     def __init__(self, input_data: Dict[str, str], installer: str):
-#         super(FolderModule, self).__init__(input_data, installer)
-
-
-# class PlatformModule(NameTag):
-#     """Class representing an platform"""
-
-#     def __init__(self, input_data: Dict[str, str], _):
-#         installer = input_data["installer"]
-#         version = input_data["version"]
-
-#         self.default = _get_value(input_data, "default")
-#         self.installer = _get_value(input_data, "installer")
-#         self.version = {
-#             "identifier": _get_value(version, "identifier"),
-#             "command": _get_value(version, "command"),
-#         }
-
-#         self.presets = _serialize_list(input_data["presets"], "presets")
-
-#         self.apps = _serialize_list(input_data, "apps", installer)
-#         self.files = _serialize_list(input_data, "files", installer)
-#         self.folders = _serialize_list(input_data, "folders", installer)
-#         super(PlatformModule, self).__init__(input_data, installer)
-
-
-# @dataclass
-# class PresetModule(NameTag):
-#     """Class representing preset"""
-
-#     def __init__(self, input_data: Dict[str, str], _):
-#         self.requires = _get_value(input_data, "requires")
-#         self.optionals = _get_value(input_data, "optionals")
-#         super(PresetModule, self).__init__(input_data)
-
-
-# class SchemaModule:
-#     """Class representing the devfile"""
-
-#     def __init__(self, input_data: Dict[str, str]):
-#         self.platforms = _serialize_list(input_data, "platforms")
-
-
-# ListApp = List[AppModule]
-# ListFile = List[FileModule]
-# ListFolder = List[FolderModule]
-# ModuleType = Union[ListApp, ListFile, ListFolder]
-
-
-# def _serialize_list(
-#     input_data: Dict[str, str], key: str, installer: str = None
-# ) -> List[Union[[ModuleType], PlatformModule]]:
-#     response: List[ModuleType] = []
-#     ref = {
-#         "platforms": PlatformModule,
-#         "apps": AppModule,
-#         "files": FileModule,
-#         "folder": FolderModule,
-#         "presets": PresetModule,
-#     }
-#     for mod in input_data[key]:
-#         response.append(ref[key](mod, installer))
-#     return response
+    command: Optional[str] = None
+    config: Optional[List[str]] = None
+    init: Optional[List[str]] = None
+    optionals: Optional[List[str]] = None
+    requires: Optional[List[str]] = None
+    version: Optional[VersionBlock] = None
+    owner: Optional[str] = None
+    parent_dir: Optional[str] = None
+    permission: Optional[str] = None
