@@ -2,7 +2,7 @@
 Models
 ==================================
 
-.. automodule:: devinstaller.data
+.. automodule:: devinstaller.models
    :members:
    :undoc-members:
    :show-inheritance:

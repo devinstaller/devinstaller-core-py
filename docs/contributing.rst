@@ -60,3 +60,207 @@ Install dev dependencies
 .. code:: bash
 
    poetry add -D pytest
+
+Testing and code coverage
+=========================
+
+Testing
+-------
+
+Install `tox <https://tox.readthedocs.io/en/latest/index.html>`__ on
+your machine globally or in a separate venv, then run:
+
+.. code:: bash
+
+   tox
+
+Coverage report
+---------------
+
+Coverage report is automatically generated for the master branch by
+`coveralls.io <https://coveralls.io/gitlab/justinekizhak/devinstaller>`__
+
+Testing using Gitlab runner locally
+===================================
+
+.. _prerequisites-1:
+
+Prerequisites
+-------------
+
+Docker
+~~~~~~
+
+You need docker installed, because we will be using the ``docker``
+executor for the gitlab-runner.
+
+Install ``gitlab-runner`` locally
+---------------------------------
+
+MacOS
+~~~~~
+
+#. Install using brew
+
+   ::
+
+      brew install gitlab-runner
+
+#. Register it with gitlab
+
+   ::
+
+      gitlab-runner register
+
+#. Options
+
+   ========================= ===================================
+   Option                    Value
+   ========================= ===================================
+   ``gitlab-ci coordinator`` https://gitlab.com
+   ``gitlab-ci description`` Enter some description
+   ``gitlab-ci tags``        Enter some tags
+   ``Executer``              ``docker``
+   ``default docker image``  Enter the name of some docker image
+   ========================= ===================================
+
+Running the tests
+-----------------
+
+::
+
+   gitlab-runner exec docker test
+
+Facing any problems
+===================
+
+Issue with installing poetry packages
+-------------------------------------
+
+Try setting LANG variable for the shell, if its not set.
+
+Copy paste this line into your ``~/.bash_profile`` or ``~/.zshrc``.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: bash
+
+   export $LANG = en_US.UTF-8
+
+After this you might need to reopen the terminal.
+
+Reinstall Python using brew
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The default python installation from Xcode is not built using SSL
+support. So you may have problem installing packages.
+
+Reinstall python using this command on the terminal:
+
+.. code:: bash
+
+   brew reinstall python
+
+Git
+===
+
+This project uses the `Conventional git commit
+specs <https://www.conventionalcommits.org/en/v1.0.0/>`__.
+
+More information
+----------------
+
+`Read the docs <https://devinstaller.readthedocs.io/en/latest/>`__
+
+Changelog
+=========
+
+Changelog is generated using ``git-chglog``. See
+`git-chglog <https://github.com/git-chglog/git-chglog>`__.
+
+Usage
+-----
+
+.. code:: bash
+
+   git-chglog -o CHANGELOG.md
+
+Versioning
+==========
+
+This project uses `Semver versioning <https://semver.org/>`__.
+
+Version management is done using ``poetry``.
+
+Commands
+--------
+
+For more command check `poetry
+versioning <https://python-poetry.org/docs/cli/#version>`__.
+
+To bump up major version
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: bash
+
+   poetry version major
+
+To bump up minor version
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: bash
+
+   poetry version minor
+
+To bump up patch version
+~~~~~~~~~~~~~~~~~~~~~~~~
+
+.. code:: bash
+
+   poetry version patch
+
+Type checking
+=============
+
+You can type check this project. Type hints are provided.
+
+To check you need ``tox``. You can install ``tox`` globally or in a
+virtualenv.
+
+.. code:: bash
+
+   tox -e type
+
+Stub generation
+---------------
+
+Type checking for external packages need stubs.
+
+To generate stub pop into poetry shell and run:
+
+.. code:: bash
+
+   stubgen -p PACKAGE_NAME
+
+Dependencies
+============
+
+Application specific
+--------------------
+
+These dependencies are inside the ``pyproject.toml``.
+
+Dependencies required to develop docs locally
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+These are also in ``pyproject.toml``, but in the ``dev-dependencies``
+section.
+
+Test
+----
+
+These are inside ``tox.ini``.
+
+ReadTheDocs specific
+--------------------
+
+Dependencies required for ReadTheDocs are in ``docs/reqirements.txt``.
