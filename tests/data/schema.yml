@@ -56,8 +56,9 @@ platforms:
               type: string
               required: True
             display:
-              type: string
-              nullable: True
+              type:
+                - string
+                - boolean
             version:
               type: dict
               schema:
@@ -87,8 +88,6 @@ platforms:
               type: list
               schema:
                 type: string
-            executable:
-              type: string
       folders:
         type: list
         schema:
@@ -100,8 +99,9 @@ platforms:
               type: string
               required: True
             display:
-              type: string
-              nullable: True
+              type:
+                - string
+                - boolean
             owner:
               type: string
             permission:
@@ -153,8 +153,9 @@ platforms:
               schema:
                 type: string
             display:
-              type: string
-              nullable: True
+              type:
+                - string
+                - boolean
             init:
               type: list
               schema:

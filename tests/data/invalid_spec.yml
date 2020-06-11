@@ -1,13 +1,13 @@
 version: v1
-platforms:
+wrong_name:
   - name: macos
     version:
-      response: "1"
+      response: 1
       command: "echo 1"
     installer: "brew install {}"
     default: "minimal"
     presets:
-      - name: full
+      - name: None
         requires:
           - folder1
           - module1

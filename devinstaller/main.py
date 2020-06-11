@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Sun  7 Jun 2020 17:38:38 IST
+# Last-Updated: Thu 11 Jun 2020 17:24:00 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,13 +37,11 @@
 
 import os
 import click
-import pkg_resources
 from colorama import init, Fore
 import devinstaller as d
 from devinstaller import exceptions as e
 
 
-SCHEMA_FILE_PATH = pkg_resources.resource_filename("devinstaller", "data/schema.yml")
 DEFAULT_DOC_FILE_PATH = os.getcwd() + "/sample.devfile.yml"
 
 
@@ -90,7 +88,7 @@ def process_result():
 def install(file_name, platform, preset):
     """Install the default preset and the modules which it requires."""
     try:
-        d.validate_spec(file_name, SCHEMA_FILE_PATH)
+        d.validate_spec(file_name)
         d.install(file_name, platform, preset)
     except e.RuleViolation as err:
         print(Fore.RED + str(err))
@@ -109,7 +107,7 @@ def install(file_name, platform, preset):
 def show(file_name):
     """Show all the presets and modules available for your OS."""
     try:
-        d.validate_spec(file_name, SCHEMA_FILE_PATH)
+        d.validate_spec(file_name)
     except e.SchemaComplianceError as err:
         print(Fore.RED + str(err))
 

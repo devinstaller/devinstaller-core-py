@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Wed 10 Jun 2020 01:59:03 IST
+# Last-Updated: Thu 11 Jun 2020 12:38:31 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -43,19 +43,17 @@ from devinstaller import exceptions as e
 from devinstaller import helpers as h
 
 
-def validate_spec(doc_file_path: str, schema_file_path: str) -> dict:
+def validate_spec(doc_file_path: str) -> dict:
     """Validate the spec
 
     Args:
         doc_file_path: The path to the devfile
-        schema_file_path: The path to where the actual schema file lies
 
     Returns:
         Valid schema file
     """
-    schema = y.read(schema_file_path)
     document = y.read(doc_file_path)
-    return s.validate(document, schema)
+    return s.validate(document)
 
 
 def install(file_name: str, platform: str = None, preset: str = None) -> None:

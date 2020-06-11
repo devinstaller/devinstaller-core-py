@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Fri  5 Jun 2020 17:27:38 IST
+# Last-Updated: Thu 11 Jun 2020 20:34:30 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,18 +35,46 @@
 from devinstaller import schema as s
 from devinstaller import yaml_handler as y
 from devinstaller import exceptions as e
+from devinstaller import models as m
 import pytest
 
 
 def test_validator_valid():
-    document = y.read("tests/data/test.yml")
-    schema = y.read("devinstaller/data/schema.yml")
-    response = s.validate(document, schema)
-    assert response == document
+    expected_schema = y.read("tests/data/schema.yml")
+    schema = m.schema()
+
+    assert expected_schema["version"] == schema["version"]
+
+    # Check presets structure
+    expected_presets = expected_schema["platforms"]["schema"]["schema"]["presets"]
+    schema_presets = schema["platforms"]["schema"]["schema"]["presets"]
+    assert expected_presets == schema_presets
+
+    # Check version structure
+    expected_version = expected_schema["platforms"]["schema"]["schema"]["version"]
+    schema_version = schema["platforms"]["schema"]["schema"]["version"]
+    assert expected_version == schema_version
+
+    # Check apps structure
+    expected_apps = expected_schema["platforms"]["schema"]["schema"]["apps"]
+    schema_apps = schema["platforms"]["schema"]["schema"]["apps"]
+    assert expected_apps == schema_apps
+
+    # Check files structure
+    expected_files = expected_schema["platforms"]["schema"]["schema"]["files"]
+    schema_files = schema["platforms"]["schema"]["schema"]["files"]
+    assert expected_files == schema_files
+
+    # Check folders structure
+    expected_folders = expected_schema["platforms"]["schema"]["schema"]["folders"]
+    schema_folders = schema["platforms"]["schema"]["schema"]["folders"]
+    assert expected_folders == schema_folders
+
+    # Check overall schema
+    assert expected_schema == schema
 
 
 def test_validator_invalid():
     document = y.read("tests/data/invalid_spec.yml")
-    schema = y.read("devinstaller/data/schema.yml")
     with pytest.raises(e.SchemaComplianceError):
-        s.validate(document, schema)
+        s.validate(document)

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sat  6 Jun 2020 18:06:43 IST
+# Last-Updated: Thu 11 Jun 2020 20:36:03 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,19 +37,19 @@
 
 import cerberus
 from devinstaller import exceptions as e
+from devinstaller import models as m
 
 
-def validate(document: dict, schema: dict) -> dict:
+def validate(document: dict) -> dict:
     """Validate and returns a sanitised document
 
     Args:
         document: Python object which has to be validated
-        schema: Python object against which to be validated
 
     Returns:
         Sanitised object
     """
-    _v = cerberus.Validator(schema)
+    _v = cerberus.Validator(m.schema())
     if _v.validate(document):
         return _v.document
     raise e.SchemaComplianceError(_v.errors)
