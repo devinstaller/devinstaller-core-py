@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "devinstaller"
-version = "0.2.1"
+version = "0.2.2"
 description = "A Python package to setup your development environment and manage all your dotfiles, software and packages"
 authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
 license = "MIT License"
