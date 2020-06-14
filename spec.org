@@ -18,52 +18,6 @@ all good.
 ** Spread operator
 ** Reference operator
 
-* Spec
-
-| Key                                        | Required | Value type | Description                          |
-|--------------------------------------------+----------+------------+--------------------------------------|
-| =version=                                  | false    | string     |                                      |
-| =defalt=                                   | false    | string     | Reference to platform                |
-| =platform=                                 | true     | dict       |                                      |
-| =platform.check=                           | false    | dict       |                                      |
-| =platform.check.version=                   | true     | string     |                                      |
-| =platform.check.command=                   | false    | string     |                                      |
-| =platform.presets=                         | false    | list       |                                      |
-| =platform.presets.preset=                  | true     | list       |                                      |
-| =platform.presets.preset.module=           | true     | string     | Reference to apps, folders and files |
-| =platform.apps=                            | false    | list       |                                      |
-| =platform.apps.app=                        | true     | dict       |                                      |
-| =platform.apps.app.check=                  | false    | dict       |                                      |
-| =platform.apps.app.check.version=          | true     | string     |                                      |
-| =platform.apps.app.check.command=          | false    | string     |                                      |
-| =platform.apps.app.requires=               | false    | list       |                                      |
-| =platform.apps.app.requires.require=       | true     | string     | Reference to apps, folders and files |
-| =platform.apps.app.steps=                  | false    | list       |                                      |
-| =platform.apps.app.steps.step=             | true     | string     | Bash script or link to bash file     |
-| =platform.folders=                         | false    | list       |                                      |
-| =platform.folders.folder=                  | true     | dict       |                                      |
-| =platform.folders.folder.owner=            | false    | string     |                                      |
-| =platform.folders.folder.permission=       | false    | string     |                                      |
-| =platform.folders.folder.name=             | false    | string     |                                      |
-| =platform.folders.folder.parent_dir=       | false    | string     |                                      |
-| =platform.folders.folder.is_empty=         | false    | bool       |                                      |
-| =platform.folders.folder.requires=         | false    | list       |                                      |
-| =platform.folders.folder.requires.require= | true     | string     | Reference to apps, folders and files |
-| =platform.folders.folder.steps=            | false    | list       |                                      |
-| =platform.folders.folder.steps.step=       | true     | string     | Bash script or link to bash file     |
-| =platform.files=                           | false    | list       |                                      |
-| =platform.files.file=                      | true     | dict       |                                      |
-| =platform.files.file.owner=                | false    | string     |                                      |
-| =platform.files.file.permission=           | false    | string     |                                      |
-| =platform.files.file.name=                 | false    | string     |                                      |
-| =platform.files.file.parent_dir=           | false    | string     |                                      |
-| =platform.files.file.is_empty=             | false    | bool       |                                      |
-| =platform.files.file.requires=             | false    | list       |                                      |
-| =platform.files.file.requires.require=     | true     | string     | Reference to apps, folders and files |
-| =platform.files.file.steps=                | false    | list       |                                      |
-| =platform.files.file.steps.step=           | true     | string     | Bash script or link to bash file     |
-|                                            |          |            |                                      |
-
 * Difference between =app module= and =file and folder module=
 
 App module has =VersionBlock= for checking if the app is installed

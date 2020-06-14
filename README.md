@@ -1,5 +1,13 @@
 # Devinstaller
 
+[![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
+
+---
+
+[![forthebadge](https://forthebadge.com/images/badges/uses-git.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/approved-by-george-costanza.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/certified-snoop-lion.svg)](https://forthebadge.com)
+
 [[_TOC_]]
 
 # Usage

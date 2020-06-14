@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Thu 11 Jun 2020 20:38:32 IST
+# Last-Updated: Thu 11 Jun 2020 21:17:37 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -69,7 +69,7 @@ class Module:
 
 
 # Elements are not mutated
-def _name_element() -> Dict[str, str]:
+def _name_element() -> Dict[str, object]:
     return {
         "alias": {"type": "string"},
         "name": {"type": "string", "required": True},

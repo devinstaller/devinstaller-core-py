@@ -5,6 +5,18 @@
 
 * Devinstaller
 
+#+BEGIN_EXPORT markdown
+[![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
+#+END_EXPORT
+
+------
+
+#+BEGIN_EXPORT markdown
+[![forthebadge](https://forthebadge.com/images/badges/uses-git.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/approved-by-george-costanza.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/certified-snoop-lion.svg)](https://forthebadge.com)
+#+END_EXPORT
+
 #+MARKDOWN: [[_TOC_]]
 
 * README.org :noexport:
