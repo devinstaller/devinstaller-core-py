@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Thu 11 Jun 2020 12:38:31 IST
+# Last-Updated: Mon 15 Jun 2020 22:27:07 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,7 +35,7 @@
 
 """Init everything"""
 
-from devinstaller import yaml_handler as y
+from devinstaller import file_handler as f
 from devinstaller import installer as i
 from devinstaller import commands as c
 from devinstaller import schema as s
@@ -52,7 +52,7 @@ def validate_spec(doc_file_path: str) -> dict:
     Returns:
         Valid schema file
     """
-    document = y.read(doc_file_path)
+    document = f.read(doc_file_path)
     return s.validate(document)
 
 
@@ -64,7 +64,7 @@ def install(file_name: str, platform: str = None, preset: str = None) -> None:
         platform: name of the platform
         preset: name of the preset
     """
-    document = _get_platform_document(y.read(file_name), platform)
+    document = _get_platform_document(f.read(file_name), platform)
     graph = s.generate_dependency(document)
     requirements_list = _get_preset_requirements(document, preset)
     i.main(graph, requirements_list)
