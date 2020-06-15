@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Thu 11 Jun 2020 21:17:37 IST
+# Last-Updated: Mon 15 Jun 2020 19:31:43 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -69,7 +69,7 @@ class Module:
 
 
 # Elements are not mutated
-def _name_element() -> Dict[str, object]:
+def _name_element():
     return {
         "alias": {"type": "string"},
         "name": {"type": "string", "required": True},
@@ -77,7 +77,7 @@ def _name_element() -> Dict[str, object]:
     }
 
 
-def _base_element() -> Dict[str, str]:
+def _base_element():
     return {
         "type": "list",
         "schema": {
@@ -93,7 +93,7 @@ def _base_element() -> Dict[str, str]:
     }
 
 
-def _version_element() -> Dict[str, str]:
+def _version_element():
     return {
         "type": "dict",
         "schema": {
@@ -104,7 +104,7 @@ def _version_element() -> Dict[str, str]:
 
 
 # Blocks returns separate copy of dict each time because they have to be mutated
-def _preset_block() -> Dict[str, str]:
+def _preset_block():
     return {
         "type": "list",
         "schema": {
@@ -117,14 +117,14 @@ def _preset_block() -> Dict[str, str]:
     }
 
 
-def _app_block(version) -> Dict[str, str]:
+def _app_block(version):
     return {
         "type": "list",
         "schema": {"type": "dict", "schema": {"version": version}},
     }
 
 
-def _file_and_folder_block() -> Dict[str, str]:
+def _file_and_folder_block():
     return {
         "type": "list",
         "schema": {
@@ -138,7 +138,7 @@ def _file_and_folder_block() -> Dict[str, str]:
     }
 
 
-def _platform_block(version, preset, app, file_and_folder) -> Dict[str, str]:
+def _platform_block(version, preset, app, file_and_folder):
     return {
         "type": "list",
         "schema": {
@@ -156,7 +156,7 @@ def _platform_block(version, preset, app, file_and_folder) -> Dict[str, str]:
     }
 
 
-def _schema(platform) -> Dict[str, str]:
+def _schema(platform):
     return {
         "version": {"type": "string"},
         "platforms": platform,
