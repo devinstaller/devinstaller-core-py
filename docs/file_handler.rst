@@ -1,8 +1,8 @@
 ==================================
-Yaml
+File handler
 ==================================
 
-.. automodule:: devinstaller.yaml_handler
+.. automodule:: devinstaller.file_handler
    :members:
    :undoc-members:
    :show-inheritance:

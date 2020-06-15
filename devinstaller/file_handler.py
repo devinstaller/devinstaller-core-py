@@ -1,10 +1,10 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Sat  6 Jun 2020 18:14:18 IST
+# Last-Updated: Mon 15 Jun 2020 21:00:41 IST
 #
-# yaml.py is part of devinstaller
+# file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
-# Description: Handles everything yaml related
+# Description: Handles everything file related
 #
 # Copyright (c) 2020, Justin Kizhakkinedath
 # All rights reserved
@@ -33,9 +33,9 @@
 # use or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-"""Handles everything yaml"""
+"""Handles everything file_handler"""
 
-import yaml
+import anymarkup
 
 
 def read(file_path: str) -> dict:
@@ -48,12 +48,12 @@ def read(file_path: str) -> dict:
         Python object
 
     Raises:
-        ValueError: If the yaml syntax is invalid
+        ValueError: If the anymarkup syntax is invalid
     """
     with open(file_path, "r") as stream:
         try:
-            return yaml.safe_load(stream)
-        except yaml.YAMLError:
+            return anymarkup.parse(stream)
+        except Exception:
             raise ValueError(
-                "Couln't load up your devfile. Somethings wrong with your yaml syntax"
+                "Couln't load up your devfile. Somethings wrong with your anymarkup syntax"
             )

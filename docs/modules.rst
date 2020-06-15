@@ -11,4 +11,4 @@ Modules
    main
    module_contents
    schema
-   yaml_handler
+   file_handler
