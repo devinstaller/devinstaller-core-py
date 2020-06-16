@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Thu 11 Jun 2020 20:34:30 IST
+# Last-Updated: Tue 16 Jun 2020 20:59:06 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -33,14 +33,14 @@
 # -----------------------------------------------------------------------------
 
 from devinstaller import schema as s
-from devinstaller import yaml_handler as y
+from devinstaller import file_handler as f
 from devinstaller import exceptions as e
 from devinstaller import models as m
 import pytest
 
 
 def test_validator_valid():
-    expected_schema = y.read("tests/data/schema.yml")
+    expected_schema = f.read("tests/data/schema.yml")
     schema = m.schema()
 
     assert expected_schema["version"] == schema["version"]
@@ -75,6 +75,6 @@ def test_validator_valid():
 
 
 def test_validator_invalid():
-    document = y.read("tests/data/invalid_spec.yml")
+    document = f.read("tests/data/invalid_spec.yml")
     with pytest.raises(e.SchemaComplianceError):
         s.validate(document)
