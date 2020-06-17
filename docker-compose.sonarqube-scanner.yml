@@ -1,0 +1,15 @@
+version: "3"
+networks:
+  devinstaller_sonarnet:
+    external: true
+services:
+  sonar_scanner:
+    image: sonarsource/sonar-scanner-cli
+    networks:
+      - devinstaller_sonarnet
+    environment:
+      - SONAR_LOGIN=admin
+      - SONAR_PASSWORD=admin
+      - SONAR_HOST_URL=http://sonarqube:9000
+    volumes:
+      - ./:/usr/src

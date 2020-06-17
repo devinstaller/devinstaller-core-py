@@ -22,3 +22,15 @@ help:
 
 livehtml:
 	sphinx-autobuild -b html $(ALLSPHINXOPTS) $(SOURCEDIR) $(BUILDDIR)/html
+
+sonar_server:
+	@docker-compose -f docker-compose.sonarqube.yml up -d
+
+sonar_server_logs:
+	@docker logs -f devinstaller_sonarqube_1
+
+sonar_server_down:
+	@docker-compose -f docker-compose.sonarqube.yml down
+
+sonar_client:
+	@docker-compose -f docker-compose.sonarqube-scanner.yml up
