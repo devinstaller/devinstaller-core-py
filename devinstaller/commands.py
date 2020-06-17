@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Sat  6 Jun 2020 17:58:03 IST
+# Last-Updated: Wed 17 Jun 2020 01:09:37 IST
 #
 # commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,9 +37,10 @@
 
 import subprocess
 import shlex
+from devinstaller import models as m
 
 
-def run(command: str) -> dict:
+def run(command: str) -> m.CommandRunResponseType:
     """Reads the file at the path and returns the data as dict object
 
     Args:
@@ -49,16 +50,10 @@ def run(command: str) -> dict:
         serialised subprocess python object
     """
     data = subprocess.run(shlex.split(command), capture_output=True, check=True)
-    response = {
+    response: m.CommandRunResponseType = {
         "args": list(data.args),
         "returncode": data.returncode,
         "stdout": data.stdout.decode().rstrip(),
         "stderr": data.stderr.decode().rstrip(),
     }
-    # response = {
-    #     "args": shlex.split(args),
-    #     "returncode": 0,
-    #     "stdout": "All good",
-    #     "stderr": "",
-    # }
     return response

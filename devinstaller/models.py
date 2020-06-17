@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Mon 15 Jun 2020 19:31:43 IST
+# Last-Updated: Wed 17 Jun 2020 02:23:54 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,10 +37,11 @@
 
 from typing import List, Optional, Dict
 from dataclasses import dataclass
+from typing_extensions import TypedDict, Literal
 
 
 @dataclass
-class VersionBlock:
+class _VersionModule:
     """Class containing the info necessary to get the version info"""
 
     response: str
@@ -48,7 +49,7 @@ class VersionBlock:
 
 
 @dataclass
-class Module:
+class CommonModule:
     """Common class for all modules"""
 
     # pylint: disable=too-many-instance-attributes
@@ -62,11 +63,75 @@ class Module:
     init: Optional[List[str]] = None
     optionals: Optional[List[str]] = None
     requires: Optional[List[str]] = None
-    version: Optional[VersionBlock] = None
+    version: Optional[_VersionModule] = None
     owner: Optional[str] = None
     parent_dir: Optional[str] = None
     permission: Optional[str] = None
 
+
+class NameType(TypedDict):
+    alias: str
+    name: str
+    display: str
+
+
+class BaseType(TypedDict):
+    command: str
+    requires: List[str]
+    optionals: List[str]
+    init: List[str]
+    config: List[str]
+
+
+class VersionType(TypedDict):
+    command: str
+    response: str
+
+
+class AppType(NameType, BaseType):
+    version: VersionType
+
+
+class FileAndFolderType(NameType, BaseType):
+    owner: str
+    permission: str
+    parent_dir: str
+
+
+class PresetType(NameType):
+    requires: List[str]
+    optionls: List[str]
+
+
+class PlatformType(NameType):
+    installer: str
+    default: str
+    version: VersionType
+    presets: List[PresetType]
+    apps: List[AppType]
+    files: List[FileAndFolderType]
+    folders: List[FileAndFolderType]
+
+
+class FullDocumentType(TypedDict):
+    version: str
+    platforms: List[PlatformType]
+
+
+class CommandRunResponseType(TypedDict):
+    args: List[str]
+    returncode: int
+    stdout: str
+    stderr: str
+
+
+class ModuleInstalledResponseType(TypedDict):
+    init: Optional[List[CommandRunResponseType]]
+    config: Optional[List[CommandRunResponseType]]
+    command: Optional[CommandRunResponseType]
+
+
+ModuleKeys = Literal["apps", "files", "folders"]
 
 # Elements are not mutated
 def _name_element():

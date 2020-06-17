@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed 10 Jun 2020 01:57:23 IST
+# Last-Updated: Wed 17 Jun 2020 01:34:51 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,80 +38,128 @@
 from devinstaller import exceptions as e
 from devinstaller import commands as c
 from devinstaller import helpers as h
+from devinstaller import models as m
+from typing import List, Optional, Dict
 
 
-def main(graph, requirements_list):
+def main(graph: Dict[str, m.CommonModule], requirements_list: m.PresetType) -> None:
     """The entry point function
-    :param dict graph: The dependency list(graph) showing all the modules which
-    has dependencies
-    :param list requirements_list: The list of all the main modules to be
-    installed
-    :return: None
-    :rtype: None
+
+    Args:
+        graph: The dependency list(graph) showing all the modules which has dependencies
+        requirements_list: The list of all the main modules to be installed
     """
     for module_name in requirements_list["requires"]:
         _traverse(graph, module_name)
 
 
-def _traverse(graph, module_name):
-    if not graph[module_name]["installed"]:
-        if h.check_key("requires", graph[module_name]):
-            for neighbour in graph[module_name]["requires"]:
+def _traverse(graph: Dict[str, m.CommonModule], module_name: str) -> None:
+    """Reverse DFS logic for traversing dependencies.
+    Basically it installs all the dependencies first then app.
+
+    Args:
+        graph: The dependency list(graph) showing all the modules which has dependencies
+        module_name: The name of the module to traverse
+    """
+    module = graph[module_name]
+    if not module.installed:
+        if module.requires is not None:
+            for neighbour in module.requires:
                 _traverse(graph, neighbour)
         else:
-            _execute(module_name, graph)
-            graph[module_name]["installed"] = True
+            _execute(graph, module_name)
+            module.installed = True
 
 
-def _execute(module_name, graph):
-    if h.check_key(module_name, graph):
+def _execute(
+    graph: Dict[str, m.CommonModule], module_name: str
+) -> Optional[m.ModuleInstalledResponseType]:
+    """Common entry point for installing all the modules.
+
+    Args:
+        graph: The dependency list(graph) showing all the modules which has dependencies
+        module_name: The name of the module to traverse
+
+    Returns:
+        The response object containing the status of all the commands
+    """
+    if module_name in graph:
         module = graph[module_name]
-        return function[module["type"]](module)
+        return function[module.type](module)
     print(f"I was unable to find the module: {module_name}")
     raise e.RuleViolation(rule_code=104)
 
 
-def _install_module(module):
-    print(f"Installing module: {module['name']}...")
-    response = {}
-    response["init"] = _install_steps(module, "init")
-    response["command"] = _install_command(module)
-    response["config"] = _install_steps(module, "config")
+def _install_module(module: m.CommonModule) -> m.ModuleInstalledResponseType:
+    """The function which installs app modules
+
+    Args:
+        module: The app module
+
+    Returns:
+        The response object of the module
+    """
+    print("Installing module: {name}...".format(name=module.display))
+    response: m.ModuleInstalledResponseType = {
+        "init": _install_steps(module.init),
+        "command": _install_command(module),
+        "config": _install_steps(module.config),
+    }
     return response
 
 
-def _install_command(module):
-    try:
-        if module["command"] is None:
-            print(f"skipping installation for {module['name']}")
-            return None
-        return c.run(module["command"])
-    except KeyError:
-        try:
-            command = module["installer"].format(name=module["name"])
-            return c.run(command)
-        except IndexError:
-            raise e.ParseError(module["installer"], rule_code=105)
+def _install_command(module: m.CommonModule) -> Optional[m.CommandRunResponseType]:
+    """The function which installs the module.
 
+    Args:
+        module: The app module
 
-def _install_steps(module, step_name):
-    response = []
-    try:
-        for i in module[step_name]:
-            response.append(c.run(i))
-        return response
-    except KeyError:
+    Returns:
+        The response object of the main install command
+    """
+    if module.command is None:
+        print("skipping installation for {name}".format(name=module.display))
         return None
+    return c.run(module.command)
 
 
-def _create_file(module):
-    print(f"Creating file: {module['name']}...")
-    return True
+def _install_steps(
+    steps: Optional[List[str]],
+) -> Optional[List[m.CommandRunResponseType]]:
+    """The function which handles installing of multi step commands.
+
+    Args:
+        steps: The list of steps which needs to be executed
+
+    Returns:
+        List of response object corresponding to each step
+    """
+    if steps is not None:
+        response: List[m.CommandRunResponseType] = []
+        for step in steps:
+            response.append(c.run(step))
+        return response
+    return None
 
 
-def _create_folder(module):
-    print(f"Creating folder: {module['name']}...")
-    return True
+def _create_file(module: m.CommonModule):
+    """The function which will create the required file
+
+    Args:
+        module: The file module
+    """
+    print("Creating file: {name}...".format(name=module.display))
+    raise NotImplementedError
 
 
-function = {"module": _install_module, "file": _create_file, "folder": _create_folder}
+def _create_folder(module: m.CommonModule):
+    """The function which will create the required folder
+
+    Args:
+        module: The folder module
+    """
+    print("Creating folder: {name}...".format(name=module.display))
+    raise NotImplementedError
+
+
+function = {"app": _install_module, "file": _create_file, "folder": _create_folder}

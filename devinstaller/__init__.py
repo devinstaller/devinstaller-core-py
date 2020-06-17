@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Mon 15 Jun 2020 22:27:07 IST
+# Last-Updated: Wed 17 Jun 2020 02:04:31 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,15 +35,16 @@
 
 """Init everything"""
 
+from typing import List, Optional
 from devinstaller import file_handler as f
 from devinstaller import installer as i
 from devinstaller import commands as c
 from devinstaller import schema as s
 from devinstaller import exceptions as e
-from devinstaller import helpers as h
+from devinstaller import models as m
 
 
-def validate_spec(doc_file_path: str) -> dict:
+def validate_spec(doc_file_path: str) -> m.FullDocumentType:
     """Validate the spec
 
     Args:
@@ -56,54 +57,94 @@ def validate_spec(doc_file_path: str) -> dict:
     return s.validate(document)
 
 
-def install(file_name: str, platform: str = None, preset: str = None) -> None:
+def install(
+    full_document: m.FullDocumentType, platform: str = None, preset: str = None
+) -> None:
     """Entry point for the install function
 
     Args:
-        file_name: name of the devfile
+        full_document: The full spec file
         platform: name of the platform
         preset: name of the preset
     """
-    document = _get_platform_document(f.read(file_name), platform)
+    document = _get_platform_document(full_document, platform)
     graph = s.generate_dependency(document)
     requirements_list = _get_preset_requirements(document, preset)
     i.main(graph, requirements_list)
 
 
-def _get_preset_data(document, preset_name, rule_code):
-    for preset in document["presets"]:
+def _get_preset_data(
+    presets: List[m.PresetType], preset_name: str, rule_code: int
+) -> m.PresetType:
+    """Returns the required preset object
+
+    Args:
+        presets: The object containing info about all the presets
+        preset_name: The name of the required preset
+        rule_code: The error exception which will be thrown when no preset is
+            matched with the name of required preset
+
+    Returns:
+        The data of the required preset which is to be installed
+    """
+    for preset in presets:
         if preset["name"] == preset_name:
             return preset
     raise e.RuleViolation(rule_code)
 
 
-def _get_platform_document(document, platform):
-    for _platform in document["platforms"]:
-        if platform and _platform["name"] == platform:
-            return _platform
-        if version_compare(i):
-            return _platform
+def _get_platform_document(
+    full_document: m.FullDocumentType, platform_name: Optional[str]
+) -> m.PlatformType:
+    """Returns the spec for the required platform.
+
+    Args:
+        document: The whole spec (including all the platforms)
+        platform_name: The name of the platform given by the user
+
+    Returns:
+        The part of spec specific to the platform
+    """
+    for platform in full_document["platforms"]:
+        if platform_name and platform["name"] == platform_name:
+            return platform
+        if compare_command_and_response(platform["version"]):
+            return platform
     raise e.RuleViolation(100)
 
 
-def _get_preset_requirements(document, preset):
-    if preset:
-        return _get_preset_data(document, preset, 102)
-    if h.check_key("default", document):
-        return _get_preset_data(document, document["default"], 103)
+def _get_preset_requirements(
+    document: m.PlatformType, preset_name: Optional[str]
+) -> m.PresetType:
+    """Get the list of all the modules which has to be installed.
+    This data is extracted by either the user giving us the name of the
+    preset which is to be installed or by using the name of default
+    preset and extracting the data.
+
+    Args:
+        document: The complete spec specific to the platform
+        preset_name: The name of the preset given by the user
+
+    Returns:
+        The preset module object
+    """
+    if preset_name:
+        return _get_preset_data(document["presets"], preset_name, 102)
+    if "default" in document:
+        return _get_preset_data(document["presets"], document["default"], 103)
     raise e.RuleViolation(101)
 
 
-def version_compare(input_data: dict) -> bool:
+def compare_command_and_response(input_data: m.VersionType) -> bool:
     """Check if the given platform is the one expected.
     It runs the command and checks it with the expected response in the
     devfile. If matches then it returns true else false.
 
     Args:
-        input_data: The platform object in the devfile
+    input_data: The platform object in the devfile
 
     Returns:
         If present then True
     """
-    command_response = c.run(input_data["version"]["command"])
-    return bool(input_data["version"]["identifier"] == command_response["stdout"])
+    command_response = c.run(input_data["command"])
+    return bool(input_data["response"] == command_response["stdout"])

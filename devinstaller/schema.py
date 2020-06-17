@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Thu 11 Jun 2020 20:36:03 IST
+# Last-Updated: Wed 17 Jun 2020 03:09:26 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,9 +38,11 @@
 import cerberus
 from devinstaller import exceptions as e
 from devinstaller import models as m
+from typing import Dict, Optional, Union, cast
+import copy
 
 
-def validate(document: dict) -> dict:
+def validate(document: dict) -> m.FullDocumentType:
     """Validate and returns a sanitised document
 
     Args:
@@ -55,30 +57,86 @@ def validate(document: dict) -> dict:
     raise e.SchemaComplianceError(_v.errors)
 
 
-def _list_to_dict(input_data, key, module_type, installer=None):
+def _parse_installer_command(full_data: m.PlatformType, module_data: m.AppType) -> str:
+    """Runs only in the case where there is no special command to install
+    the module and where the default command will be used.
+
+    Args:
+        full_data: The whole spec for the current platform
+        module_data: The data for the current module
+
+    Returns:
+        The command which will be used to install the module
+    """
+    try:
+        return full_data["installer"].format(name=module_data["name"])
+    except KeyError:
+        raise e.ParseError(full_data["installer"], 105)
+
+
+def _get_installer_command(input_data: m.PlatformType, data: dict,) -> Optional[str]:
+    """Checks if the module is AppType and then proceeds to extract the
+    installer command
+
+    Args:
+        input_data: The data specific to the platform
+        data: Module data. Type: dict
+
+    Returns:
+        string containing the final command to install the app
+    """
+    if data["type"] == "app":
+        # Reverting back type: dict -> AppType
+        return _get_installer(input_data, cast(m.AppType, data))
+    return None
+
+
+def _get_installer(full_data: m.PlatformType, module_data: m.AppType) -> Optional[str]:
+    """Gets the command which will be used to install the module
+
+    Args:
+        full_data: The whole spec for the current platform
+        module_data: The data for the current module
+
+    Returns:
+        The command which will be used to install the module
+    """
+    if "command" in module_data:
+        return module_data["command"] if module_data["command"] is not True else None
+    if "installer" in full_data:
+        return _parse_installer_command(full_data, module_data)
+    raise e.RuleViolation(106)
+
+
+def _list_to_dict(
+    input_data: m.PlatformType, key: m.ModuleKeys
+) -> Dict[str, m.CommonModule]:
+    """Takes in the whole data and creates the dependency graph for one module_type
+
+    Args:
+        input_data: The whole spec for the current platform
+        key: The name of the list which is to be serialised.
+            Options: `apps`, `files` and `folders`.
+
+    Returns:
+        The graph for one specific platform
+    """
+    type_reference = {"apps": "app", "files": "file", "folders": "folder"}
+    module_type = type_reference[key]
     response = {}
-    for i in input_data[key]:
-        name = _get_name(i)
-        response[name] = i
-        response[name]["installed"] = False
-        response[name]["type"] = module_type
-        response[name] = _add_installer(response[name], installer)
+    for temp in input_data[key]:
+        # For mutation purpose we have to cast Mapping -> dict
+        data = cast(dict, temp)
+        code_name = data.get("alias", data["name"])
+        data["display"] = data.get("name", None)
+        data["installed"] = False
+        data["type"] = module_type
+        data["command"] = _get_installer_command(input_data, data)
+        response[code_name] = m.CommonModule(**data)
     return response
 
 
-def _add_installer(data, installer):
-    if installer:
-        data["installer"] = installer
-    return data
-
-
-def _get_name(input_data):
-    if "alias" in input_data:
-        return input_data["alias"]
-    return input_data["name"]
-
-
-def generate_dependency(input_data: dict) -> dict:
+def generate_dependency(input_data: m.PlatformType) -> Dict[str, m.CommonModule]:
     """Generate dependency list(graph) from the data.
     Dependency list houses all the modules and their dependency on each other
 
@@ -89,9 +147,7 @@ def generate_dependency(input_data: dict) -> dict:
         Dependency object
     """
     response = {}
-    response.update(
-        _list_to_dict(input_data, "modules", "module", input_data["installer"])
-    )
-    response.update(_list_to_dict(input_data, "folders", "folder"))
-    response.update(_list_to_dict(input_data, "files", "file"))
+    response.update(_list_to_dict(input_data, "apps"))
+    response.update(_list_to_dict(input_data, "folders"))
+    response.update(_list_to_dict(input_data, "files"))
     return response

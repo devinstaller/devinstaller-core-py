@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Thu 11 Jun 2020 17:24:00 IST
+# Last-Updated: Wed 17 Jun 2020 02:03:16 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -88,8 +88,8 @@ def process_result():
 def install(file_name, platform, preset):
     """Install the default preset and the modules which it requires."""
     try:
-        d.validate_spec(file_name)
-        d.install(file_name, platform, preset)
+        full_document = d.validate_spec(file_name)
+        d.install(full_document, platform, preset)
     except e.RuleViolation as err:
         print(Fore.RED + str(err))
     except e.SchemaComplianceError as err:

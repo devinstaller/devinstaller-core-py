@@ -78,3 +78,38 @@ def test_validator_invalid():
     document = f.read("tests/data/invalid_spec.yml")
     with pytest.raises(e.SchemaComplianceError):
         s.validate(document)
+
+
+def test_get_installer__both_present():
+    full_data = {"installer": "brew install {name}"}
+    module_data = {"name": "mod1", "command": "pip install"}
+    response = s._get_installer(full_data, module_data)
+    assert response == "pip install"
+
+
+def test_get_installer__command_not_present():
+    full_data = {"installer": "brew install {name}"}
+    module_data = {"name": "mod1"}
+    response = s._get_installer(full_data, module_data)
+    assert response == "brew install mod1"
+
+
+def test_get_installer__installer_not_present():
+    full_data = {}
+    module_data = {"name": "mod1", "command": "pip install"}
+    response = s._get_installer(full_data, module_data)
+    assert response == "pip install"
+
+
+def test_get_installer__both_not_present():
+    full_data = {}
+    module_data = {"name": "mod1"}
+    with pytest.raises(e.RuleViolation):
+        s._get_installer(full_data, module_data)
+
+
+def test_parse_installer_command():
+    full_data = {"installer": "brew install {wrong_key}"}
+    module_data = {"name": "mod1"}
+    with pytest.raises(e.ParseError):
+        s._parse_installer_command(full_data, module_data)
