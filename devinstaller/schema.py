@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Wed 17 Jun 2020 03:09:26 IST
+# Last-Updated: Thu 18 Jun 2020 20:41:05 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,11 +35,10 @@
 
 """Handles everything related to spec file schema"""
 
+from typing import Dict, Optional, cast
 import cerberus
 from devinstaller import exceptions as e
 from devinstaller import models as m
-from typing import Dict, Optional, Union, cast
-import copy
 
 
 def validate(document: dict) -> m.FullDocumentType:

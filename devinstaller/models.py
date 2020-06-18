@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed 17 Jun 2020 02:23:54 IST
+# Last-Updated: Thu 18 Jun 2020 20:48:07 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,9 +35,8 @@
 
 """All the models including the schema as well as graph models"""
 
-from typing import List, Optional, Dict
+from typing import List, Optional, Dict, TypedDict, Literal
 from dataclasses import dataclass
-from typing_extensions import TypedDict, Literal
 
 
 @dataclass
@@ -70,12 +69,18 @@ class CommonModule:
 
 
 class NameType(TypedDict):
+    """Type declaration for the `name` block
+    """
+
     alias: str
     name: str
     display: str
 
 
 class BaseType(TypedDict):
+    """Type declaration for the `base` block
+    """
+
     command: str
     requires: List[str]
     optionals: List[str]
@@ -84,26 +89,41 @@ class BaseType(TypedDict):
 
 
 class VersionType(TypedDict):
+    """Type declaration for the `version` block
+    """
+
     command: str
     response: str
 
 
 class AppType(NameType, BaseType):
+    """Type declaration for the `app` block
+    """
+
     version: VersionType
 
 
 class FileAndFolderType(NameType, BaseType):
+    """Type declaration for the `file` and `folder` block
+    """
+
     owner: str
     permission: str
     parent_dir: str
 
 
 class PresetType(NameType):
+    """Type declaration for the `preset` block
+    """
+
     requires: List[str]
     optionls: List[str]
 
 
 class PlatformType(NameType):
+    """Type declaration for the `platform` block
+    """
+
     installer: str
     default: str
     version: VersionType
@@ -114,11 +134,17 @@ class PlatformType(NameType):
 
 
 class FullDocumentType(TypedDict):
+    """Type declaration for the whole spec file
+    """
+
     version: str
     platforms: List[PlatformType]
 
 
 class CommandRunResponseType(TypedDict):
+    """Type declaration for response from the `command.run`
+    """
+
     args: List[str]
     returncode: int
     stdout: str
@@ -126,6 +152,9 @@ class CommandRunResponseType(TypedDict):
 
 
 class ModuleInstalledResponseType(TypedDict):
+    """Type declaration for the response of the module install
+    """
+
     init: Optional[List[CommandRunResponseType]]
     config: Optional[List[CommandRunResponseType]]
     command: Optional[CommandRunResponseType]
@@ -228,7 +257,7 @@ def _schema(platform):
     }
 
 
-def schema() -> Dict[str, str]:
+def schema() -> Dict:
     """Returns the schema object for validating the devfile
 
     Returns:

@@ -1,11 +1,10 @@
-SONARQUBE_COMPOSE_FILE = docker-compose.sonarqube.yml
-SONARQUBE_SCANNER_COMPOSE_FILE = docker-compose.sonarqube-scanner.yml
-
-SPHINXOPTS    ?=
-SPHINXBUILD   ?= sphinx-build
-SOURCEDIR     = docs
-BUILDDIR      = build
-ALLSPHINXOPTS = -z devinstaller
+ALLSPHINXOPTS					 = -z devinstaller
+BUILDDIR						 = build
+SOURCEDIR						 = docs
+SPHINXBUILD						?= sphinx-build
+SPHINXOPTS						?=
+SONARQUBE_COMPOSE_FILE			 = docker-compose.sonarqube.yml
+SONARQUBE_SCANNER_COMPOSE_FILE	 = docker-compose.sonarqube-scanner.yml
 
 define HELP_BODY
 For help regarding sphinx run 'make sphinx_help'.
@@ -21,6 +20,8 @@ sonar_server_logs   : For printing out sonar logs. To exit the logs use 'C-c'.
 sonar_code_analysis : Run pytest, get the coverage report and then run the
                         'sonar-scanner' in the docker. Needs running instance
                         of sonar server.
+
+Command other than these will be fed into sphinx.
 endef
 
 export HELP_BODY

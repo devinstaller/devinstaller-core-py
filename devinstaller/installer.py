@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed 17 Jun 2020 01:34:51 IST
+# Last-Updated: Thu 18 Jun 2020 20:40:18 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,11 +35,10 @@
 
 """Handles the main how to install the modules logic"""
 
+from typing import List, Optional, Dict
 from devinstaller import exceptions as e
 from devinstaller import commands as c
-from devinstaller import helpers as h
 from devinstaller import models as m
-from typing import List, Optional, Dict
 
 
 def main(graph: Dict[str, m.CommonModule], requirements_list: m.PresetType) -> None:
