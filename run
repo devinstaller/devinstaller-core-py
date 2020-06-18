@@ -1,0 +1,122 @@
+#!/usr/bin/env python3
+import os
+import sys
+import argparse
+
+SONARQUBE_COMPOSE_FILE = "docker-compose.sonarqube.yml"
+SONARQUBE_SCANNER_COMPOSE_FILE = "docker-compose.sonarqube-scanner.yml"
+
+
+def run_cmd(cmd):
+    print(cmd)
+    os.system(cmd)
+
+
+def startup_sonar_server():
+    cmd = "docker-compose -f {} up -d".format(SONARQUBE_COMPOSE_FILE)
+    print("Starting up containers...")
+    run_cmd(cmd)
+
+
+def shutdown_sonar_server():
+    cmd = "docker-compose -f {} down".format(SONARQUBE_COMPOSE_FILE)
+    print("Stopping all containers...")
+    run_cmd(cmd)
+
+
+def show_docker_logs(container_name):
+    cmd = "docker logs -f {}".format(container_name)
+    print("Printing logs for {}...".format(container_name))
+    run_cmd(cmd)
+
+
+def run_code_analysis():
+    cmd = "docker-compose -f {} up".format(SONARQUBE_SCANNER_COMPOSE_FILE)
+    print("Running code analysis...")
+    run_cmd(cmd)
+
+
+def run_unit_tests():
+    cmd_coverage_erase = "poetry run coverage erase"
+    cmd_coverage_run = "poetry run coverage run"
+    cmd_coverage_report = "poetry run coverage xml -i"
+    print("Running unit tests...")
+    run_cmd(cmd_coverage_erase)
+    run_cmd(cmd_coverage_run)
+    run_cmd(cmd_coverage_report)
+
+
+def sonar_server(command):
+    ref = {
+        "start": startup_sonar_server,
+        "stop": shutdown_sonar_server,
+    }
+    ref[command]()
+
+
+def docker(command, container_name):
+    ref = {
+        "logs": show_docker_logs,
+    }
+    ref[command](container_name)
+
+
+def sonar_client(skip):
+    if skip is True:
+        run_unit_tests()
+    else:
+        print("Skipping unit tests...")
+    run_code_analysis()
+
+
+class MyParser(argparse.ArgumentParser):
+    def error(self, message):
+        sys.stderr.write("error: %s\n" % message)
+        self.print_help()
+        sys.exit(2)
+
+
+if __name__ == "__main__":
+    try:
+        parser = MyParser()
+        subparsers = parser.add_subparsers(dest="subparser")
+
+        sonar_server_parser = subparsers.add_parser("sonar_server")
+        sonar_server_parser.add_argument(
+            "-c",
+            "--command",
+            dest="command",
+            default="start",
+            help="The name of the command to run",
+        )
+
+        sonar_client_parser = subparsers.add_parser("sonar_client")
+        sonar_client_parser.add_argument(
+            "-s",
+            "--skip-tests",
+            dest="skip",
+            action="store_false",
+            help="Skip unit tests",
+        )
+
+        docker_parser = subparsers.add_parser("docker")
+        docker_parser.add_argument(
+            "-c",
+            "--command",
+            dest="command",
+            default="logs",
+            help="Name of the command",
+        )
+        docker_parser.add_argument(
+            "-n",
+            "--container-name",
+            dest="container_name",
+            default="devinstaller_sonarqube_1",
+            help="Name of the container",
+        )
+
+        kwargs = vars(parser.parse_args())
+        globals()[kwargs.pop("subparser")](**kwargs)
+    except Exception:
+        parser.print_help()
+        sys.exit(2)

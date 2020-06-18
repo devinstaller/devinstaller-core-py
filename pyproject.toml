@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "devinstaller"
-version = "0.2.2"
+version = "0.3.0"
 description = "A Python package to setup your development environment and manage all your dotfiles, software and packages"
 authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
 license = "MIT License"
@@ -13,7 +13,7 @@ keywords = [
 ]
 classifiers = [
     "Development Status :: 3 - Alpha",
-    "Programming Language :: Python :: 3.7",
+    "Programming Language :: Python :: 3.8",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
 ]
@@ -35,6 +35,9 @@ sphinxcontrib-napoleon = "^0.7"
 mypy = "^0.780"
 lxml = "^4.5.1"
 jupyterlab = "^2.1.4"
+pytest = "^5.4.3"
+pytest-cov = "^2.10.0"
+pytest-subprocess = "^0.1.4"
 
 [tool.poetry.scripts]
 dev = 'devinstaller.main:main'
