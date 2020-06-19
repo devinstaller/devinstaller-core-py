@@ -36,14 +36,17 @@ def run_code_analysis():
     run_cmd(cmd)
 
 
+def docker_clean_up():
+    print("Cleaning up docker containers and volumes")
+    run_cmd("docker system prune")
+    run_cmd("docker volume prune")
+
+
 def run_unit_tests():
-    cmd_coverage_erase = "poetry run coverage erase"
-    cmd_coverage_run = "poetry run coverage run"
-    cmd_coverage_report = "poetry run coverage xml -i"
     print("Running unit tests...")
-    run_cmd(cmd_coverage_erase)
-    run_cmd(cmd_coverage_run)
-    run_cmd(cmd_coverage_report)
+    run_cmd("poetry run coverage erase")
+    run_cmd("poetry run coverage run")
+    run_cmd("poetry run coverage xml -i")
 
 
 def sonar_server(command):
@@ -61,11 +64,13 @@ def docker(command, container_name):
     ref[command](container_name)
 
 
-def sonar_client(skip):
+def sonar_client(skip, clean):
     if skip is True:
         run_unit_tests()
     else:
         print("Skipping unit tests...")
+    if clean is True:
+        docker_clean_up()
     run_code_analysis()
 
 
@@ -83,10 +88,9 @@ if __name__ == "__main__":
 
         sonar_server_parser = subparsers.add_parser("sonar_server")
         sonar_server_parser.add_argument(
-            "-c",
-            "--command",
             dest="command",
             default="start",
+            nargs="?",
             help="The name of the command to run",
         )
 
@@ -98,14 +102,17 @@ if __name__ == "__main__":
             action="store_false",
             help="Skip unit tests",
         )
+        sonar_client_parser.add_argument(
+            "-s",
+            "--clean-up",
+            dest="clean",
+            action="store_true",
+            help="Cleanup all docker containers and volumes",
+        )
 
         docker_parser = subparsers.add_parser("docker")
         docker_parser.add_argument(
-            "-c",
-            "--command",
-            dest="command",
-            default="logs",
-            help="Name of the command",
+            dest="command", nargs="?", default="logs", help="Name of the command",
         )
         docker_parser.add_argument(
             "-n",
