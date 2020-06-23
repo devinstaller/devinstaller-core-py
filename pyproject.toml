@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "devinstaller"
-version = "0.3.0"
+version = "0.4.0"
 description = "A Python package to setup your development environment and manage all your dotfiles, software and packages"
 authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
 license = "MIT License"
@@ -40,7 +40,8 @@ pytest-cov = "^2.10.0"
 pytest-subprocess = "^0.1.4"
 
 [tool.poetry.scripts]
-dev = 'devinstaller.main:main'
+dev = 'devinstaller.__main__:main'
+devinstaller = 'devinstaller.__main__:main'
 
 [tool.poetry.urls]
 "Bug Reports" = "https://gitlab.com/justinekizhak/devinstaller/issues"

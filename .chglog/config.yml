@@ -2,7 +2,7 @@ style: gitlab
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://gitlab.com/justinekizhak/devinstaller
+  repository_url: https://gitlab.com/devinstaller/devinstaller
 options:
   commits:
     filters:
