@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Fri 29 May 2020 15:10:09 IST
-# Last-Updated: Fri  5 Jun 2020 13:07:37 IST
+# Last-Updated: Fri 26 Jun 2020 18:30:10 IST
 #
 # test_app.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -33,11 +33,10 @@
 # -----------------------------------------------------------------------------
 
 from click.testing import CliRunner
-from devinstaller.main import main
+from devinstaller.__main__ import main
 import pytest
 
 
-# @pytest.mark.xfail(raises=AssertionError, reason="Needs investigation")
 @pytest.mark.skip
 def test_install():
     runner = CliRunner()
@@ -45,7 +44,6 @@ def test_install():
     assert result.exit_code == 0
 
 
-# @pytest.mark.xfail(raises=AssertionError, reason="Needs investigation")
 @pytest.mark.skip
 def test_list():
     runner = CliRunner()
