@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Mon  6 Jul 2020 19:38:44 IST
+# Last-Updated: Mon  6 Jul 2020 20:12:47 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -66,6 +66,7 @@ class ParseError(ValueError):
         self.error_statement = error_statement
         self.rule_code = rule_code
         self.message = message
+        super().__init__(self.message)
 
     def __str__(self):
         return (
@@ -81,6 +82,7 @@ class SchemaComplianceError(ValueError):
     def __init__(self, errors: str, message: str = "") -> None:
         self.errors = errors
         self.message = message
+        super().__init__(self.message)
 
     def __str__(self):
         return f"{ self.message }\n{ self.errors }"
@@ -93,6 +95,7 @@ class RuleViolationError(ValueError):
     def __init__(self, rule_code: int, message: str = "") -> None:
         self.rule_code = rule_code
         self.message = message
+        super().__init__(self.message)
 
     def __str__(self):
         return (
