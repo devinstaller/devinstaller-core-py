@@ -1,41 +1,45 @@
 version:
   type: string
+author:
+  type: string
+description:
+  type: string
+url:
+  type: string
 platforms:
   type: list
   schema:
     type: dict
     schema:
-      alias:
-        type: string
       name:
         type: string
         required: True
-      display:
+      description:
         type: string
       default:
         type: string
-      installer:
+      before_each:
         type: string
-      version:
+      after_each:
+        type: string
+      platform_info:
         type: dict
         schema:
-          response:
+          system:
             type: string
-            required: True
-          command:
+          version:
             type: string
-            required: True
+          architecture:
+            type: string
       presets:
         type: list
         schema:
           type: dict
           schema:
-            alias:
-              type: string
             name:
               type: string
               required: True
-            display:
+            description:
               type: string
             requires:
               type: list
@@ -45,7 +49,7 @@ platforms:
               type: list
               schema:
                 type: string
-      apps:
+      modules:
         type: list
         schema:
           type: dict
@@ -56,22 +60,23 @@ platforms:
               type: string
               required: True
             display:
-              type:
-                - string
-                - boolean
+              type: string
+            description:
+              type: string
+            url:
+              type: string
+            executable:
+              type: string
             version:
-              type: dict
-              schema:
-                response:
-                  type: string
-                  required: True
-                command:
-                  type: string
-                  required: True
+              type: string
             requires:
               type: list
               schema:
                 type: string
+            before:
+              type: string
+            after:
+              type: string
             optionals:
               type: list
               schema:
@@ -88,83 +93,16 @@ platforms:
               type: list
               schema:
                 type: string
-      folders:
-        type: list
-        schema:
-          type: dict
-          schema:
-            alias:
-              type: string
-            name:
-              type: string
-              required: True
-            display:
-              type:
-                - string
-                - boolean
             owner:
               type: string
             permission:
               type: string
             parent_dir:
               type: string
-            requires:
-              type: list
-              schema:
-                type: string
-            optionals:
-              type: list
-              schema:
-                type: string
-            init:
-              type: list
-              schema:
-                type: string
-            command:
-              type:
-                - string
-                - boolean
-            config:
-              type: list
-              schema:
-                type: string
-      files:
-        type: list
-        schema:
-          type: dict
-          schema:
-            alias:
+            type:
+              default: "app"
               type: string
-            owner:
-              type: string
-            permission:
-              type: string
-            name:
-              type: string
-              required: True
-            parent_dir:
-              type: string
-            requires:
-              type: list
-              schema:
-                type: string
-            optionals:
-              type: list
-              schema:
-                type: string
-            display:
-              type:
-                - string
-                - boolean
-            init:
-              type: list
-              schema:
-                type: string
-            command:
-              type:
-                - string
-                - boolean
-            config:
-              type: list
-              schema:
-                type: string
+              one_of:
+                - "app"
+                - "file"
+                - "folder"

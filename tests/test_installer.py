@@ -12,7 +12,7 @@ def test_install_module__skip():
         "installed": False,
         "command": None,
     }
-    mock_data = m.CommonModule(**mock_data)
+    mock_data = m.Module(**mock_data)
     response = i._install_module(mock_data)
     assert response["command"] is None
 
@@ -28,6 +28,6 @@ def test_install_module__success(fake_process):
         "installed": False,
         "command": command,
     }
-    mock_data = m.CommonModule(**mock_data)
+    mock_data = m.Module(**mock_data)
     response = i._install_module(mock_data)
     assert response["command"]["stdout"] == mock_response

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Thu 18 Jun 2020 20:48:07 IST
+# Last-Updated: Mon  6 Jul 2020 17:29:58 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,26 +35,21 @@
 
 """All the models including the schema as well as graph models"""
 
-from typing import List, Optional, Dict, TypedDict, Literal
+from typing import List, Optional, Dict, TypedDict
 from dataclasses import dataclass
 
 
 @dataclass
-class _VersionModule:
-    """Class containing the info necessary to get the version info"""
-
-    response: str
-    command: str
-
-
-@dataclass
-class CommonModule:
-    """Common class for all modules"""
+class Module:
+    """The class which will be used by all the modules
+    """
 
     # pylint: disable=too-many-instance-attributes
     name: str
     type: str
     installed: bool
+    description: Optional[str] = None
+    url: Optional[str] = None
     alias: Optional[str] = None
     display: Optional[str] = None
     command: Optional[str] = None
@@ -62,12 +57,15 @@ class CommonModule:
     init: Optional[List[str]] = None
     optionals: Optional[List[str]] = None
     requires: Optional[List[str]] = None
-    version: Optional[_VersionModule] = None
+    version: Optional[str] = None
     owner: Optional[str] = None
     parent_dir: Optional[str] = None
     permission: Optional[str] = None
+    before: Optional[str] = None
+    after: Optional[str] = None
 
 
+#
 class NameType(TypedDict):
     """Type declaration for the `name` block
     """
@@ -77,39 +75,22 @@ class NameType(TypedDict):
     display: str
 
 
-class BaseType(TypedDict):
+class ModuleType(TypedDict):
     """Type declaration for the `base` block
     """
 
     command: str
-    requires: List[str]
-    optionals: List[str]
-    init: List[str]
+    after: str
+    before: str
     config: List[str]
-
-
-class VersionType(TypedDict):
-    """Type declaration for the `version` block
-    """
-
-    command: str
-    response: str
-
-
-class AppType(NameType, BaseType):
-    """Type declaration for the `app` block
-    """
-
-    version: VersionType
-
-
-class FileAndFolderType(NameType, BaseType):
-    """Type declaration for the `file` and `folder` block
-    """
-
+    init: List[str]
+    optionals: List[str]
     owner: str
-    permission: str
     parent_dir: str
+    permission: str
+    requires: List[str]
+    type: str
+    version: str
 
 
 class PresetType(NameType):
@@ -120,17 +101,24 @@ class PresetType(NameType):
     optionls: List[str]
 
 
+class PlatformInfo(TypedDict):
+    """Type declaration for the platform info
+    """
+
+    system: str
+    version: str
+    architecture: str
+
+
 class PlatformType(NameType):
     """Type declaration for the `platform` block
     """
 
     installer: str
     default: str
-    version: VersionType
+    platform_info: PlatformInfo
     presets: List[PresetType]
-    apps: List[AppType]
-    files: List[FileAndFolderType]
-    folders: List[FileAndFolderType]
+    modules: List[ModuleType]
 
 
 class FullDocumentType(TypedDict):
@@ -160,101 +148,83 @@ class ModuleInstalledResponseType(TypedDict):
     command: Optional[CommandRunResponseType]
 
 
-ModuleKeys = Literal["apps", "files", "folders"]
-
-# Elements are not mutated
-def _name_element():
-    return {
-        "alias": {"type": "string"},
-        "name": {"type": "string", "required": True},
-        "display": {"type": "string"},
-    }
-
-
-def _base_element():
-    return {
+def _module_block():
+    data = {
         "type": "list",
         "schema": {
             "type": "dict",
             "schema": {
-                "requires": {"type": "list", "schema": {"type": "string"}},
-                "optionals": {"type": "list", "schema": {"type": "string"}},
+                "type": {
+                    "type": "string",
+                    "default": "app",
+                    "one_of": ["app", "file", "folder"],
+                },
+                "alias": {"type": "string"},
+                "name": {"type": "string", "required": True},
+                "executable": {"type": "string"},
+                "description": {"type": "string"},
+                "url": {"type": "string"},
+                "display": {"type": "string"},
+                "after": {"type": "string"},
+                "before": {"type": "string"},
                 "command": {"type": ["string", "boolean"]},
-                "init": {"type": "list", "schema": {"type": "string"}},
                 "config": {"type": "list", "schema": {"type": "string"}},
+                "init": {"type": "list", "schema": {"type": "string"}},
+                "optionals": {"type": "list", "schema": {"type": "string"}},
+                "owner": {"type": "string"},
+                "parent_dir": {"type": "string"},
+                "permission": {"type": "string"},
+                "requires": {"type": "list", "schema": {"type": "string"}},
+                "version": {"type": "string"},
             },
         },
     }
+    return data
 
 
-def _version_element():
-    return {
-        "type": "dict",
-        "schema": {
-            "response": {"type": "string", "required": True},
-            "command": {"type": "string", "required": True},
-        },
-    }
-
-
-# Blocks returns separate copy of dict each time because they have to be mutated
 def _preset_block():
-    return {
+    data = {
         "type": "list",
         "schema": {
             "type": "dict",
             "schema": {
+                "name": {"type": "string", "required": True},
+                "description": {"type": "string"},
                 "requires": {"type": "list", "schema": {"type": "string"}},
                 "optionals": {"type": "list", "schema": {"type": "string"}},
             },
         },
     }
+    return data
 
 
-def _app_block(version):
-    return {
-        "type": "list",
-        "schema": {"type": "dict", "schema": {"version": version}},
-    }
-
-
-def _file_and_folder_block():
-    return {
+def _platform_block():
+    preset = _preset_block()
+    module = _module_block()
+    data = {
         "type": "list",
         "schema": {
             "type": "dict",
             "schema": {
-                "owner": {"type": "string"},
-                "permission": {"type": "string"},
-                "parent_dir": {"type": "string"},
-            },
-        },
-    }
-
-
-def _platform_block(version, preset, app, file_and_folder):
-    return {
-        "type": "list",
-        "schema": {
-            "type": "dict",
-            "schema": {
+                "name": {"type": "string", "required": True},
+                "description": {"type": "string"},
                 "default": {"type": "string"},
-                "installer": {"type": "string"},
-                "version": version,
+                "before_each": {"type": "string"},
+                "after_each": {"type": "string"},
+                "platform_info": {
+                    "type": "dict",
+                    "schema": {
+                        "system": {"type": "string"},
+                        "version": {"type": "string"},
+                        "architecture": {"type": "string"},
+                    },
+                },
                 "presets": preset,
-                "apps": app,
-                "folders": file_and_folder,
-                "files": file_and_folder,
+                "modules": module,
             },
         },
     }
-
-
-def _schema(platform):
-    return {
-        "version": {"type": "string"},
-        "platforms": platform,
-    }
+    return data
 
 
 def schema() -> Dict:
@@ -263,27 +233,12 @@ def schema() -> Dict:
     Returns:
       A new instance of schema object
     """
-    # Creating new elements
-    name = _name_element()
-    private_name = _name_element()
-    version = _version_element()
-    # Building a new base element for other blocks
-    base = _base_element()
-    private_name["display"]["type"] = ["string", "boolean"]
-    base["schema"]["schema"].update(private_name)
-    # Update preset block
-    preset = _preset_block()
-    preset["schema"]["schema"].update(name)
-    # Update app block
-    app = _app_block(version)
-    app["schema"]["schema"].update(base["schema"]["schema"])
-    # Update file_and_folder block
-    file_and_folder = _file_and_folder_block()
-    file_and_folder["schema"]["schema"].update(base["schema"]["schema"])
-    # Create a platform block using all the other blocks
-    platform = _platform_block(
-        version=version, preset=preset, app=app, file_and_folder=file_and_folder
-    )
-    platform["schema"]["schema"].update(name)
-    # Creating and returning the schema
-    return _schema(platform)
+    platform = _platform_block()
+    data = {
+        "version": {"type": "string"},
+        "author": {"type": "string"},
+        "description": {"type": "string"},
+        "url": {"type": "string"},
+        "platforms": platform,
+    }
+    return data

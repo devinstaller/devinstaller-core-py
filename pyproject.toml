@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "devinstaller"
-version = "0.4.0"
+version = "0.4.1"
 description = "A Python package to setup your development environment and manage all your dotfiles, software and packages"
 authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
 license = "MIT License"
@@ -16,9 +16,6 @@ classifiers = [
     "Programming Language :: Python :: 3.8",
     "License :: OSI Approved :: MIT License",
     "Operating System :: OS Independent",
-]
-include = [
-  "devinstaller/data/*"
 ]
 
 [tool.poetry.dependencies]

@@ -1,8 +1,5 @@
 image: python:latest
 
-# include:
-#   - template: Code-Quality.gitlab-ci.yml
-
 stages:
   - test
   - deploy
@@ -34,10 +31,3 @@ build:
     - poetry publish --build -u $PYPI_USERNAME -p $PYPI_PASSWORD
   only:
     - master
-# code_quality:
-#   after_script:
-#     - cat gl-code-quality-report.json
-#   artifacts:
-#     reports:
-#       codequality: gl-code-quality-report.json
-#     paths: [gl-code-quality-report.json]

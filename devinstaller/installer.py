@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Thu 18 Jun 2020 20:40:18 IST
+# Last-Updated: Mon  6 Jul 2020 16:16:18 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -41,7 +41,7 @@ from devinstaller import commands as c
 from devinstaller import models as m
 
 
-def main(graph: Dict[str, m.CommonModule], requirements_list: m.PresetType) -> None:
+def main(graph: Dict[str, m.Module], requirements_list: m.PresetType) -> None:
     """The entry point function
 
     Args:
@@ -52,7 +52,7 @@ def main(graph: Dict[str, m.CommonModule], requirements_list: m.PresetType) -> N
         _traverse(graph, module_name)
 
 
-def _traverse(graph: Dict[str, m.CommonModule], module_name: str) -> None:
+def _traverse(graph: Dict[str, m.Module], module_name: str) -> None:
     """Reverse DFS logic for traversing dependencies.
     Basically it installs all the dependencies first then app.
 
@@ -71,7 +71,7 @@ def _traverse(graph: Dict[str, m.CommonModule], module_name: str) -> None:
 
 
 def _execute(
-    graph: Dict[str, m.CommonModule], module_name: str
+    graph: Dict[str, m.Module], module_name: str
 ) -> Optional[m.ModuleInstalledResponseType]:
     """Common entry point for installing all the modules.
 
@@ -89,7 +89,7 @@ def _execute(
     raise e.RuleViolation(rule_code=104)
 
 
-def _install_module(module: m.CommonModule) -> m.ModuleInstalledResponseType:
+def _install_module(module: m.Module) -> m.ModuleInstalledResponseType:
     """The function which installs app modules
 
     Args:
@@ -107,7 +107,7 @@ def _install_module(module: m.CommonModule) -> m.ModuleInstalledResponseType:
     return response
 
 
-def _install_command(module: m.CommonModule) -> Optional[m.CommandRunResponseType]:
+def _install_command(module: m.Module) -> Optional[m.CommandRunResponseType]:
     """The function which installs the module.
 
     Args:
@@ -141,7 +141,7 @@ def _install_steps(
     return None
 
 
-def _create_file(module: m.CommonModule):
+def _create_file(module: m.Module):
     """The function which will create the required file
 
     Args:
@@ -151,7 +151,7 @@ def _create_file(module: m.CommonModule):
     raise NotImplementedError
 
 
-def _create_folder(module: m.CommonModule):
+def _create_folder(module: m.Module):
     """The function which will create the required folder
 
     Args:

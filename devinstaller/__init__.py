@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Wed 17 Jun 2020 02:04:31 IST
+# Last-Updated: Mon  6 Jul 2020 16:33:55 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -108,7 +108,7 @@ def _get_platform_document(
     for platform in full_document["platforms"]:
         if platform_name and platform["name"] == platform_name:
             return platform
-        if compare_command_and_response(platform["version"]):
+        if compare_command_and_response(platform["platform_info"]):
             return platform
     raise e.RuleViolation(100)
 
@@ -135,16 +135,15 @@ def _get_preset_requirements(
     raise e.RuleViolation(101)
 
 
-def compare_command_and_response(input_data: m.VersionType) -> bool:
+def compare_command_and_response(input_data: m.PlatformInfo) -> bool:
     """Check if the given platform is the one expected.
     It runs the command and checks it with the expected response in the
     devfile. If matches then it returns true else false.
 
     Args:
-    input_data: The platform object in the devfile
+        input_data: The platform object in the devfile
 
     Returns:
         If present then True
     """
-    command_response = c.run(input_data["command"])
-    return bool(input_data["response"] == command_response["stdout"])
+    pass

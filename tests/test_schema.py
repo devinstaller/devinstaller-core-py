@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Tue 16 Jun 2020 20:59:06 IST
+# Last-Updated: Mon  6 Jul 2020 17:25:32 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -39,77 +39,39 @@ from devinstaller import models as m
 import pytest
 
 
-def test_validator_valid():
-    expected_schema = f.read("tests/data/schema.yml")
-    schema = m.schema()
-
-    assert expected_schema["version"] == schema["version"]
-
-    # Check presets structure
-    expected_presets = expected_schema["platforms"]["schema"]["schema"]["presets"]
-    schema_presets = schema["platforms"]["schema"]["schema"]["presets"]
-    assert expected_presets == schema_presets
-
-    # Check version structure
-    expected_version = expected_schema["platforms"]["schema"]["schema"]["version"]
-    schema_version = schema["platforms"]["schema"]["schema"]["version"]
-    assert expected_version == schema_version
-
-    # Check apps structure
-    expected_apps = expected_schema["platforms"]["schema"]["schema"]["apps"]
-    schema_apps = schema["platforms"]["schema"]["schema"]["apps"]
-    assert expected_apps == schema_apps
-
-    # Check files structure
-    expected_files = expected_schema["platforms"]["schema"]["schema"]["files"]
-    schema_files = schema["platforms"]["schema"]["schema"]["files"]
-    assert expected_files == schema_files
-
-    # Check folders structure
-    expected_folders = expected_schema["platforms"]["schema"]["schema"]["folders"]
-    schema_folders = schema["platforms"]["schema"]["schema"]["folders"]
-    assert expected_folders == schema_folders
-
-    # Check overall schema
-    assert expected_schema == schema
+@pytest.fixture(scope="class")
+def expected_schema():
+    return f.read("tests/data/schema.yml")
 
 
-def test_validator_invalid():
-    document = f.read("tests/data/invalid_spec.yml")
-    with pytest.raises(e.SchemaComplianceError):
-        s.validate(document)
+@pytest.fixture(scope="class")
+def schema():
+    return m.schema()
 
 
-def test_get_installer__both_present():
-    full_data = {"installer": "brew install {name}"}
-    module_data = {"name": "mod1", "command": "pip install"}
-    response = s._get_installer(full_data, module_data)
-    assert response == "pip install"
+class TestSchemaValidity:
+    def test_top_level(self, expected_schema, schema):
+        assert expected_schema["version"] == schema["version"]
+        assert expected_schema["author"] == schema["author"]
+        assert expected_schema["description"] == schema["description"]
+        assert expected_schema["url"] == schema["url"]
 
+    def test_preset_block(self, expected_schema, schema):
+        expected_presets = expected_schema["platforms"]["schema"]["schema"]["presets"]
+        schema_presets = schema["platforms"]["schema"]["schema"]["presets"]
+        assert expected_presets == schema_presets
 
-def test_get_installer__command_not_present():
-    full_data = {"installer": "brew install {name}"}
-    module_data = {"name": "mod1"}
-    response = s._get_installer(full_data, module_data)
-    assert response == "brew install mod1"
+    def test_platform_info_block(self, expected_schema, schema):
+        expected_version = expected_schema["platforms"]["schema"]["schema"][
+            "platform_info"
+        ]
+        schema_version = schema["platforms"]["schema"]["schema"]["platform_info"]
+        assert expected_version == schema_version
 
+    def test_modules_block(self, expected_schema, schema):
+        expected_apps = expected_schema["platforms"]["schema"]["schema"]["modules"]
+        schema_apps = schema["platforms"]["schema"]["schema"]["modules"]
+        assert expected_apps == schema_apps
 
-def test_get_installer__installer_not_present():
-    full_data = {}
-    module_data = {"name": "mod1", "command": "pip install"}
-    response = s._get_installer(full_data, module_data)
-    assert response == "pip install"
-
-
-def test_get_installer__both_not_present():
-    full_data = {}
-    module_data = {"name": "mod1"}
-    with pytest.raises(e.RuleViolation):
-        s._get_installer(full_data, module_data)
-
-
-def test_parse_installer_command():
-    full_data = {"installer": "brew install {wrong_key}"}
-    module_data = {"name": "mod1"}
-    with pytest.raises(e.ParseError):
-        s._parse_installer_command(full_data, module_data)
+    def test_full(self, expected_schema, schema):
+        assert expected_schema == schema

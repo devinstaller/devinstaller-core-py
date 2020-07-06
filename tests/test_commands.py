@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 03:00:14 IST
-# Last-Updated: Wed  3 Jun 2020 03:42:03 IST
+# Last-Updated: Wed  1 Jul 2020 22:33:09 IST
 #
 # test_commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -32,8 +32,9 @@
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-from devinstaller import commands as c
 import shlex
+
+from devinstaller import commands as c
 
 
 def test_command_run(fake_process):
