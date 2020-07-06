@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Mon 29 Jun 2020 16:42:28 IST
+# Last-Updated: Mon  6 Jul 2020 20:28:25 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,7 +37,6 @@
 
 import os
 import click
-from colorama import init, Fore
 import devinstaller as d
 from devinstaller import exceptions as e
 
@@ -50,13 +49,12 @@ def main():
     """Main entrypoint function. Everything in this run before any of the
     subcommand
     """
-    init(autoreset=True)
 
 
 @main.resultcallback()
 def process_result():
     """Final callback function. Runs after the end of everything."""
-    print(Fore.GREEN + "Bye. Have a good day.")
+    click.secho("Bye. Have a good day.", fg="green")
 
 
 @main.command()
@@ -91,9 +89,9 @@ def install(file_name, platform, preset):
         full_document = d.validate_spec(file_name)
         d.install(full_document, platform, preset)
     except e.RuleViolation as err:
-        print(Fore.RED + str(err))
+        click.secho(str(err), fg="red")
     except e.SchemaComplianceError as err:
-        print(Fore.RED + str(err))
+        click.secho(str(err), fg="red")
 
 
 @main.command()
@@ -109,7 +107,7 @@ def show(file_name):
     try:
         d.validate_spec(file_name)
     except e.SchemaComplianceError as err:
-        print(Fore.RED + str(err))
+        click.secho(str(err), fg="red")
 
 
 # @main.command()

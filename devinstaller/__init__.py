@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Mon  6 Jul 2020 16:33:55 IST
+# Last-Updated: Mon  6 Jul 2020 20:28:20 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -90,7 +90,7 @@ def _get_preset_data(
     for preset in presets:
         if preset["name"] == preset_name:
             return preset
-    raise e.RuleViolation(rule_code)
+    raise e.RuleViolationError(rule_code)
 
 
 def _get_platform_document(
@@ -110,7 +110,7 @@ def _get_platform_document(
             return platform
         if compare_command_and_response(platform["platform_info"]):
             return platform
-    raise e.RuleViolation(100)
+    raise e.RuleViolationError(100)
 
 
 def _get_preset_requirements(
@@ -132,7 +132,7 @@ def _get_preset_requirements(
         return _get_preset_data(document["presets"], preset_name, 102)
     if "default" in document:
         return _get_preset_data(document["presets"], document["default"], 103)
-    raise e.RuleViolation(101)
+    raise e.RuleViolationError(101)
 
 
 def compare_command_and_response(input_data: m.PlatformInfo) -> bool:

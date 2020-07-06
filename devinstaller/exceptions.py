@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Wed 10 Jun 2020 01:54:11 IST
+# Last-Updated: Mon  6 Jul 2020 19:38:44 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -33,7 +33,8 @@
 # use or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-"""Houses all the custom exceptions in the app"""
+"""Houses all the custom exceptions in the app
+"""
 
 rules = {
     100: (
@@ -53,45 +54,48 @@ rules = {
         "with any preset in the file."
     ),
     104: ("There is an module record missing in a `required` list of another module."),
-    105: ("There is an error parsing `installer` value"),
-    106: ("You can't skip both the `installer` and `command` field at the same time"),
 }
 
 
 class ParseError(ValueError):
     """Exception when a statement in the yaml field inside the devfile
-    is not valid"""
+    is not valid
+    """
 
-    def __init__(self, error_statement, rule_code, message=""):
+    def __init__(self, error_statement: str, rule_code: int, message: str = "") -> None:
         self.error_statement = error_statement
         self.rule_code = rule_code
-        super(ParseError, self).__init__(message)
+        self.message = message
 
     def __str__(self):
-        return "Error parsing `{statement}`. Look into: {rule}".format(
-            statement=self.error_statement, rule=rules[self.rule_code]
+        return (
+            f"{ self.message }Error parsing `{ self.error_statement }`. Look into: { self.rule_code }"
+            f"Rule { self.rule_code }: {rules[self.rule_code]}"
         )
 
 
-class SchemaComplianceError(Exception):
-    """Exception when a yaml field in the devfile is not valid"""
+class SchemaComplianceError(ValueError):
+    """Exception when a yaml field in the devfile is not valid
+    """
 
-    def __init__(self, errors, message=""):
+    def __init__(self, errors: str, message: str = "") -> None:
         self.errors = errors
-        super(SchemaComplianceError, self).__init__(message)
+        self.message = message
 
     def __str__(self):
-        return "{errors}".format(errors=self.errors)
+        return f"{ self.message }\n{ self.errors }"
 
 
-class RuleViolation(Exception):
-    """Exception when a runtime rule is violated"""
+class RuleViolationError(ValueError):
+    """Exception when a runtime rule is violated
+    """
 
-    def __init__(self, rule_code, message=""):
+    def __init__(self, rule_code: int, message: str = "") -> None:
         self.rule_code = rule_code
-        super(RuleViolation, self).__init__(message)
+        self.message = message
 
     def __str__(self):
-        return "I found a violation of rule {code}. The rule says: {statement}".format(
-            code=self.rule_code, statement=rules[self.rule_code]
+        return (
+            f"{ self.message }\nI found a violation of rule { self.rule_code }."
+            f"Rule { self.rule_code }: {rules[self.rule_code]}"
         )
