@@ -34,10 +34,10 @@
 # -----------------------------------------------------------------------------
 
 """Handles the main how to install the modules logic"""
+from typing import Dict, List, Optional
 
-from typing import List, Optional, Dict
-from devinstaller import exceptions as e
 from devinstaller import commands as c
+from devinstaller import exceptions as e
 from devinstaller import models as m
 
 

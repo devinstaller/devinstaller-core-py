@@ -34,14 +34,14 @@
 # -----------------------------------------------------------------------------
 
 """Init everything"""
-
 from typing import List, Optional
+
+from devinstaller import commands as c
+from devinstaller import exceptions as e
 from devinstaller import file_handler as f
 from devinstaller import installer as i
-from devinstaller import commands as c
-from devinstaller import schema as s
-from devinstaller import exceptions as e
 from devinstaller import models as m
+from devinstaller import schema as s
 
 
 def validate_spec(doc_file_path: str) -> m.FullDocumentType:

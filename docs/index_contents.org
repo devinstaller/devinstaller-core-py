@@ -18,4 +18,3 @@ dev install --platform macos  # dev install -p macos
 #+BEGIN_SRC sh
 dev install --platform macos --preset doom
 #+END_SRC
-

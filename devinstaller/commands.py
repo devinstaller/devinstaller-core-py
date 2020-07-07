@@ -34,9 +34,9 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything related to running shell commands"""
-
-import subprocess
 import shlex
+import subprocess
+
 from devinstaller import models as m
 
 

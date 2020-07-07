@@ -34,12 +34,12 @@
 # -----------------------------------------------------------------------------
 
 """The main entrypoint module"""
-
 import os
+
 import click
+
 import devinstaller as d
 from devinstaller import exceptions as e
-
 
 DEFAULT_DOC_FILE_PATH = os.getcwd() + "/sample.devfile.yml"
 

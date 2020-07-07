@@ -34,9 +34,10 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything related to spec file schema"""
-
 from typing import Dict, cast
+
 import cerberus
+
 from devinstaller import exceptions as e
 from devinstaller import models as m
 

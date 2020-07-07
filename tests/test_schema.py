@@ -31,12 +31,12 @@
 #   otherwise, arising from, out of or in connection with the software or the use
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
-
-from devinstaller import schema as s
-from devinstaller import file_handler as f
-from devinstaller import exceptions as e
-from devinstaller import models as m
 import pytest
+
+from devinstaller import exceptions as e
+from devinstaller import file_handler as f
+from devinstaller import models as m
+from devinstaller import schema as s
 
 
 @pytest.fixture(scope="class")

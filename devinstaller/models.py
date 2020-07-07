@@ -34,9 +34,8 @@
 # -----------------------------------------------------------------------------
 
 """All the models including the schema as well as graph models"""
-
-from typing import List, Optional, Dict, TypedDict
 from dataclasses import dataclass
+from typing import Dict, List, Optional, TypedDict
 
 
 @dataclass

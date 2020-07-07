@@ -31,10 +31,10 @@
 #   otherwise, arising from, out of or in connection with the software or the use
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
-
-from click.testing import CliRunner
-from devinstaller.__main__ import main
 import pytest
+from click.testing import CliRunner
+
+from devinstaller.__main__ import main
 
 
 @pytest.mark.skip

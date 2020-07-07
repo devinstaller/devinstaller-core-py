@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
+import argparse
 import os
 import sys
-import argparse
 
 SONARQUBE_COMPOSE_FILE = "docker-compose.sonarqube.yml"
 SONARQUBE_SCANNER_COMPOSE_FILE = "docker-compose.sonarqube-scanner.yml"
@@ -50,17 +50,12 @@ def run_unit_tests():
 
 
 def sonar_server(command):
-    ref = {
-        "start": startup_sonar_server,
-        "stop": shutdown_sonar_server,
-    }
+    ref = {"start": startup_sonar_server, "stop": shutdown_sonar_server}
     ref[command]()
 
 
 def docker(command, container_name):
-    ref = {
-        "logs": show_docker_logs,
-    }
+    ref = {"logs": show_docker_logs}
     ref[command](container_name)
 
 
@@ -112,7 +107,7 @@ if __name__ == "__main__":
 
         docker_parser = subparsers.add_parser("docker")
         docker_parser.add_argument(
-            dest="command", nargs="?", default="logs", help="Name of the command",
+            dest="command", nargs="?", default="logs", help="Name of the command"
         )
         docker_parser.add_argument(
             "-n",

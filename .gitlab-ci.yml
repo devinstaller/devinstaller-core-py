@@ -13,6 +13,14 @@ test:
     - pip install tox
     - tox
 
+type_lint_check:
+  stage: test
+  script:
+    - pip install tox
+    - tox -e check
+  only:
+    - master
+
 merge_test:
   stage: test
   script:

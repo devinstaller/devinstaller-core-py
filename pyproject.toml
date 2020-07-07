@@ -35,6 +35,7 @@ jupyterlab = "^2.1.4"
 pytest = "^5.4.3"
 pytest-cov = "^2.10.0"
 pytest-subprocess = "^0.1.4"
+ipdb = "^0.13.3"
 
 [tool.poetry.scripts]
 dev = 'devinstaller.__main__:main'
