@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Mon  6 Jul 2020 20:28:20 IST
+# Last-Updated: Tue  7 Jul 2020 13:55:50 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -146,4 +146,3 @@ def compare_command_and_response(input_data: m.PlatformInfo) -> bool:
     Returns:
         If present then True
     """
-    pass

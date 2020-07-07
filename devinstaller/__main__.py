@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Mon  6 Jul 2020 20:28:25 IST
+# Last-Updated: Tue  7 Jul 2020 13:59:08 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -88,7 +88,7 @@ def install(file_name, platform, preset):
     try:
         full_document = d.validate_spec(file_name)
         d.install(full_document, platform, preset)
-    except e.RuleViolation as err:
+    except e.RuleViolationError as err:
         click.secho(str(err), fg="red")
     except e.SchemaComplianceError as err:
         click.secho(str(err), fg="red")
