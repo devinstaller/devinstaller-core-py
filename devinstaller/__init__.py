@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Wed  8 Jul 2020 15:19:00 IST
+# Last-Updated: Wed  8 Jul 2020 21:04:19 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,7 +34,11 @@
 # -----------------------------------------------------------------------------
 
 """Init everything"""
+import platform
 from typing import List, Optional
+
+import click
+import pick
 
 # from devinstaller import commands as c
 from devinstaller import exceptions as e
@@ -58,7 +62,10 @@ def validate_spec(doc_file_path: str) -> m.FullDocumentType:
 
 
 def install(
-    full_document: m.FullDocumentType, platform: str = None, preset: str = None
+    full_document: m.FullDocumentType,
+    platform_code_name: Optional[str] = None,
+    preset: Optional[str] = None,
+    module: Optional[str] = None,
 ) -> None:
     """Entry point for the install function
 
@@ -67,83 +74,85 @@ def install(
         platform: name of the platform
         preset: name of the preset
     """
-    document = _get_platform_document(full_document, platform)
-    graph = s.generate_dependency(document)
-    requirements_list = _get_preset_requirements(document, preset)
-    i.main(graph, requirements_list)
+    if not platform_code_name:
+        if "platforms" in full_document:
+            current_platform = get_current_platform()
+            platform_list = full_document["platforms"]
+            platform_code_name = get_platform_code_name(platform_list, current_platform)
 
 
-def _get_preset_data(
-    presets: List[m.GroupType], preset_name: str, rule_code: int
-) -> m.GroupType:
-    """Returns the required preset object
-
-    Args:
-        presets: The object containing info about all the presets
-        preset_name: The name of the required preset
-        rule_code: The error exception which will be thrown when no preset is
-            matched with the name of required preset
-
-    Returns:
-        The data of the required preset which is to be installed
-    """
-    for preset in presets:
-        if preset["name"] == preset_name:
-            return preset
-    raise e.RuleViolationError(rule_code)
-
-
-def _get_platform_document(
-    full_document: m.FullDocumentType, platform_name: Optional[str]
-) -> m.PlatformType:
-    """Returns the spec for the required platform.
+def get_platform_code_name(
+    platform_list: List[m.PlatformType], current_platform: m.PlatformInfoType
+) -> str:
+    """Gets the current platform code name
 
     Args:
-        document: The whole spec (including all the platforms)
-        platform_name: The name of the platform given by the user
+        platform_list: List of all platforms declared in the spec
+        current_platform: The current platform object
 
     Returns:
-        The part of spec specific to the platform
+        The `code_name` of current platform
     """
-    for platform in full_document["platforms"]:
-        if platform_name and platform["name"] == platform_name:
-            return platform
-        if compare_command_and_response(platform["platform_info"]):
-            return platform
-    raise e.RuleViolationError(100)
+    platforms_supported: List[m.PlatformType] = []
+    for p in platform_list:
+        if compare_strings(p["platform_info"]["system"], current_platform["system"]):
+            if "version" not in p["platform_info"]:
+                platforms_supported.append(p)
+            elif compare_version(
+                current_platform["version"], p["platform_info"]["version"]
+            ):
+                platforms_supported.append(p)
+    if len(platforms_supported) > 1:
+        return ask_user_for_platform(platforms_supported)
+    elif len(platforms_supported) < 1:
+        raise e.PlatformUnsupportedError
+    return platforms_supported[0]["name"]
 
 
-def _get_preset_requirements(
-    document: m.PlatformType, preset_name: Optional[str]
-) -> m.GroupType:
-    """Get the list of all the modules which has to be installed.
-    This data is extracted by either the user giving us the name of the
-    preset which is to be installed or by using the name of default
-    preset and extracting the data.
+def ask_user_for_platform(platforms_supported: List[m.PlatformType]) -> str:
+    print(
+        "Hey.. your current platform supports multiple platforms declared in the spec file"
+    )
+    title = "Do you mind narrowring it down to one for me?"
+    options = [p["name"] for p in platforms_supported]
+    option, index = pick.pick(options, title)
+    click.secho(f"Nice choice: {option}", fg="green")
+    return option
+
+
+def compare_version(version: str, expected_version: str) -> bool:
+    # TODO Improve version comparision logic
+    if version == expected_version:
+        return True
+    return False
+
+
+def compare_strings(*args: str) -> bool:
+    """Compare all the strings with each other (case insensitive)
 
     Args:
-        document: The complete spec specific to the platform
-        preset_name: The name of the preset given by the user
+        Any number of string arguments.
+        At least one argument required else it will return False.
+        If one argument then it will return True.
 
     Returns:
-        The preset module object
+        True if all matches else False
     """
-    if preset_name:
-        return _get_preset_data(document["groups"], preset_name, 102)
-    if "default" in document:
-        return _get_preset_data(document["groups"], document["default"], 103)
-    raise e.RuleViolationError(101)
+    if len({v.casefold() for v in args}) != 1:
+        return False
+    return True
 
 
-# pylint: disable=unused-argument
-def compare_command_and_response(input_data: m.PlatformInfo) -> bool:
-    """Check if the given platform is the one expected.
-    It runs the command and checks it with the expected response in the
-    devfile. If matches then it returns true else false.
-
-    Args:
-        input_data: The platform object in the devfile
+def get_current_platform() -> m.PlatformInfoType:
+    """Get the current platform object
 
     Returns:
-        If present then True
+        The current platform object
     """
+    data: m.PlatformInfoType = {
+        "system": platform.system(),
+        "version": platform.version(),
+    }
+    if data["system"] == "Darwin":
+        data["version"] = platform.mac_ver()[0]
+    return data

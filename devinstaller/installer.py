@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed  8 Jul 2020 15:14:30 IST
+# Last-Updated: Wed  8 Jul 2020 21:03:38 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -84,7 +84,7 @@ def _execute(
     """
     if module_name in graph:
         module = graph[module_name]
-        return function[module.type](module)
+        return function[module.module_type](module)
     raise e.RuleViolationError(
         rule_code=104, message=f"I was unable to find the module: {module_name}"
     )

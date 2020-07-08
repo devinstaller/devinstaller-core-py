@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed  8 Jul 2020 16:54:12 IST
+# Last-Updated: Wed  8 Jul 2020 20:09:09 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -99,16 +99,14 @@ class GroupType(TypedDict):
     name: str
     description: str
     requires: List[str]
-    optionls: List[str]
 
 
-class PlatformInfo(TypedDict):
+class PlatformInfoType(TypedDict):
     """Type declaration for the platform info
     """
 
     system: str
     version: str
-    architecture: str
 
 
 class PlatformType(TypedDict):
@@ -120,7 +118,7 @@ class PlatformType(TypedDict):
     default: str
     before_each: str
     after_each: str
-    platform_info: PlatformInfo
+    platform_info: PlatformInfoType
 
 
 class FullDocumentType(TypedDict):
@@ -202,7 +200,6 @@ def _group_block():
                 "name": {"type": "string", "required": True},
                 "description": {"type": "string"},
                 "requires": {"type": "list", "schema": {"type": "string"}},
-                "optionals": {"type": "list", "schema": {"type": "string"}},
             },
         },
     }
@@ -223,9 +220,8 @@ def _platform_block():
                 "platform_info": {
                     "type": "dict",
                     "schema": {
-                        "system": {"type": "string"},
+                        "system": {"type": "string", "required": True},
                         "version": {"type": "string"},
-                        "architecture": {"type": "string"},
                     },
                 },
             },

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Mon  6 Jul 2020 20:12:47 IST
+# Last-Updated: Wed  8 Jul 2020 20:27:23 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -101,4 +101,18 @@ class RuleViolationError(ValueError):
         return (
             f"{ self.message }\nI found a violation of rule { self.rule_code }."
             f"Rule { self.rule_code }: {rules[self.rule_code]}"
+        )
+
+
+class PlatformUnsupportedError(ValueError):
+    """Exception when the current platform is unsupported by the spec file
+    """
+
+    def __init__(self, message: str = "") -> None:
+        self.message = message
+        super().__init__(self.message)
+
+    def __str__(self):
+        return (
+            f"{ self.message }\nYour current platform is unsupported by the spec file"
         )
