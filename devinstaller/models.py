@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed  8 Jul 2020 15:20:22 IST
+# Last-Updated: Wed  8 Jul 2020 16:54:12 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -45,7 +45,7 @@ class Module:
 
     # pylint: disable=too-many-instance-attributes
     name: str
-    type: str
+    module_type: str
     installed: bool
     after: Optional[str] = None
     before: Optional[str] = None
@@ -86,9 +86,10 @@ class ModuleType(TypedDict):
     parent_dir: str
     permission: str
     requires: List[str]
-    type: str
+    module_type: str
     url: str
     version: str
+    supported_platforms: List[str]
 
 
 class GroupType(TypedDict):
@@ -120,8 +121,6 @@ class PlatformType(TypedDict):
     before_each: str
     after_each: str
     platform_info: PlatformInfo
-    groups: List[GroupType]
-    modules: List[ModuleType]
 
 
 class FullDocumentType(TypedDict):
@@ -135,6 +134,8 @@ class FullDocumentType(TypedDict):
     include: str
     program_file: str
     platforms: List[PlatformType]
+    groups: List[GroupType]
+    modules: List[ModuleType]
 
 
 class CommandRunResponseType(TypedDict):
@@ -162,11 +163,12 @@ def _module_block():
         "schema": {
             "type": "dict",
             "schema": {
-                "type": {
+                "module_type": {
                     "type": "string",
                     "default": "app",
                     "one_of": ["app", "file", "folder"],
                 },
+                "supported_platforms": {"type": "list", "schema": {"type": "string"}},
                 "after": {"type": "string"},
                 "alias": {"type": "string"},
                 "before": {"type": "string"},
@@ -208,8 +210,6 @@ def _group_block():
 
 
 def _platform_block():
-    group = _group_block()
-    module = _module_block()
     data = {
         "type": "list",
         "schema": {
@@ -228,8 +228,6 @@ def _platform_block():
                         "architecture": {"type": "string"},
                     },
                 },
-                "groups": group,
-                "modules": module,
             },
         },
     }
@@ -243,6 +241,8 @@ def schema() -> Dict:
       A new instance of schema object
     """
     platform = _platform_block()
+    group = _group_block()
+    module = _module_block()
     data = {
         "version": {"type": "string"},
         "author": {"type": "string"},
@@ -251,5 +251,7 @@ def schema() -> Dict:
         "include": {"type": "string"},
         "program_file": {"type": "string"},
         "platforms": platform,
+        "groups": group,
+        "modules": module,
     }
     return data
