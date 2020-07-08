@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Sun 24 May 2020 20:45:00 IST
-# Last-Updated: Tue  7 Jul 2020 13:55:50 IST
+# Last-Updated: Wed  8 Jul 2020 15:19:00 IST
 #
 # __init__.py is part of somepackge
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,7 +36,7 @@
 """Init everything"""
 from typing import List, Optional
 
-from devinstaller import commands as c
+# from devinstaller import commands as c
 from devinstaller import exceptions as e
 from devinstaller import file_handler as f
 from devinstaller import installer as i
@@ -74,8 +74,8 @@ def install(
 
 
 def _get_preset_data(
-    presets: List[m.PresetType], preset_name: str, rule_code: int
-) -> m.PresetType:
+    presets: List[m.GroupType], preset_name: str, rule_code: int
+) -> m.GroupType:
     """Returns the required preset object
 
     Args:
@@ -115,7 +115,7 @@ def _get_platform_document(
 
 def _get_preset_requirements(
     document: m.PlatformType, preset_name: Optional[str]
-) -> m.PresetType:
+) -> m.GroupType:
     """Get the list of all the modules which has to be installed.
     This data is extracted by either the user giving us the name of the
     preset which is to be installed or by using the name of default
@@ -129,12 +129,13 @@ def _get_preset_requirements(
         The preset module object
     """
     if preset_name:
-        return _get_preset_data(document["presets"], preset_name, 102)
+        return _get_preset_data(document["groups"], preset_name, 102)
     if "default" in document:
-        return _get_preset_data(document["presets"], document["default"], 103)
+        return _get_preset_data(document["groups"], document["default"], 103)
     raise e.RuleViolationError(101)
 
 
+# pylint: disable=unused-argument
 def compare_command_and_response(input_data: m.PlatformInfo) -> bool:
     """Check if the given platform is the one expected.
     It runs the command and checks it with the expected response in the

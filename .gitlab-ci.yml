@@ -15,6 +15,7 @@ test:
 
 type_lint_check:
   stage: test
+  allow_failure: true
   script:
     - pip install tox
     - tox -e check

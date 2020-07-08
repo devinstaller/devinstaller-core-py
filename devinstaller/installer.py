@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Mon  6 Jul 2020 20:28:31 IST
+# Last-Updated: Wed  8 Jul 2020 15:14:30 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -41,7 +41,7 @@ from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
-def main(graph: Dict[str, m.Module], requirements_list: m.PresetType) -> None:
+def main(graph: Dict[str, m.Module], requirements_list: m.GroupType) -> None:
     """The entry point function
 
     Args:

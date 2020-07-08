@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Mon  6 Jul 2020 17:29:58 IST
+# Last-Updated: Wed  8 Jul 2020 15:20:22 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -47,55 +47,56 @@ class Module:
     name: str
     type: str
     installed: bool
-    description: Optional[str] = None
-    url: Optional[str] = None
-    alias: Optional[str] = None
-    display: Optional[str] = None
+    after: Optional[str] = None
+    before: Optional[str] = None
     command: Optional[str] = None
     config: Optional[List[str]] = None
+    content: Optional[str] = None
+    description: Optional[str] = None
+    display: Optional[str] = None
+    executable: Optional[str] = None
     init: Optional[List[str]] = None
     optionals: Optional[List[str]] = None
-    requires: Optional[List[str]] = None
-    version: Optional[str] = None
     owner: Optional[str] = None
     parent_dir: Optional[str] = None
     permission: Optional[str] = None
-    before: Optional[str] = None
-    after: Optional[str] = None
+    requires: Optional[List[str]] = None
+    url: Optional[str] = None
+    version: Optional[str] = None
 
 
 #
-class NameType(TypedDict):
-    """Type declaration for the `name` block
-    """
-
-    alias: str
-    name: str
-    display: str
-
-
 class ModuleType(TypedDict):
-    """Type declaration for the `base` block
+    """Type declaration for all the block
     """
 
-    command: str
     after: str
+    alias: str
     before: str
+    command: str
     config: List[str]
+    content: str
+    description: str
+    display: str
+    executable: str
     init: List[str]
+    name: str
     optionals: List[str]
     owner: str
     parent_dir: str
     permission: str
     requires: List[str]
     type: str
+    url: str
     version: str
 
 
-class PresetType(NameType):
+class GroupType(TypedDict):
     """Type declaration for the `preset` block
     """
 
+    name: str
+    description: str
     requires: List[str]
     optionls: List[str]
 
@@ -109,14 +110,17 @@ class PlatformInfo(TypedDict):
     architecture: str
 
 
-class PlatformType(NameType):
+class PlatformType(TypedDict):
     """Type declaration for the `platform` block
     """
 
-    installer: str
+    name: str
+    description: str
     default: str
+    before_each: str
+    after_each: str
     platform_info: PlatformInfo
-    presets: List[PresetType]
+    groups: List[GroupType]
     modules: List[ModuleType]
 
 
@@ -125,6 +129,11 @@ class FullDocumentType(TypedDict):
     """
 
     version: str
+    author: str
+    description: str
+    url: str
+    include: str
+    program_file: str
     platforms: List[PlatformType]
 
 
@@ -158,22 +167,23 @@ def _module_block():
                     "default": "app",
                     "one_of": ["app", "file", "folder"],
                 },
-                "alias": {"type": "string"},
-                "name": {"type": "string", "required": True},
-                "executable": {"type": "string"},
-                "description": {"type": "string"},
-                "url": {"type": "string"},
-                "display": {"type": "string"},
                 "after": {"type": "string"},
+                "alias": {"type": "string"},
                 "before": {"type": "string"},
                 "command": {"type": ["string", "boolean"]},
                 "config": {"type": "list", "schema": {"type": "string"}},
+                "content": {"type": "string"},
+                "description": {"type": "string"},
+                "display": {"type": "string"},
+                "executable": {"type": "string"},
                 "init": {"type": "list", "schema": {"type": "string"}},
+                "name": {"type": "string", "required": True},
                 "optionals": {"type": "list", "schema": {"type": "string"}},
                 "owner": {"type": "string"},
                 "parent_dir": {"type": "string"},
                 "permission": {"type": "string"},
                 "requires": {"type": "list", "schema": {"type": "string"}},
+                "url": {"type": "string"},
                 "version": {"type": "string"},
             },
         },
@@ -181,7 +191,7 @@ def _module_block():
     return data
 
 
-def _preset_block():
+def _group_block():
     data = {
         "type": "list",
         "schema": {
@@ -198,7 +208,7 @@ def _preset_block():
 
 
 def _platform_block():
-    preset = _preset_block()
+    group = _group_block()
     module = _module_block()
     data = {
         "type": "list",
@@ -218,7 +228,7 @@ def _platform_block():
                         "architecture": {"type": "string"},
                     },
                 },
-                "presets": preset,
+                "groups": group,
                 "modules": module,
             },
         },
@@ -238,6 +248,8 @@ def schema() -> Dict:
         "author": {"type": "string"},
         "description": {"type": "string"},
         "url": {"type": "string"},
+        "include": {"type": "string"},
+        "program_file": {"type": "string"},
         "platforms": platform,
     }
     return data
