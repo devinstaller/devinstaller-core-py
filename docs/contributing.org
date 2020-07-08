@@ -1,5 +1,9 @@
 #+TITLE: Contributing
 
+* Exporting org files :noexport:
+To export the org files use =org-pandoc-export-to-rst=.
+
+For this you need =pandoc= to be installed locally on your computer.
 * Prerequisites
 ** Poetry
 You will need ~poetry~ installed in your machine.
@@ -186,7 +190,7 @@ Type checking for external packages need stubs.
 To generate stub pop into poetry shell and run:
 
 #+BEGIN_SRC sh
-stubgen -p PACKAGE_NAME
+stubgen -p PACKAGE_NAME -o stubs
 #+END_SRC
 
 * Dependencies
