@@ -1,5 +1,13 @@
 #+OPTIONS: author:nil
 
+* What is Devinstaller?
+
+Devinstaller started its life as a dotfile manager but now its has developed
+into a unique tool to handle developer environments and their tools.
+
+Unlike other tools which are static config files and they are interpreted and
+executed by some other application, Devinstaller lets you handle the
+interpretation and its execution.
 * Usage
 ** Basic
 
@@ -18,3 +26,8 @@ dev install --platform macos  # dev install -p macos
 #+BEGIN_SRC sh
 dev install --platform macos --preset doom
 #+END_SRC
+
+* Local Variables :noexport:
+# Local variables:
+# eval: (add-hook 'after-save-hook 'org-pandoc-export-to-rst t t)
+# end:

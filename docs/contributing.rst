@@ -40,12 +40,12 @@ For developers install normal and dev dependencies
 
    poetry install
 
-Use poetry shell
-----------------
+Install dev dependencies
+------------------------
 
 .. code:: bash
 
-   poetry shell
+   poetry add -D pytest
 
 Install normal dependencies
 ---------------------------
@@ -54,18 +54,15 @@ Install normal dependencies
 
    poetry add numpy
 
-Install dev dependencies
-------------------------
+Use poetry shell
+----------------
 
 .. code:: bash
 
-   poetry add -D pytest
-
-Testing and code coverage
-=========================
+   poetry shell
 
 Testing
--------
+=======
 
 Install `tox <https://tox.readthedocs.io/en/latest/index.html>`__ on
 your machine globally or in a separate venv, then run:
@@ -74,62 +71,58 @@ your machine globally or in a separate venv, then run:
 
    tox
 
-Coverage report
----------------
-
-Coverage report is automatically generated for the master branch by
-`coveralls.io <https://coveralls.io/gitlab/justinekizhak/devinstaller>`__
-
 Testing using Gitlab runner locally
-===================================
+-----------------------------------
 
 .. _prerequisites-1:
 
 Prerequisites
--------------
+~~~~~~~~~~~~~
 
-Docker
-~~~~~~
-
-You need docker installed, because we will be using the ``docker``
-executor for the gitlab-runner.
+-  Docker You need docker installed, because we will be using the
+   ``docker`` executor for the gitlab-runner.
 
 Install ``gitlab-runner`` locally
----------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-MacOS
-~~~~~
+#. MacOS
 
-#. Install using brew
+   #. Install using brew
 
-   ::
+      ::
 
-      brew install gitlab-runner
+         brew install gitlab-runner
 
-#. Register it with gitlab
+   #. Register it with gitlab
 
-   ::
+      ::
 
-      gitlab-runner register
+         gitlab-runner register
 
-#. Options
+   #. Options
 
-   ========================= ===================================
-   Option                    Value
-   ========================= ===================================
-   ``gitlab-ci coordinator`` https://gitlab.com
-   ``gitlab-ci description`` Enter some description
-   ``gitlab-ci tags``        Enter some tags
-   ``Executer``              ``docker``
-   ``default docker image``  Enter the name of some docker image
-   ========================= ===================================
+      ========================= ===================================
+      Option                    Value
+      ========================= ===================================
+      ``gitlab-ci coordinator`` https://gitlab.com
+      ``gitlab-ci description`` Enter some description
+      ``gitlab-ci tags``        Enter some tags
+      ``Executer``              ``docker``
+      ``default docker image``  Enter the name of some docker image
+      ========================= ===================================
 
 Running the tests
------------------
+~~~~~~~~~~~~~~~~~
 
 ::
 
    gitlab-runner exec docker test
+
+Coverage report
+===============
+
+Coverage report is automatically generated for the master branch by
+`coveralls.io <https://coveralls.io/gitlab/justinekizhak/devinstaller>`__
 
 Facing any problems
 ===================
@@ -165,11 +158,6 @@ Git
 
 This project uses the `Conventional git commit
 specs <https://www.conventionalcommits.org/en/v1.0.0/>`__.
-
-More information
-----------------
-
-`Read the docs <https://devinstaller.readthedocs.io/en/latest/>`__
 
 Changelog
 =========
@@ -254,11 +242,6 @@ Dependencies required to develop docs locally
 
 These are also in ``pyproject.toml``, but in the ``dev-dependencies``
 section.
-
-Test
-----
-
-These are inside ``tox.ini``.
 
 ReadTheDocs specific
 --------------------

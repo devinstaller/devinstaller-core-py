@@ -5,8 +5,12 @@ Welcome to Devinstaller's documentation!
    :maxdepth: 3
    :caption: Table of Contents
 
+   design_process
+   specification
+   commands
    modules
    contributing
+
 
 
 .. include:: index_contents.rst
