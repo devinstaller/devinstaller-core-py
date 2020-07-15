@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed  8 Jul 2020 20:09:09 IST
+# Last-Updated: Wed 15 Jul 2020 02:24:25 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -116,9 +116,19 @@ class PlatformType(TypedDict):
     name: str
     description: str
     default: str
+    before: str
+    after: str
     before_each: str
     after_each: str
     platform_info: PlatformInfoType
+
+
+class PlatformIncludeType(TypedDict):
+    """Type declaration for the platform include block
+    """
+
+    spec_file: str
+    prog_file: str
 
 
 class FullDocumentType(TypedDict):
@@ -129,8 +139,8 @@ class FullDocumentType(TypedDict):
     author: str
     description: str
     url: str
-    include: str
-    program_file: str
+    prog_file: str
+    include: List[PlatformIncludeType]
     platforms: List[PlatformType]
     groups: List[GroupType]
     modules: List[ModuleType]
@@ -215,6 +225,8 @@ def _platform_block():
                 "name": {"type": "string", "required": True},
                 "description": {"type": "string"},
                 "default": {"type": "string"},
+                "before": {"type": "string"},
+                "after": {"type": "string"},
                 "before_each": {"type": "string"},
                 "after_each": {"type": "string"},
                 "platform_info": {
@@ -244,8 +256,17 @@ def schema() -> Dict:
         "author": {"type": "string"},
         "description": {"type": "string"},
         "url": {"type": "string"},
-        "include": {"type": "string"},
-        "program_file": {"type": "string"},
+        "include": {
+            "type": "list",
+            "schema": {
+                "type": "dict",
+                "schema": {
+                    "spec_file": {"type": "string", "required": True},
+                    "prog_file": {"type": "string"},
+                },
+            },
+        },
+        "prog_file": {"type": "string"},
         "platforms": platform,
         "groups": group,
         "modules": module,
