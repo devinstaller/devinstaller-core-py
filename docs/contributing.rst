@@ -7,6 +7,15 @@ Contributing
 Prerequisites
 =============
 
+These are requirements you need to install globally beforehand.
+
+Python 3.8
+----------
+
+The project uses a lot of features on in the 3.8 version so you need
+this. You can install this in any way you want, as long as ``poetry``
+can reach it.
+
 Poetry
 ------
 
@@ -23,6 +32,13 @@ Installing using
    curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | python
 
 More instructions on their Github repository.
+
+Tox
+---
+
+You can run unit test and coverage report without tox, but tox makes it
+easier. The CI/CD uses the tox setup so you can run the tests in the
+same way the CI/CD will be running.
 
 Develop
 =======
@@ -156,8 +172,9 @@ Reinstall python using this command on the terminal:
 Git
 ===
 
-This project uses the `Conventional git commit
-specs <https://www.conventionalcommits.org/en/v1.0.0/>`__.
+This project uses the `DEP 2
+specification <https://gitlab.com/devinstaller/deps/-/tree/master/dep-0002>`__
+for commit message format.
 
 Changelog
 =========
@@ -229,21 +246,30 @@ To generate stub pop into poetry shell and run:
 
    stubgen -p PACKAGE_NAME -o stubs
 
-Dependencies
-============
+About the dependency files
+==========================
 
-Application specific
---------------------
+There are 2 files used to store the dependency.
 
-These dependencies are inside the ``pyproject.toml``.
+For developing the application
+------------------------------
 
-Dependencies required to develop docs locally
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Both the dev and non dev dependencies are stored in the
+``pyproject.toml``.
 
-These are also in ``pyproject.toml``, but in the ``dev-dependencies``
-section.
-
-ReadTheDocs specific
---------------------
+For building the docs
+---------------------
 
 Dependencies required for ReadTheDocs are in ``docs/reqirements.txt``.
+
+There are 2 types of dependencies in the ``requirements.txt`` file
+
+#. Sphinx dependencies These are required for building the docs
+#. Dependencies for documentation linking These are required so that the
+   Devinstaller docs can use the docs of the library it is using.
+
+To get this list, run in the shell:
+
+.. code:: bash
+
+   poetry export -f requirements.txt --without-hashes

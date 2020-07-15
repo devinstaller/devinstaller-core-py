@@ -1,4 +1,4 @@
-#+TITLE: The design process
+#+TITLE: The Design process
 
 * Motivation
 

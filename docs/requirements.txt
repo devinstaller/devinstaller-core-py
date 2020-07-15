@@ -1,7 +1,18 @@
+# Documentation dependencies
 sphinx==3.0.4
 sphinx-autobuild==0.7.1
 sphinxcontrib-napoleon==0.7
+### Dependencies required to link to their docs
+anymarkup==0.8.1
+anymarkup-core==0.8.1
 cerberus==1.3.2
 click==7.1.2
 colorama==0.4.3
-anymarkup==0.8.1
+configobj==5.0.6
+json5==0.9.5
+pick==0.6.7
+pyyaml==5.3.1
+six==1.15.0
+toml==0.10.1
+typeguard==2.9.1
+xmltodict==0.12.0

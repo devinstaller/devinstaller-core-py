@@ -1,5 +1,5 @@
 ==================
-The design process
+The Design process
 ==================
 
 :Author: Justine Kizhakkinedath
