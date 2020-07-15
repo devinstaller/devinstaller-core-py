@@ -8,7 +8,7 @@ Welcome to Devinstaller's documentation!
    design_process
    specification
    commands
-   modules
+   api
    contributing
 
 
