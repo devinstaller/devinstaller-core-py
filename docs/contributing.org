@@ -32,26 +32,24 @@ For more information look into [[https://www.freecodecamp.org/news/test-driven-d
 poetry install
 #+END_SRC
 
-** Use poetry shell
+** Install dev dependencies
 
 #+BEGIN_SRC sh
-poetry shell
+poetry add -D pytest
 #+END_SRC
-
 ** Install normal dependencies
 
 #+BEGIN_SRC sh
 poetry add numpy
 #+END_SRC
 
-** Install dev dependencies
+** Use poetry shell
 
 #+BEGIN_SRC sh
-poetry add -D pytest
+poetry shell
 #+END_SRC
-* Testing and code coverage
 
-** Testing
+* Testing
 
 Install [[https://tox.readthedocs.io/en/latest/index.html][tox]] on your machine globally or in a separate venv, then run:
 
@@ -59,34 +57,30 @@ Install [[https://tox.readthedocs.io/en/latest/index.html][tox]] on your machine
 tox
 #+END_SRC
 
-** Coverage report
+** Testing using Gitlab runner locally
 
-Coverage report is automatically generated for the master branch by [[https://coveralls.io/gitlab/justinekizhak/devinstaller][coveralls.io]]
+*** Prerequisites
 
-* Testing using Gitlab runner locally
+- Docker
+  You need docker installed, because we will be using the =docker= executor for the gitlab-runner.
 
-** Prerequisites
+*** Install =gitlab-runner= locally
 
-*** Docker
-You need docker installed, because we will be using the =docker= executor for the gitlab-runner.
+**** MacOS
 
-** Install =gitlab-runner= locally
-
-*** MacOS
-
-**** Install using brew
+***** Install using brew
 
 #+BEGIN_SRC
 brew install gitlab-runner
 #+END_SRC
 
-**** Register it with gitlab
+***** Register it with gitlab
 
 #+BEGIN_SRC
 gitlab-runner register
 #+END_SRC
 
-**** Options
+***** Options
 
 | Option                  | Value                               |
 |-------------------------+-------------------------------------|
@@ -96,11 +90,15 @@ gitlab-runner register
 | =Executer=              | =docker=                            |
 | =default docker image=  | Enter the name of some docker image |
 
-** Running the tests
+*** Running the tests
 
 #+begin_src
 gitlab-runner exec docker test
 #+end_src
+
+* Coverage report
+
+Coverage report is automatically generated for the master branch by [[https://coveralls.io/gitlab/justinekizhak/devinstaller][coveralls.io]]
 
 * Facing any problems
 
@@ -130,10 +128,6 @@ brew reinstall python
 * Git
 
 This project uses the [[https://www.conventionalcommits.org/en/v1.0.0/][Conventional git commit specs]].
-
-** More information
-
-[[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
 
 * Changelog
 
@@ -203,10 +197,11 @@ These dependencies are inside the =pyproject.toml=.
 
 These are also in =pyproject.toml=, but in the =dev-dependencies= section.
 
-** Test
-
-These are inside =tox.ini=.
-
 ** ReadTheDocs specific
 
 Dependencies required for ReadTheDocs are in =docs/reqirements.txt=.
+
+* Local Variables :noexport:
+# Local variables:
+# eval: (add-hook 'after-save-hook 'org-pandoc-export-to-rst t t)
+# end:
