@@ -70,18 +70,18 @@ dev install --platform macos --preset doom
 
 Main page: [[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
 
-| Topic            | Documentation link   |
-|------------------+----------------------|
-| The Motivation   | Draft                |
-| Terminology      | TODO                 |
-| Specification    | Draft                |
-| Rules            | TODO                 |
-| Commands         | TODO                 |
-| Module guide     | TODO                 |
-| Custom Interface | TODO                 |
-| Library guide    | TODO                 |
-| API              | WIP (Auto generated) |
-| Contributing     | Draft                |
+| Topic              | Documentation link                                                |
+|--------------------+-------------------------------------------------------------------|
+| The Design process | [[https://devinstaller.readthedocs.io/en/latest/design_process.html]] |
+| Terminology        | TODO                                                              |
+| Specification      | [[https://devinstaller.readthedocs.io/en/latest/specification.html]]  |
+| Rules              | TODO                                                              |
+| CLI Commands       | TODO                                                              |
+| Module guide       | TODO                                                              |
+| Custom Interface   | TODO                                                              |
+| Library guide      | TODO                                                              |
+| API                | [[https://devinstaller.readthedocs.io/en/latest/modules.html]]        |
+| Contributing       | [[https://devinstaller.readthedocs.io/en/latest/contributing.html]]   |
 
 * License
 

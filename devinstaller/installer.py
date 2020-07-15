@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed  8 Jul 2020 15:14:30 IST
+# Last-Updated: Tue 14 Jul 2020 14:38:48 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -41,14 +41,14 @@ from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
-def main(graph: Dict[str, m.Module], requirements_list: m.GroupType) -> None:
+def main(graph: Dict[str, m.Module], requirements_list: List[str]) -> None:
     """The entry point function
 
     Args:
         graph: The dependency list(graph) showing all the modules which has dependencies
-        requirements_list: The list of all the main modules to be installed
+        requirements_list: The list of modules to be installed
     """
-    for module_name in requirements_list["requires"]:
+    for module_name in requirements_list:
         _traverse(graph, module_name)
 
 
@@ -84,7 +84,7 @@ def _execute(
     """
     if module_name in graph:
         module = graph[module_name]
-        return function[module.type](module)
+        return function[module.module_type](module)
     raise e.RuleViolationError(
         rule_code=104, message=f"I was unable to find the module: {module_name}"
     )

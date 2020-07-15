@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Mon 15 Jun 2020 21:00:41 IST
+# Last-Updated: Tue 14 Jul 2020 19:22:16 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -57,3 +57,8 @@ def read(file_path: str) -> dict:
             raise ValueError(
                 "Couln't load up your devfile. Somethings wrong with your anymarkup syntax"
             )
+
+
+def parse_and_download(input_str: str):
+
+    pass

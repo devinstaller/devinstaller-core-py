@@ -227,7 +227,7 @@ To generate stub pop into poetry shell and run:
 
 .. code:: bash
 
-   stubgen -p PACKAGE_NAME
+   stubgen -p PACKAGE_NAME -o stubs
 
 Dependencies
 ============

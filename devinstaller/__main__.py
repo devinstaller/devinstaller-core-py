@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Tue  7 Jul 2020 13:59:08 IST
+# Last-Updated: Tue 14 Jul 2020 13:33:43 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,7 +38,7 @@ import os
 
 import click
 
-import devinstaller as d
+from devinstaller import app as a
 from devinstaller import exceptions as e
 
 DEFAULT_DOC_FILE_PATH = os.getcwd() + "/sample.devfile.yml"
@@ -76,18 +76,17 @@ def process_result():
     ),
 )
 @click.option(
-    "--preset",
-    "preset",
+    "--group",
+    "group",
     help=(
-        "Name of the preset you want to install. "
-        "If not provided then the default preset will be installed."
+        "Name of the group you want to install. "
+        "If not provided then the default group will be installed."
     ),
 )
-def install(file_name, platform, preset):
-    """Install the default preset and the modules which it requires."""
+def install(file_name, platform, group):
+    """Install the default group and the modules which it requires."""
     try:
-        full_document = d.validate_spec(file_name)
-        d.install(full_document, platform, preset)
+        a.install(file_name, platform, group)
     except e.RuleViolationError as err:
         click.secho(str(err), fg="red")
     except e.SchemaComplianceError as err:
@@ -103,9 +102,9 @@ def install(file_name, platform, preset):
     help="Name of the install file. Default: `install.yaml`",
 )
 def show(file_name):
-    """Show all the presets and modules available for your OS."""
+    """Show all the groups and modules available for your OS."""
     try:
-        d.validate_spec(file_name)
+        a.show(file_name)
     except e.SchemaComplianceError as err:
         click.secho(str(err), fg="red")
 
