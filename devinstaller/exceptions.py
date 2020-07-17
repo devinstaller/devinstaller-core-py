@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Wed  8 Jul 2020 20:27:23 IST
+# Last-Updated: Fri 17 Jul 2020 13:34:23 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -54,6 +54,12 @@ rules = {
         "with any preset in the file."
     ),
     104: ("There is an module record missing in a `required` list of another module."),
+    105: (
+        "Library usage: You need to provide either the `schema__object` or the path to the spec file."
+    ),
+    106: (
+        "The name of the platform specified in the modules didn't match up with the ones defined in the `platforms` block."
+    ),
 }
 
 

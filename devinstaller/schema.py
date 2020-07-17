@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Tue 14 Jul 2020 18:49:20 IST
+# Last-Updated: Fri 17 Jul 2020 13:35:33 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -76,42 +76,54 @@ def generate_dependency(
     """
     response = {}
     for temp in input_data["modules"]:
-        if platform_object["name"] in temp["supported_platforms"]:
+        if check_for_module_platform_compatibility(platform_object, temp):
             # For mutation purpose we have to cast Mapping -> dict
             module_object = cast(dict, temp)
-            code_name = module_object.get("alias", module_object["name"])
+            codename = module_object.get("alias", module_object["name"])
             module_object["display"] = module_object.get(
                 "display", module_object["name"]
             )
+            module_object["codename"] = codename
             module_object["installed"] = False
-            module_object["before"] = get_hook(module_object, platform_object, "before")
-            module_object["after"] = get_hook(module_object, platform_object, "after")
-            response[code_name] = m.Module(**module_object)
+            response[codename] = m.Module(**module_object)
     return response
 
 
-def get_hook(
-    module_object: m.ModuleType, platform_object: m.PlatformType, hook: str
-) -> str:
-    """Returns the hook for the module.
-    Works for both `before` and `after` hooks.
+def check_for_module_platform_compatibility(
+    platform_object: m.PlatformType, module: m.ModuleType
+) -> bool:
+    """Checks if the given module is compatible with the current platform.
 
     Steps:
-        1. Returns the hook in the module. If not present then
-        2. Returns the hook in the platform_object. If not present then
-        3. Returns None
+        1. Checks if the user has provided `supported_platforms` key-value pair
+        in the module object. If it is NOT provided then it is assumed that this specific
+        module is compatible with all platforms and returns True.
+        2. Checks if the platform object is a "mock" platform object or not.
+        If the user didn't provided platforms block in the spec a "mock"
+        platform object as placeholder is generated. So it checks whether is
+        this the mock object or not. If it is then `SchemaComplianceError` is raised.
+        3. Checks if the platform name is supported by the module. If yes then returns True.
+        4. Nothing else then returns False
 
     Args:
-        module_object: The object whose hook is required
-        platform_object: The object from where the fallback hook is extracted
-        hook: The name of the hook
+        platform_object: The current platform object
+        module: The module object
+
+    Returns:
+        True if compatible else False
     """
-    fallback_hook = f"{hook}_each"
-    if hook in module_object:
-        return module_object[hook]
-    if fallback_hook in platform_object:
-        return platform_object[fallback_hook]
-    return None
+    if "supported_platforms" not in module:
+        return True
+    if platform_object["name"] == "MOCK":
+        raise e.SchemaComplianceError(
+            errors=(
+                f"You used the `supported_platforms` key in {module['name']},"
+                "but your spec file didn't have any `platforms` module."
+            )
+        )
+    if platform_object["name"] in module["supported_platforms"]:
+        return True
+    return False
 
 
 def get_platform_object(
@@ -130,31 +142,45 @@ def get_platform_object(
     Returns:
         The platform object
     """
-    try:
-        if not platform_code_name:
+    if not platform_code_name:
+        if "platforms" in full_document:
             current_platform = get_current_platform()
             platform_list = full_document["platforms"]
             return get_platform_object_using_system(platform_list, current_platform)
-        return get_platform_object_from_codename(
-            full_document["platforms"], platform_code_name
-        )
-        raise e.RuleViolationError(100)
-    except KeyError:
-        raise e.SchemaComplianceError(errors="platform object missing")
+        return get_mock_platform_object()
+    return get_platform_object_from_codename(
+        full_document["platforms"], platform_code_name
+    )
+
+
+def get_mock_platform_object() -> m.PlatformType:
+    """Returns a mock platform object
+
+    Returns:
+        Mock platform object
+    """
+    return {
+        "name": "MOCK",
+        "description": "MOCK",
+        "platform_info": {"system": "MOCK", "version": "MOCK"},
+    }
 
 
 def get_platform_object_from_codename(
-    platform_list: List[m.PlatformType], platform_code_name: str
+    platform_list: List[m.PlatformType], platform_codename: str
 ) -> m.PlatformType:
-    """Returns the platform object whose name matches the `platform_code_name`.
+    """Returns the platform object whose name matches the `platform_codename`.
 
     Args:
         full_document: The full spec file
-        platform_code_name: name of the platform
+        platform_codename: name of the platform
     """
     for _plat in platform_list:
-        if _plat["name"] == platform_code_name:
+        if _plat["name"] == platform_codename:
             return _plat
+    raise e.RuleViolationError(
+        106, f"I couldn't find any platform called {platform_codename}"
+    )
 
 
 def get_platform_object_using_system(
@@ -170,17 +196,17 @@ def get_platform_object_using_system(
         The `code_name` of current platform
     """
     platforms_supported: List[m.PlatformType] = []
-    for p in platform_list:
-        if compare_strings(p["platform_info"]["system"], current_platform["system"]):
-            if "version" not in p["platform_info"]:
-                platforms_supported.append(p)
+    for _p in platform_list:
+        if compare_strings(_p["platform_info"]["system"], current_platform["system"]):
+            if "version" not in _p["platform_info"]:
+                platforms_supported.append(_p)
             elif compare_version(
-                current_platform["version"], p["platform_info"]["version"]
+                current_platform["version"], _p["platform_info"]["version"]
             ):
-                platforms_supported.append(p)
+                platforms_supported.append(_p)
     if len(platforms_supported) > 1:
         return ask_user_for_platform_object(platforms_supported)
-    elif len(platforms_supported) < 1:
+    if len(platforms_supported) < 1:
         raise e.PlatformUnsupportedError
     return platforms_supported[0]
 
@@ -205,13 +231,20 @@ def ask_user_for_platform_object(
     )
     title = "Do you mind narrowring it down to one for me?"
     options = [p["name"] for p in platforms_supported]
-    option, index = pick.pick(options, title)
+    option, _ = pick.pick(options, title)
     click.secho(f"Nice choice: {option}", fg="green")
     return get_platform_object_from_codename(platforms_supported, option)
 
 
 def compare_version(version: str, expected_version: str) -> bool:
-    # TODO Improve version comparision logic
+    """Compares the version of the current platform and the version info in the spec file.
+
+    Works with both the platforms block and the modules block?
+
+    Uses the semver specification to compare.
+    """
+    # TODO How to compare using the semver specification.
+    # TODO What about the modules which doesnt' use the semver spec?
     if version == expected_version:
         return True
     return False

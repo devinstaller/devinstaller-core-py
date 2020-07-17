@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Tue 14 Jul 2020 14:38:48 IST
+# Last-Updated: Thu 16 Jul 2020 20:22:43 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -49,10 +49,10 @@ def main(graph: Dict[str, m.Module], requirements_list: List[str]) -> None:
         requirements_list: The list of modules to be installed
     """
     for module_name in requirements_list:
-        _traverse(graph, module_name)
+        traverse(graph, module_name)
 
 
-def _traverse(graph: Dict[str, m.Module], module_name: str) -> None:
+def traverse(graph: Dict[str, m.Module], module_name: str) -> None:
     """Reverse DFS logic for traversing dependencies.
     Basically it installs all the dependencies first then app.
 
@@ -64,13 +64,13 @@ def _traverse(graph: Dict[str, m.Module], module_name: str) -> None:
     if not module.installed:
         if module.requires is not None:
             for neighbour in module.requires:
-                _traverse(graph, neighbour)
+                traverse(graph, neighbour)
         else:
-            _execute(graph, module_name)
+            execute(graph, module_name)
             module.installed = True
 
 
-def _execute(
+def execute(
     graph: Dict[str, m.Module], module_name: str
 ) -> Optional[m.ModuleInstalledResponseType]:
     """Common entry point for installing all the modules.
@@ -90,7 +90,7 @@ def _execute(
     )
 
 
-def _install_module(module: m.Module) -> m.ModuleInstalledResponseType:
+def install_module(module: m.Module) -> m.ModuleInstalledResponseType:
     """The function which installs app modules
 
     Args:
@@ -101,14 +101,14 @@ def _install_module(module: m.Module) -> m.ModuleInstalledResponseType:
     """
     print("Installing module: {name}...".format(name=module.display))
     response: m.ModuleInstalledResponseType = {
-        "init": _install_steps(module.init),
-        "command": _install_command(module),
-        "config": _install_steps(module.config),
+        "init": install_steps(module.init),
+        "command": install_command(module),
+        "config": install_steps(module.config),
     }
     return response
 
 
-def _install_command(module: m.Module) -> Optional[m.CommandRunResponseType]:
+def install_command(module: m.Module) -> Optional[m.CommandRunResponseType]:
     """The function which installs the module.
 
     Args:
@@ -123,7 +123,7 @@ def _install_command(module: m.Module) -> Optional[m.CommandRunResponseType]:
     return c.run(module.command)
 
 
-def _install_steps(
+def install_steps(
     steps: Optional[List[str]],
 ) -> Optional[List[m.CommandRunResponseType]]:
     """The function which handles installing of multi step commands.
@@ -142,7 +142,7 @@ def _install_steps(
     return None
 
 
-def _create_file(module: m.Module):
+def create_file(module: m.Module):
     """The function which will create the required file
 
     Args:
@@ -152,7 +152,7 @@ def _create_file(module: m.Module):
     raise NotImplementedError
 
 
-def _create_folder(module: m.Module):
+def create_folder(module: m.Module):
     """The function which will create the required folder
 
     Args:
@@ -162,4 +162,4 @@ def _create_folder(module: m.Module):
     raise NotImplementedError
 
 
-function = {"app": _install_module, "file": _create_file, "folder": _create_folder}
+function = {"app": install_module, "file": create_file, "folder": create_folder}

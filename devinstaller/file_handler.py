@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Tue 14 Jul 2020 19:22:16 IST
+# Last-Updated: Fri 17 Jul 2020 14:22:59 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,6 +34,7 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything file_handler"""
+import re
 
 import anymarkup
 
@@ -59,6 +60,40 @@ def read(file_path: str) -> dict:
             )
 
 
-def parse_and_download(input_str: str):
+def download(url: str) -> dict:
+    """Downloads file from the internet
 
-    pass
+    Args:
+        url: Url of the file
+
+    Returns:
+        Python object
+    """
+    # TODO
+
+
+def parse_and_download(input_str: str) -> dict:
+    """Checks the input_str and downloads or reads the file.
+
+    Steps:
+        1. Extract the method: `file` or `url`
+        2. If file then expand the file path and stores it for checking dependency cycle and downloads the file
+        3. If url the stores the it for checking the dependency cycle
+        4. Either way reads the file and returns the object.
+
+    Args:
+        input_str: path to file. Follows the spec format
+
+    Returns:
+        Python dict
+    """
+    # TODO Write the function to parse and download the file
+    # Make sure to expand the path.
+
+    pattern = r"^(url|file): (.*)"
+    result = re.match(pattern, input_str)
+    method = result.group(1)
+    function = {"file": read, "url": download}
+    full_path = result.group(2)
+    data = function[method](full_path)
+    return data

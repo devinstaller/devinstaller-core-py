@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed 15 Jul 2020 02:24:25 IST
+# Last-Updated: Thu 16 Jul 2020 20:18:03 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -47,13 +47,12 @@ class Module:
     name: str
     module_type: str
     installed: bool
-    after: Optional[str] = None
-    before: Optional[str] = None
+    codename: str
+    display: str
     command: Optional[str] = None
     config: Optional[List[str]] = None
     content: Optional[str] = None
     description: Optional[str] = None
-    display: Optional[str] = None
     executable: Optional[str] = None
     init: Optional[List[str]] = None
     optionals: Optional[List[str]] = None
@@ -63,6 +62,9 @@ class Module:
     requires: Optional[List[str]] = None
     url: Optional[str] = None
     version: Optional[str] = None
+    source: Optional[str] = None
+    target: Optional[str] = None
+    symbolic: Optional[bool] = None
 
 
 #
@@ -70,9 +72,7 @@ class ModuleType(TypedDict):
     """Type declaration for all the block
     """
 
-    after: str
     alias: str
-    before: str
     command: str
     config: List[str]
     content: str
@@ -90,15 +90,33 @@ class ModuleType(TypedDict):
     url: str
     version: str
     supported_platforms: List[str]
+    source: str
+    target: str
+    symbolic: bool
 
 
-class GroupType(TypedDict):
-    """Type declaration for the `preset` block
+class InterfaceModuleType(TypedDict):
+    """Type declaration for the `modules` in the interface block
+    """
+
+    name: str
+    before: str
+    after: str
+
+
+class InterfaceType(TypedDict):
+    """Type declaration for the interface block
     """
 
     name: str
     description: str
+    supported_platforms: List[str]
+    before: str
+    after: str
     requires: List[str]
+    before_each: str
+    after_each: str
+    modules: List[InterfaceModuleType]
 
 
 class PlatformInfoType(TypedDict):
@@ -115,11 +133,6 @@ class PlatformType(TypedDict):
 
     name: str
     description: str
-    default: str
-    before: str
-    after: str
-    before_each: str
-    after_each: str
     platform_info: PlatformInfoType
 
 
@@ -142,8 +155,8 @@ class FullDocumentType(TypedDict):
     prog_file: str
     include: List[PlatformIncludeType]
     platforms: List[PlatformType]
-    groups: List[GroupType]
     modules: List[ModuleType]
+    interface: List[InterfaceType]
 
 
 class CommandRunResponseType(TypedDict):
@@ -165,7 +178,9 @@ class ModuleInstalledResponseType(TypedDict):
     command: Optional[CommandRunResponseType]
 
 
-def _module_block():
+def module():
+    """Return the schema for the `module` block
+    """
     data = {
         "type": "list",
         "schema": {
@@ -174,12 +189,10 @@ def _module_block():
                 "module_type": {
                     "type": "string",
                     "default": "app",
-                    "one_of": ["app", "file", "folder"],
+                    "one_of": ["app", "file", "folder", "link", "group"],
                 },
                 "supported_platforms": {"type": "list", "schema": {"type": "string"}},
-                "after": {"type": "string"},
                 "alias": {"type": "string"},
-                "before": {"type": "string"},
                 "command": {"type": ["string", "boolean"]},
                 "config": {"type": "list", "schema": {"type": "string"}},
                 "content": {"type": "string"},
@@ -195,13 +208,18 @@ def _module_block():
                 "requires": {"type": "list", "schema": {"type": "string"}},
                 "url": {"type": "string"},
                 "version": {"type": "string"},
+                "source": {"type": "string"},
+                "target": {"type": "string"},
+                "symbolic": {"type": "boolean"},
             },
         },
     }
     return data
 
 
-def _group_block():
+def platform():
+    """Return the schema for the `platform` block
+    """
     data = {
         "type": "list",
         "schema": {
@@ -209,31 +227,44 @@ def _group_block():
             "schema": {
                 "name": {"type": "string", "required": True},
                 "description": {"type": "string"},
-                "requires": {"type": "list", "schema": {"type": "string"}},
-            },
-        },
-    }
-    return data
-
-
-def _platform_block():
-    data = {
-        "type": "list",
-        "schema": {
-            "type": "dict",
-            "schema": {
-                "name": {"type": "string", "required": True},
-                "description": {"type": "string"},
-                "default": {"type": "string"},
-                "before": {"type": "string"},
-                "after": {"type": "string"},
-                "before_each": {"type": "string"},
-                "after_each": {"type": "string"},
                 "platform_info": {
                     "type": "dict",
                     "schema": {
                         "system": {"type": "string", "required": True},
                         "version": {"type": "string"},
+                    },
+                },
+            },
+        },
+    }
+    return data
+
+
+def interface():
+    """Return the schema for the `interface` block
+    """
+    data = {
+        "type": "list",
+        "schema": {
+            "type": "dict",
+            "schema": {
+                "name": {"type": "string", "required": True},
+                "description": {"type": "string"},
+                "supported_platforms": {"type": "list", "schema": {"type": "string"}},
+                "before": {"type": "string"},
+                "after": {"type": "string"},
+                "requires": {"type": "list", "schema": {"type": "string"}},
+                "before_each": {"type": "string"},
+                "after_each": {"type": "string"},
+                "modules": {
+                    "type": "list",
+                    "schema": {
+                        "type": "dict",
+                        "schema": {
+                            "name": "string",
+                            "before": "string",
+                            "after": "string",
+                        },
                     },
                 },
             },
@@ -248,9 +279,6 @@ def schema() -> Dict:
     Returns:
       A new instance of schema object
     """
-    platform = _platform_block()
-    group = _group_block()
-    module = _module_block()
     data = {
         "version": {"type": "string"},
         "author": {"type": "string"},
@@ -267,8 +295,8 @@ def schema() -> Dict:
             },
         },
         "prog_file": {"type": "string"},
-        "platforms": platform,
-        "groups": group,
-        "modules": module,
+        "platforms": platform(),
+        "modules": module(),
+        "interface": interface(),
     }
     return data

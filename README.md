@@ -1,12 +1,11 @@
+[![img](https://img.shields.io/badge/Made_in-Doom_Emacs-blue?style=for-the-badge)](https://github.com/hlissner/doom-emacs)
+[![img](https://img.shields.io/badge/follow_me-@alka1e-E4405F?style=for-the-badge&logo=instagram&labelColor=8f3c4c&logoColor=white)](https://www.instagram.com/alka1e)
+[![img](https://img.shields.io/badge/follow_me-@alka1e-1DA1F2?style=for-the-badge&logo=twitter&labelColor=27597a&logoColor=white)](https://twitter.com/alka1e)
+
 # Devinstaller
 
+[![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
-
----
-
-[![forthebadge](https://forthebadge.com/images/badges/uses-git.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/approved-by-george-costanza.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/certified-snoop-lion.svg)](https://forthebadge.com)
 
 [[_TOC_]]
 
@@ -62,9 +61,15 @@ Main page: [Read the docs](https://devinstaller.readthedocs.io/en/latest/)
 | Module guide       | TODO                                                                |
 | Custom Interface   | TODO                                                                |
 | Library guide      | TODO                                                                |
-| API                | <https://devinstaller.readthedocs.io/en/latest/modules.html>        |
+| API                | <https://devinstaller.readthedocs.io/en/latest/api.html>            |
 | Contributing       | <https://devinstaller.readthedocs.io/en/latest/contributing.html>   |
 
 # License
 
 Licensed under the terms of [MIT License](LICENSE.md)
+
+---
+
+[![forthebadge](https://forthebadge.com/images/badges/uses-git.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/approved-by-george-costanza.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/certified-snoop-lion.svg)](https://forthebadge.com)
