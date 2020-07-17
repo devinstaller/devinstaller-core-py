@@ -7,8 +7,6 @@
 [![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
 
-[[_TOC_]]
-
 # Table of Contents
 
 [[_TOC_]]
