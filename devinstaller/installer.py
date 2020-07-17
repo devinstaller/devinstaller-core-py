@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Thu 16 Jul 2020 20:22:43 IST
+# Last-Updated: Fri 17 Jul 2020 18:46:24 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -81,6 +81,10 @@ def execute(
 
     Returns:
         The response object containing the status of all the commands
+
+    Raises:
+        RuleViolationError
+            with error code :ref:`error-code-104`
     """
     if module_name in graph:
         module = graph[module_name]

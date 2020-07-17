@@ -7,6 +7,7 @@ API
 
    app
    commands
+   error_codes
    exceptions
    file_handler
    installer

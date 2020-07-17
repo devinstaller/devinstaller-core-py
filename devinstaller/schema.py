@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Fri 17 Jul 2020 16:46:49 IST
+# Last-Updated: Fri 17 Jul 2020 18:24:38 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -183,7 +183,7 @@ def get_platform_object_from_codename(
 
     Raises:
         RuleViolationError
-            with error code 106
+            with error code :ref:`error-code-106`
     """
     for _plat in platform_list:
         if _plat["name"] == platform_codename:

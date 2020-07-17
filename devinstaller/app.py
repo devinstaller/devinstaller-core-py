@@ -43,7 +43,7 @@ def install(
 
     raises:
         RuleViolationError
-            with error code 105
+            with error code :ref:`error-code-105`
     """
     if file_path is not None:
         schema_object: dict = f.read(file_path)

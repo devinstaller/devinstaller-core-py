@@ -90,10 +90,8 @@ your machine globally or in a separate venv, then run:
 Testing using Gitlab runner locally
 -----------------------------------
 
-.. _prerequisites-1:
-
-Prerequisites
-~~~~~~~~~~~~~
+Gitlab runner requirements
+~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 -  Docker You need docker installed, because we will be using the
    ``docker`` executor for the gitlab-runner.
