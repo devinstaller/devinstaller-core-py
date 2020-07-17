@@ -20,7 +20,7 @@ Devinstaller started its life as a dotfile manager but now its has developed int
 
 Unlike other tools which are static config files and they are interpreted and executed by some other application, Devinstaller lets you handle the interpretation and its execution.
 
-[For more info ReadTheDocs](#orga243a42)
+[For more info ReadTheDocs](#full-documentation)
 
 # Features
 
@@ -49,8 +49,6 @@ dev install --platform macos  # dev install -p macos
 ```sh
 dev install --platform macos --preset doom
 ```
-
-<a id="orga243a42"></a>
 
 # Full Documentation
 

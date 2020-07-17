@@ -40,7 +40,7 @@ Unlike other tools which are static config files and they are interpreted and
 executed by some other application, Devinstaller lets you handle the
 interpretation and its execution.
 
-[[Full Documentation][For more info ReadTheDocs]]
+#+MARKDOWN: [For more info ReadTheDocs](#full-documentation)
 * Features
 
 - Native support for both Shell and Python commands
