@@ -4,10 +4,11 @@
 
 # Devinstaller
 
-[![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![img](https://img.shields.io/badge/work_in-progress-eb3434?style=for-the-badge&labelColor=7d1616)]()
-[![codecov](https://codecov.io/gl/devinstaller/devinstaller/branch/master/graph/badge.svg)](https://codecov.io/gl/devinstaller/devinstaller)
+[![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![Documentation Status](https://readthedocs.org/projects/devinstaller/badge/?version=latest&style=for-the-badge)](https://devinstaller.readthedocs.io/en/latest/?badge=latest)
+[![codecov](https://codecov.io/gl/devinstaller/devinstaller/branch/master/graph/badge.svg)](https://codecov.io/gl/devinstaller/devinstaller)
+[![pipeline](https://gitlab.com/justinekizhak/devinstaller/badges/master/pipeline.svg)](https://gitlab.com/justinekizhak/devinstaller/-/commits/master)
 
 ## Table of Contents
 
