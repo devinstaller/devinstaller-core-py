@@ -6,6 +6,8 @@
 
 [![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![img](https://img.shields.io/badge/work_in-progress-eb3434?style=for-the-badge&labelColor=7d1616)]()
+[![codecov](https://codecov.io/gl/devinstaller/devinstaller/branch/master/graph/badge.svg)](https://codecov.io/gl/devinstaller/devinstaller)
+[![Documentation Status](https://readthedocs.org/projects/devinstaller/badge/?version=latest&style=for-the-badge)](https://devinstaller.readthedocs.io/en/latest/?badge=latest)
 
 ## Table of Contents
 
