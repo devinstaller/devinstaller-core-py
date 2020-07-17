@@ -1,4 +1,4 @@
-"""The main module which is used by CLI
+"""The main module which is used by CLI and Library
 """
 from typing import List, Optional, Union
 
@@ -21,14 +21,17 @@ def install(
     module_name: Optional[str] = None,
 ) -> None:
     """Install the default preset and the modules which it requires.
+
     There are two ways this function works.
+
     1. Passing the file_path (Default method for the CLI usage)
     2. Passing the spec_object
 
     If you pass the file path then it takes the precedance and the file is read
     and the object is loaded.
+
     If not then it checks for the schema_object and if it is not present then
-    RuleVioloationError 105 is raised.
+    `RuleVioloationError 105` is raised.
 
     And in either case the object will be validated before further processing.
 
@@ -37,6 +40,10 @@ def install(
         spec_object: Takes in the full spec file as a python dict
         platform_codename: The name of the platform
         module: The name of the module to installed
+
+    raises:
+        RuleViolationError
+            with error code 105
     """
     if file_path is not None:
         schema_object: dict = f.read(file_path)

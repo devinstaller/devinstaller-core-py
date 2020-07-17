@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Fri 17 Jul 2020 13:35:33 IST
+# Last-Updated: Fri 17 Jul 2020 16:46:49 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -54,6 +54,9 @@ def validate(document: dict) -> m.FullDocumentType:
 
     Returns:
         Sanitised object
+
+    Raises:
+        SchemaComplianceError
     """
     _v = cerberus.Validator(m.schema())
     if _v.validate(document):
@@ -96,12 +99,12 @@ def check_for_module_platform_compatibility(
 
     Steps:
         1. Checks if the user has provided `supported_platforms` key-value pair
-        in the module object. If it is NOT provided then it is assumed that this specific
-        module is compatible with all platforms and returns True.
+           in the module object. If it is NOT provided then it is assumed that this specific
+           module is compatible with all platforms and returns True.
         2. Checks if the platform object is a "mock" platform object or not.
-        If the user didn't provided platforms block in the spec a "mock"
-        platform object as placeholder is generated. So it checks whether is
-        this the mock object or not. If it is then `SchemaComplianceError` is raised.
+           If the user didn't provided platforms block in the spec a "mock"
+           platform object as placeholder is generated. So it checks whether is
+           this the mock object or not. If it is then `SchemaComplianceError` is raised.
         3. Checks if the platform name is supported by the module. If yes then returns True.
         4. Nothing else then returns False
 
@@ -111,6 +114,9 @@ def check_for_module_platform_compatibility(
 
     Returns:
         True if compatible else False
+
+    Raises:
+        SchemaComplianceError
     """
     if "supported_platforms" not in module:
         return True
@@ -174,6 +180,10 @@ def get_platform_object_from_codename(
     Args:
         full_document: The full spec file
         platform_codename: name of the platform
+
+    Raises:
+        RuleViolationError
+            with error code 106
     """
     for _plat in platform_list:
         if _plat["name"] == platform_codename:
@@ -194,6 +204,9 @@ def get_platform_object_using_system(
 
     Returns:
         The `code_name` of current platform
+
+    Raises:
+        PlatformUnsupportedError
     """
     platforms_supported: List[m.PlatformType] = []
     for _p in platform_list:
@@ -215,8 +228,10 @@ def ask_user_for_platform_object(
     platforms_supported: List[m.PlatformType],
 ) -> m.PlatformType:
     """Ask the user for which platform to be used.
+
     Sometimes it may happen that platform code name is not provided by the user so the
     system tries to figure which platform it is currently running.
+
     But it may happen that multiple platforms defined satisfy the conditions, in that case
     we will explicitly ask the user to select one of the platforms which are satisfied.
 
@@ -239,7 +254,7 @@ def ask_user_for_platform_object(
 def compare_version(version: str, expected_version: str) -> bool:
     """Compares the version of the current platform and the version info in the spec file.
 
-    Works with both the platforms block and the modules block?
+    TODO Works with both the platforms block and the modules block?
 
     Uses the semver specification to compare.
     """

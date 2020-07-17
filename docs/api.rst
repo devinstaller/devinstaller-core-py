@@ -5,10 +5,11 @@ API
    :maxdepth: 3
    :caption: Table of Contents
 
+   app
    commands
-   models
    exceptions
-   main
-   module_contents
-   schema
    file_handler
+   installer
+   main
+   models
+   schema

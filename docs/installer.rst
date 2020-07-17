@@ -1,8 +1,8 @@
 ==================================
-Devinstaller module
+Installer
 ==================================
 
-.. automodule:: devinstaller
+.. automodule:: devinstaller.installer
    :members:
    :undoc-members:
    :show-inheritance:

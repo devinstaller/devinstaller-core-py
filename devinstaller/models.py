@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Thu 16 Jul 2020 20:18:03 IST
+# Last-Updated: Fri 17 Jul 2020 16:35:16 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -178,7 +178,7 @@ class ModuleInstalledResponseType(TypedDict):
     command: Optional[CommandRunResponseType]
 
 
-def module():
+def module() -> dict:
     """Return the schema for the `module` block
     """
     data = {
@@ -217,7 +217,7 @@ def module():
     return data
 
 
-def platform():
+def platform() -> dict:
     """Return the schema for the `platform` block
     """
     data = {
@@ -240,7 +240,7 @@ def platform():
     return data
 
 
-def interface():
+def interface() -> dict:
     """Return the schema for the `interface` block
     """
     data = {
@@ -273,7 +273,7 @@ def interface():
     return data
 
 
-def schema() -> Dict:
+def schema() -> dict:
     """Returns the schema object for validating the devfile
 
     Returns:
