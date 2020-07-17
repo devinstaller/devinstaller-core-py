@@ -7,7 +7,7 @@
 [![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
 
-# Table of Contents
+## Table of Contents
 
 [[_TOC_]]
 
@@ -61,6 +61,8 @@ Main page: [Read the docs](https://devinstaller.readthedocs.io/en/latest/)
 | Library guide      | TODO                                                                |
 | API                | <https://devinstaller.readthedocs.io/en/latest/api.html>            |
 | Contributing       | <https://devinstaller.readthedocs.io/en/latest/contributing.html>   |
+
+_Remaining docs are WIP_
 
 # License
 

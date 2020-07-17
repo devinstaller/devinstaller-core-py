@@ -16,6 +16,10 @@
 [![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
 #+END_EXPORT
 
+** Table of Contents
+
+#+MARKDOWN: [[_TOC_]]
+
 * README.org :noexport:
 
 ** Exporting
@@ -23,10 +27,6 @@
 For exporting the file you need [[https://github.com/larstvei/ox-gfm][Github Flavored Markdown exporter for Org Mode]] package.
 This file is auto exported into markdown using the file local variable at the bottom of the file.
 You can also manually export this file into ~markdown~ format using =M-x org-gfm-export-to-markdown=.
-
-* Table of Contents
-
-#+MARKDOWN: [[_TOC_]]
 
 * What is Devinstaller?
 
@@ -79,6 +79,8 @@ Main page: [[https://devinstaller.readthedocs.io/en/latest/][Read the docs]]
 | Library guide      | TODO                                                              |
 | API                | [[https://devinstaller.readthedocs.io/en/latest/api.html]]            |
 | Contributing       | [[https://devinstaller.readthedocs.io/en/latest/contributing.html]]   |
+
+/Remaining docs are WIP/
 
 * License
 
