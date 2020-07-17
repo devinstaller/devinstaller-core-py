@@ -13,7 +13,7 @@
 
 #+BEGIN_EXPORT markdown
 [![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
-[![status alpha](https://img.shields.io/badge/status-ALPHA-critical?style=for-the-badge&labelColor=gray)](https://gitlab.com/justinekizhak/devinstaller)
+[![img](https://img.shields.io/badge/work_in-progress-eb3434?style=for-the-badge&labelColor=7d1616)]()
 #+END_EXPORT
 
 ** Table of Contents
