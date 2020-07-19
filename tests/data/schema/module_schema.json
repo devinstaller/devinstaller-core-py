@@ -1,0 +1,58 @@
+{
+  "type": "list",
+  "schema": {
+    "type": "dict",
+    "schema": {
+      "module_type": {
+        "type": "string",
+        "default": "phony",
+        "allowed": ["app", "file", "folder", "link", "group", "phony"]
+      },
+      "supported_platforms": { "type": "list", "schema": { "type": "string" } },
+      "alias": { "type": "string" },
+      "create": { "type": "boolean" },
+      "init": {
+        "type": "list",
+        "schema": {
+          "type": ["string", "dict"],
+          "schema": {
+            "install": { "type": "string" },
+            "rollback": { "type": "string" }
+          }
+        }
+      },
+      "command": {
+        "type": ["string", "dict"],
+        "schema": {
+          "install": { "type": "string" },
+          "rollback": { "type": "string" }
+        }
+      },
+      "config": {
+        "type": "list",
+        "schema": {
+          "type": ["string", "dict"],
+          "schema": {
+            "install": { "type": "string" },
+            "rollback": { "type": "string" }
+          }
+        }
+      },
+      "content": { "type": "string" },
+      "description": { "type": "string" },
+      "display": { "type": "string" },
+      "executable": { "type": "string" },
+      "name": { "type": "string", "required": true },
+      "optionals": { "type": "list", "schema": { "type": "string" } },
+      "owner": { "type": "string" },
+      "parent_dir": { "type": "string" },
+      "permission": { "type": "string" },
+      "requires": { "type": "list", "schema": { "type": "string" } },
+      "url": { "type": "string" },
+      "version": { "type": "string" },
+      "source": { "type": "string" },
+      "target": { "type": "string" },
+      "symbolic": { "type": "boolean" }
+    }
+  }
+}

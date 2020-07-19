@@ -9,7 +9,7 @@ from devinstaller import models as m
 
 def test_install_module__skip():
     mock_data = {
-        "codename": "mod",
+        "alias": "mod",
         "name": "module1",
         "display": "module v1",
         "module_type": "app",
@@ -27,7 +27,7 @@ def test_install_module__success(fake_process):
     mock_command = shlex.split(command)
     fake_process.register_subprocess(mock_command, stdout=mock_response)
     mock_data = {
-        "codename": "mod",
+        "alias": "mod",
         "name": "module1",
         "display": "module v1",
         "module_type": "app",

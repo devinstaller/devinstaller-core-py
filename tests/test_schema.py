@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Sat 18 Jul 2020 21:11:14 IST
+# Last-Updated: Sun 19 Jul 2020 19:10:20 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,41 +40,31 @@ from devinstaller import schema as s
 
 
 @pytest.fixture(scope="class")
-def expected_schema():
-    return f.read("tests/data/schema.yml")
-
-
-@pytest.fixture(scope="class")
 def schema():
     return m.schema()
 
 
 class TestSchemaValidity:
-    def test_top_level(self, expected_schema, schema):
-        assert expected_schema["version"] == schema["version"]
-        assert expected_schema["author"] == schema["author"]
-        assert expected_schema["description"] == schema["description"]
-        assert expected_schema["url"] == schema["url"]
+    def test_toplevel(self, schema):
+        expected = f.read("tests/data/schema/top_level_schema.json")
+        assert expected["version"] == schema["version"]
+        assert expected["author"] == schema["author"]
+        assert expected["description"] == schema["description"]
+        assert expected["url"] == schema["url"]
+        assert expected["include"] == schema["include"]
+        assert expected["prog_file"] == schema["prog_file"]
 
-    def test_preset_block(self, expected_schema, schema):
-        expected_presets = expected_schema["platforms"]["schema"]["schema"]["presets"]
-        schema_presets = schema["platforms"]["schema"]["schema"]["presets"]
-        assert expected_presets == schema_presets
+    def test_platforms_block(self, schema):
+        expected = f.read("tests/data/schema/platform_schema.json")
+        assert expected == schema["platforms"]
 
-    def test_platform_info_block(self, expected_schema, schema):
-        expected_version = expected_schema["platforms"]["schema"]["schema"][
-            "platform_info"
-        ]
-        schema_version = schema["platforms"]["schema"]["schema"]["platform_info"]
-        assert expected_version == schema_version
+    def test_modules_block(self, schema):
+        expected = f.read("tests/data/schema/module_schema.json")
+        assert expected == schema["modules"]
 
-    def test_modules_block(self, expected_schema, schema):
-        expected_apps = expected_schema["platforms"]["schema"]["schema"]["modules"]
-        schema_apps = schema["platforms"]["schema"]["schema"]["modules"]
-        assert expected_apps == schema_apps
-
-    def test_full(self, expected_schema, schema):
-        assert expected_schema == schema
+    def test_interfaces_block(self, schema):
+        expected = f.read("tests/data/schema/interface_schema.json")
+        assert expected == schema["interfaces"]
 
 
 @pytest.fixture
@@ -137,7 +127,7 @@ class TestGenerateModuleMap:
         foo is explicity supported and bar is implicitly.
         """
         platform_object = {"name": "macos"}
-        module_map = s.generate_module_map(full_document, platform_object)
+        module_map = s.generate_module_map(full_document["modules"], platform_object)
         expected_response = {
             "foo": m.Module("foo", "app", False, "foo", "foo"),
             "bar": m.Module("bar", "app", False, "bar", "bar"),
@@ -149,6 +139,32 @@ class TestGenerateModuleMap:
         foo is NOT supported and bar is supported implicitly.
         """
         platform_object = {"name": "test"}
-        module_map = s.generate_module_map(full_document, platform_object)
+        module_map = s.generate_module_map(full_document["modules"], platform_object)
         expected_response = {"bar": m.Module("bar", "app", False, "bar", "bar")}
         assert module_map == expected_response
+
+
+class TestValidator:
+    def test_top_level_success(self):
+        document = f.read("tests/data/schema/top_level_valid.json")
+        assert s.validate(document)["valid"]
+
+    def test_top_level_fail(self):
+        document = f.read("tests/data/schema/top_level_invalid.json")
+        assert not s.validate(document, m.top_level())["valid"]
+
+    def test_platform_success(self):
+        document = f.read("tests/data/schema/platform_valid.json")
+        assert s.validate(document)["valid"]
+
+    def test_module_success(self):
+        document = f.read("tests/data/schema/module_valid.json")
+        assert s.validate(document)["valid"]
+
+    def test_interface_success(self):
+        document = f.read("tests/data/schema/interface_valid.json")
+        assert s.validate(document)["valid"]
+
+    def test_full_document_success(self):
+        document = f.read("tests/data/schema/full_document_valid.json")
+        assert s.validate(document)["valid"]

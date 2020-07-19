@@ -1,5 +1,3 @@
-from unittest.mock import Mock
-
 import pytest
 
 from devinstaller import app
@@ -23,7 +21,8 @@ def test_ask_user_for_req_list(mock_questionary, mocker):
         ),
         m.Module("bar", "app", False, "bar alias", "Bar as displayed"),
     ]
-    response = app.ask_user_for_the_requirement_list(module_objects)
-    expected_response = ["bar alias"]
-    mock_questionary.assert_called_once()
-    assert response == expected_response
+    app.ask_user_for_the_requirement_list(module_objects)
+    mock_questionary.assert_called_with(
+        "Do you mind selected a few for me?",
+        choices=["Foo as displayed - Foo description", "Bar as displayed"],
+    )

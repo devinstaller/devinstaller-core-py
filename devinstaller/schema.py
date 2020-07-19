@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sun 19 Jul 2020 12:25:46 IST
+# Last-Updated: Sun 19 Jul 2020 17:29:29 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,8 +35,9 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything related to spec file schema"""
+import copy
 import platform
-from typing import Any, Dict, List, Optional, Union
+from typing import Any, Dict, List, Optional, Union, cast
 
 import cerberus
 import questionary
@@ -46,39 +47,64 @@ from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
-def validate(document: Dict[Any, Any]) -> m.FullDocumentType:
-    """Validate and returns a sanitised document
+def validate(
+    document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
+) -> m.ValidateResponseType:
+    """Validate the given document with the schema
 
     Args:
         document: Python object which has to be validated
+        schema: It can also take in custom schema for validation. Default is the Full file schema
 
     Returns:
-        Sanitised object
+        A dict with its validity, document and its errors.
+    """
+    _v = cerberus.Validator(schema)
+    data: m.ValidateResponseType = {
+        "valid": _v.validate(document),
+        "document": _v.document,
+        "errors": _v.errors,
+    }
+    return data
+
+
+def get_validated_document(
+    document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
+) -> m.FullDocumentType:
+    """Validate the given document with the schema
+
+    Args:
+        document: Python object which has to be validated
+        schema: It can also take in custom schema for validation. Default is the Full file schema
+
+    Returns:
+        Validated object
 
     Raises:
         SpecificationError
             with error code :ref:`error-code-100`
     """
-    _v = cerberus.Validator(m.schema())
-    if _v.validate(document):
-        return _v.document
-    raise e.SpecificationError(_v.errors, "S100")
+    data = validate(document)
+    if data["valid"]:
+        return cast(m.FullDocumentType, data["document"])
+    raise e.SpecificationError(str(data["errors"]), "S100")
 
 
-def remove_key_from_dict(input_dictionary, key):
+def remove_key_from_dict(input_dictionary: Dict[Any, Any], key: str) -> Dict[Any, Any]:
     """Remove the key and its value from the dictionary
 
     The original dictionary is not modified instead a copy is made and modified and that is returned.
 
     Args:
-    input_dictionary: Any dictionary
-    key: The key and its value you want to remove
+        input_dictionary: Any dictionary
+        key: The key and its value you want to remove
 
-    Returns a new dictionary.
+    Returns:
+        A new dictionary without the specified key
     """
     if key not in input_dictionary:
         return input_dictionary
-    new_dictionary = input_dictionary.copy()
+    new_dictionary = copy.deepcopy(input_dictionary)
     new_dictionary.pop(key)
     return new_dictionary
 
@@ -130,20 +156,42 @@ def create_module(module_object: m.ModuleType) -> m.Module:
             if the requirements of the input data is not matched
     """
     assert "name" in module_object
-    assert "alias" in module_object
-    module_object["display"] = module_object.get("display", module_object["name"])
-    module_object = remove_key_from_dict(module_object, "supported_platforms")
-    module_object["installed"] = False
-    module_object["init"] = [
-        create_module_install_instruction(i) for i in module_object["init"]
-    ]
-    module_object["config"] = [
-        create_module_install_instruction(i) for i in module_object["config"]
-    ]
-    module_object["command"] = create_module_install_instruction(
-        module_object["command"]
-    )
-    return m.Module(**module_object)
+    temp_obj: Dict[str, Any] = dict(**module_object)
+    temp_obj = remove_key_from_dict(temp_obj, "supported_platforms")
+    temp_obj["display"] = module_object.get("display", module_object["name"])
+    temp_obj["installed"] = False
+    temp_obj["init"] = create_install_steps(module_object, step_name="init")
+    temp_obj["config"] = create_install_steps(module_object, step_name="config")
+    temp_obj["command"] = create_install_steps(module_object, step_name="command")
+    assert "name" in temp_obj
+    assert "alias" in temp_obj
+    assert "module_type" in temp_obj
+    assert "display" in temp_obj
+    return m.Module(**temp_obj)
+
+
+def create_install_steps(
+    module_object: m.ModuleType, step_name: str
+) -> Union[List[m.ModuleInstallInstruction], m.ModuleInstallInstruction, None]:
+    """Creates either an object or a list of objects of class `ModuleInstallInstruction`.
+
+    This is done before serializing the `Module` object.
+    The `Module` class needs the installation steps for the module as objects of `ModuleInstallInstructions`.
+
+    Args:
+        module_object: The object whose installation steps needs to be serialized into objects
+        step_name: The name of the step which will be serialized
+
+    Returns:
+        Either a object or a list of `ModuleInstallInstruction` objects
+    """
+    if step_name in module_object:
+        if isinstance(module_object[step_name], list):
+            return [
+                create_module_install_instruction(i) for i in module_object[step_name]
+            ]
+        return create_module_install_instruction(module_object[step_name])
+    return None
 
 
 def create_module_install_instruction(

@@ -1,0 +1,17 @@
+{
+  "type": "list",
+  "schema": {
+    "type": "dict",
+    "schema": {
+      "name": { "type": "string", "required": true },
+      "description": { "type": "string" },
+      "platform_info": {
+        "type": "dict",
+        "schema": {
+          "system": { "type": "string", "required": true },
+          "version": { "type": "string" }
+        }
+      }
+    }
+  }
+}

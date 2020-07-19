@@ -50,7 +50,7 @@ def install(
         schema_object = spec_object
     else:
         raise e.DevinstallerError("Schema object not found", "D100")
-    validated_schema_object: m.FullDocumentType = s.validate(schema_object)
+    validated_schema_object = s.get_validated_document(schema_object)
     platform_object = s.get_platform_object(validated_schema_object, platform_codename)
     module_map = s.generate_module_map(
         validated_schema_object["modules"], platform_object

@@ -1,0 +1,10 @@
+{
+  "platforms": [
+    {
+      "name": "macos",
+      "platform_info": {
+        "system": "darwin"
+      }
+    }
+  ]
+}

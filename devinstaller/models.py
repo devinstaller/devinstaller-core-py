@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sun 19 Jul 2020 12:09:16 IST
+# Last-Updated: Sun 19 Jul 2020 18:52:35 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,6 +40,9 @@ from typing import Any, Dict, List, NewType, Optional, TypedDict, Union
 
 @dataclass
 class ModuleInstallInstruction:
+    """The class used to serialize`init`, `command` and `config` commands into objects
+    """
+
     install: str
     rollback: Optional[str] = None
 
@@ -74,6 +77,9 @@ class Module:
 
 
 class ModuleInstallInstructionType(TypedDict):
+    """Type declaration for the instruction for `init`, `command` and `config`
+    """
+
     install: str
     rollback: Optional[str]
 
@@ -89,8 +95,8 @@ class ModuleType(TypedDict):
     content: str
     description: str
     display: str
-    executable: str
     name: str
+    executable: str
     optionals: List[str]
     owner: str
     parent_dir: str
@@ -186,6 +192,15 @@ class ModuleInstalledResponseType(TypedDict):
     init: Optional[List[CommandRunResponseType]]
     config: Optional[List[CommandRunResponseType]]
     command: Optional[CommandRunResponseType]
+
+
+class ValidateResponseType(TypedDict):
+    """Type declaration for the response of the `devinstaller.schema.validate` function
+    """
+
+    valid: bool
+    document: Dict[Any, Any]
+    errors: Dict[Any, Any]
 
 
 ModuleMapType = NewType("ModuleMapType", Dict[str, Module])
@@ -306,9 +321,9 @@ def interface() -> Dict[str, Any]:
                     "schema": {
                         "type": "dict",
                         "schema": {
-                            "name": "string",
-                            "before": "string",
-                            "after": "string",
+                            "name": {"type": "string"},
+                            "before": {"type": "string"},
+                            "after": {"type": "string"},
                         },
                     },
                 },
@@ -318,12 +333,7 @@ def interface() -> Dict[str, Any]:
     return data
 
 
-def schema() -> Dict[str, Any]:
-    """Used for getting a new instance of the schema for the validating the spec file.
-
-    Returns:
-      The schema for the whole spec
-    """
+def top_level() -> Dict[str, Any]:
     data = {
         "version": {"type": "string"},
         "author": {"type": "string"},
@@ -340,8 +350,18 @@ def schema() -> Dict[str, Any]:
             },
         },
         "prog_file": {"type": "string"},
-        "platforms": platform(),
-        "modules": module(),
-        "interfaces": interface(),
     }
+    return data
+
+
+def schema() -> Dict[str, Any]:
+    """Used for getting a new instance of the schema for the validating the spec file.
+
+    Returns:
+      The schema for the whole spec
+    """
+    data = dict(**top_level())
+    data["platforms"] = platform()
+    data["modules"] = module()
+    data["interfaces"] = interface()
     return data

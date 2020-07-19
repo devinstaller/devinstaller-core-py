@@ -1,0 +1,17 @@
+{
+  "version": { "type": "string" },
+  "author": { "type": "string" },
+  "description": { "type": "string" },
+  "url": { "type": "string" },
+  "include": {
+    "type": "list",
+    "schema": {
+      "type": "dict",
+      "schema": {
+        "spec_file": { "type": "string", "required": true },
+        "prog_file": { "type": "string" }
+      }
+    }
+  },
+  "prog_file": { "type": "string" }
+}
