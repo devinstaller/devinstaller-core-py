@@ -1,9 +1,8 @@
 """The main module which is used by CLI and Library
 """
-from typing import List, Optional, Union
+from typing import Any, Dict, List, Optional
 
-import click
-import pick
+import questionary
 from typeguard import typechecked
 
 from devinstaller import exceptions as e
@@ -16,9 +15,9 @@ from devinstaller import schema as s
 @typechecked
 def install(
     file_path: Optional[str] = None,
-    spec_object: Optional[dict] = None,
+    spec_object: Optional[Dict[Any, Any]] = None,
     platform_codename: Optional[str] = None,
-    module_name: Optional[str] = None,
+    requirements_list: Optional[List[str]] = None,
 ) -> None:
     """Install the default preset and the modules which it requires.
 
@@ -31,7 +30,7 @@ def install(
     and the object is loaded.
 
     If not then it checks for the schema_object and if it is not present then
-    `RuleVioloationError 105` is raised.
+    `ImplementationError` is raised.
 
     And in either case the object will be validated before further processing.
 
@@ -42,25 +41,23 @@ def install(
         module: The name of the module to installed
 
     raises:
-        RuleViolationError
-            with error code :ref:`error-code-105`
+        ImplementationError
+            with error code :ref:`error-code-D100`
     """
     if file_path is not None:
-        schema_object: dict = f.read(file_path)
+        schema_object: Dict[Any, Any] = f.read(file_path)
     elif spec_object is not None:
         schema_object = spec_object
     else:
-        raise e.RuleViolationError(105)
+        raise e.DevinstallerError("Schema object not found", "D100")
     validated_schema_object: m.FullDocumentType = s.validate(schema_object)
     platform_object = s.get_platform_object(validated_schema_object, platform_codename)
-    dependency_graph = s.generate_dependency(validated_schema_object, platform_object)
-    if module_name is None:
-        requirement_list = ask_user_for_the_requirement_list(
-            list(dependency_graph.values())
-        )
-    else:
-        requirement_list = [module_name]
-    i.main(dependency_graph, requirement_list)
+    module_map = s.generate_module_map(
+        validated_schema_object["modules"], platform_object
+    )
+    if requirements_list is None:
+        requirement_list = ask_user_for_the_requirement_list(list(module_map.values()))
+    i.main(module_map, requirement_list)
 
 
 def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[str]:
@@ -74,16 +71,31 @@ def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[st
     """
     print("Hey... You haven't selected which module to be installed")
     title = "Do you mind selected a few for me?"
-    options = [m.display for m in module_objects]
-    selections = pick.pick(options, title, multiselect=True, min_selection_count=1)
-    data = []
+    choices = {get_choice_text(m.display, m.description): m for m in module_objects}
+    selections = questionary.checkbox(title, choices=list(choices.keys())).ask()
+    data: List[str] = []
     for _s in selections:
-        _m = module_objects[_s[1]]
-        data.append(_m.codename)
+        _m = choices[_s]
+        data.append(_m.alias)
     return data
 
 
-def show(file_name):
+def get_choice_text(name: str, description: Optional[str]) -> str:
+    """Returns the choice text for displaying to the user
+
+    Args:
+        name: Name of the module
+        description: Optional description you want to print
+
+    Returns:
+        Text which is displayed to the user
+    """
+    if description is None:
+        return f"{name}"
+    return f"{name} - {description}"
+
+
+def show(file_name: str) -> None:
     """TODO
     """
     # TODO Write the function to show all the modules defined in the spec file

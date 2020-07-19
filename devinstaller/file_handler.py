@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Fri 17 Jul 2020 14:22:59 IST
+# Last-Updated: Sat 18 Jul 2020 20:13:24 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,12 +34,17 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything file_handler"""
+import hashlib
+import os
 import re
+from typing import Any, Dict
 
 import anymarkup
 
+from devinstaller import exceptions as e
 
-def read(file_path: str) -> dict:
+
+def read(file_path: str) -> Dict[Any, Any]:
     """Reads the file at the path and returns the data as dict object
 
     Args:
@@ -49,18 +54,21 @@ def read(file_path: str) -> dict:
         Python object
 
     Raises:
-        ValueError: If the anymarkup syntax is invalid
+        SpecificationError
+            with code :ref:`error-code-S100`
     """
     with open(file_path, "r") as stream:
         try:
             return anymarkup.parse(stream)
         except Exception:
-            raise ValueError(
-                "Couln't load up your devfile. Somethings wrong with your anymarkup syntax"
+            raise e.SpecificationError(
+                error=file_path,
+                error_code="S100",
+                message="There is some error in your file content",
             )
 
 
-def download(url: str) -> dict:
+def download(url: str) -> Dict[Any, Any]:
     """Downloads file from the internet
 
     Args:
@@ -72,7 +80,7 @@ def download(url: str) -> dict:
     # TODO
 
 
-def parse_and_download(input_str: str) -> dict:
+def parse_and_download(file_path: str) -> Dict[Any, Any]:
     """Checks the input_str and downloads or reads the file.
 
     Steps:
@@ -82,18 +90,36 @@ def parse_and_download(input_str: str) -> dict:
         4. Either way reads the file and returns the object.
 
     Args:
-        input_str: path to file. Follows the spec format
+        file_path: path to file. Follows the spec format
 
     Returns:
         Python dict
-    """
-    # TODO Write the function to parse and download the file
-    # Make sure to expand the path.
 
-    pattern = r"^(url|file): (.*)"
-    result = re.match(pattern, input_str)
-    method = result.group(1)
-    function = {"file": read, "url": download}
-    full_path = result.group(2)
-    data = function[method](full_path)
-    return data
+    Raises:
+        SpecificationError
+            with error code :ref:`error-code-S101`
+    """
+
+    try:
+        pattern = r"^(url|file): (.*)"
+        result = re.match(pattern, file_path)
+        assert result is not None
+        method = result.group(1)
+        function = {"file": read, "url": download}
+        full_path = os.path.expanduser(result.group(2))
+        file_contents = function[method](full_path)
+        hash_input = method + full_path + str(file_contents)
+        data = {"digest": hash(hash_input), "contents": file_contents}
+        return data
+    except AssertionError:
+        raise e.SpecificationError(
+            error=file_path,
+            error_code="S101",
+            message="The file_path you gave didn't start with `url: ` or `file: `.",
+        )
+
+
+def hash(input_data: str) -> str:
+    """Hashes the input string and returns its digest
+    """
+    return hashlib.sha256(input_data.encode("utf-8")).hexdigest()

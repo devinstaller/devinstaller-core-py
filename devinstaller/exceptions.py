@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Fri 17 Jul 2020 18:48:40 IST
+# Last-Updated: Sat 18 Jul 2020 18:21:44 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,89 +36,54 @@
 """Houses all the custom exceptions in the app
 """
 
-rules = {
-    100: (
-        "You didn't provide the name of the current platform and I couldn't "
-        "figure it out either."
-    ),
-    101: (
-        "You didn't provide the name of the preset you want to install and I "
-        "didn't found the name of the default preset in the spec."
-    ),
-    102: (
-        "The name of the preset you gave through the cli didn't match with "
-        "any preset in the spec file."
-    ),
-    103: (
-        "The name of the default preset present in the spec didn't match "
-        "with any preset in the file."
-    ),
-    104: ("There is an module record missing in a `required` list of another module."),
-    105: (
-        "Library usage: You need to provide either the `schema_object` or the path to the spec file."
-    ),
-    106: (
-        "The name of the platform specified in the modules didn't match up with the ones defined in the `platforms` block."
-    ),
+spec_errors = {
+    "S100": "Your devfile is not a valid.",
+    "S101": "There was an error parsing the `file_path` statement",
 }
 
+dev_errors = {"D100": "Schema object not found."}
 
-class ParseError(ValueError):
-    """Exception when a statement in the yaml field inside the devfile
-    is not valid
+
+class SpecificationError(Exception):
+    """Exception when there is a violation of the Specification.
+
+    These errors are unique to the specification. All programs implementing devinstaller
+    specification raises the same error.
     """
 
-    def __init__(self, error_statement: str, rule_code: int, message: str = "") -> None:
-        self.error_statement = error_statement
-        self.rule_code = rule_code
+    def __init__(self, error: str, error_code: str = "S100", message: str = "") -> None:
+        self.error = error
+        self.error_code = error_code
         self.message = message
         super().__init__(self.message)
 
-    def __str__(self):
-        return (
-            f"{ self.message }Error parsing `{ self.error_statement }`. Look into: { self.rule_code }"
-            f"Rule { self.rule_code }: {rules[self.rule_code]}"
+    def __str__(self) -> str:
+        response = (
+            f"\nErrors: { self.error }"
+            f"\nI found a violation of code {self.error_code}."
+            f"\n{self.error_code}: {spec_errors[self.error_code]}"
+            f"\n{ self.message }"
         )
+        return response
 
 
-class SchemaComplianceError(ValueError):
-    """Exception when a yaml field in the devfile is not valid
+class DevinstallerError(Exception):
+    """Exception when there is a runtime error.
+
+    These errors are unique to the implementaion of devinstaller runtime.
     """
 
-    def __init__(self, errors: str, message: str = "") -> None:
-        self.errors = errors
+    def __init__(self, error: str, error_code: str, message: str = "") -> None:
+        self.error = error
+        self.error_code = error_code
         self.message = message
         super().__init__(self.message)
 
-    def __str__(self):
-        return f"{ self.message }\n{ self.errors }"
-
-
-class RuleViolationError(ValueError):
-    """Exception when a runtime rule is violated
-    """
-
-    def __init__(self, rule_code: int, message: str = "") -> None:
-        self.rule_code = rule_code
-        self.message = message
-        super().__init__(self.message)
-
-    def __str__(self):
-        return (
-            f"{ self.message }\nI found a violation of rule { self.rule_code }."
-            f"Rule { self.rule_code }: {rules[self.rule_code]}"
+    def __str__(self) -> str:
+        response = (
+            f"\nErrors: { self.error }"
+            f"\nI found a violation of code {self.error_code}."
+            f"\n{self.error_code}: {dev_errors[self.error_code]}"
+            f"\n{ self.message }"
         )
-
-
-class PlatformUnsupportedError(ValueError):
-    """Exception when the current platform is unsupported by the spec file
-    """
-
-    def __init__(self, message: str = "") -> None:
-        self.message = message
-        super().__init__(self.message)
-
-    def __str__(self):
-        return (
-            f"{ self.message }\nYour current platform is unsupported by the spec file"
-        )
+        return response

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Fri 17 Jul 2020 18:24:38 IST
+# Last-Updated: Sun 19 Jul 2020 12:25:46 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -15,6 +15,7 @@
 #
 # Permission is hereby granted, free of charge, to any person obtaining a
 # copy of this software and associated documentation files (the
+
 # "software"), to deal in the software without restriction, including
 # without limitation the rights to use, copy, modify, merge, publish,
 # distribute, sublicense, and/or sell copies of the software, and to permit
@@ -35,18 +36,17 @@
 
 """Handles everything related to spec file schema"""
 import platform
-from typing import Dict, List, Optional, cast
+from typing import Any, Dict, List, Optional, Union
 
 import cerberus
-import click
-import pick
+import questionary
 
 # from devinstaller import commands as c
 from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
-def validate(document: dict) -> m.FullDocumentType:
+def validate(document: Dict[Any, Any]) -> m.FullDocumentType:
     """Validate and returns a sanitised document
 
     Args:
@@ -56,40 +56,144 @@ def validate(document: dict) -> m.FullDocumentType:
         Sanitised object
 
     Raises:
-        SchemaComplianceError
+        SpecificationError
+            with error code :ref:`error-code-100`
     """
     _v = cerberus.Validator(m.schema())
     if _v.validate(document):
         return _v.document
-    raise e.SchemaComplianceError(_v.errors)
+    raise e.SpecificationError(_v.errors, "S100")
 
 
-def generate_dependency(
-    input_data: m.FullDocumentType, platform_object: m.PlatformType
-) -> Dict[str, m.Module]:
-    """Generate dependency list(graph) from the data.
-    Dependency list houses all the modules and their dependency on each other
+def remove_key_from_dict(input_dictionary, key):
+    """Remove the key and its value from the dictionary
+
+    The original dictionary is not modified instead a copy is made and modified and that is returned.
 
     Args:
-        input_data: List of all modules
-        platform_code_name: The name of the platform
+    input_dictionary: Any dictionary
+    key: The key and its value you want to remove
+
+    Returns a new dictionary.
+    """
+    if key not in input_dictionary:
+        return input_dictionary
+    new_dictionary = input_dictionary.copy()
+    new_dictionary.pop(key)
+    return new_dictionary
+
+
+def generate_module_map(
+    modules_list: List[m.ModuleType], platform_object: m.PlatformType
+) -> m.ModuleMapType:
+    """Generate `module_map` object from the data.
+    The `module_map` houses all the modules and their dependency on each other
+
+    Args:
+        modules_list: List of all modules
+        platform_object: Plaform object of the current platform
 
     Returns:
-        Dependency object for that specific platform
+        The `module_map` object for that specific platform
     """
-    response = {}
-    for temp in input_data["modules"]:
-        if check_for_module_platform_compatibility(platform_object, temp):
-            # For mutation purpose we have to cast Mapping -> dict
-            module_object = cast(dict, temp)
-            codename = module_object.get("alias", module_object["name"])
-            module_object["display"] = module_object.get(
-                "display", module_object["name"]
-            )
-            module_object["codename"] = codename
-            module_object["installed"] = False
-            response[codename] = m.Module(**module_object)
+    response: m.ModuleMapType = m.ModuleMapType({})
+    for module_object in modules_list:
+        if check_for_module_platform_compatibility(platform_object, module_object):
+            assert "name" in module_object
+            codename: str = module_object.get("alias", module_object["name"])
+            module_object["alias"] = codename
+            new_module = create_module(module_object)
+            if codename in response:
+                response[codename] = ask_user_for_which_module(
+                    old_module=response[codename], new_module=new_module
+                )
+            else:
+                response[codename] = new_module
     return response
+
+
+def create_module(module_object: m.ModuleType) -> m.Module:
+    """Creates the module object for the `module_map` using the module dict.
+
+    Note: The `Module` class needs `alias` to init. In normal execution flow this is already handled
+    before calling this function. If it is not in its normal execution flow this should be handled by
+    the function calling this.
+
+    Args:
+        module_object: The module object which needs to serialized into a `Module` class object
+
+    Returns:
+        `Module` class object
+
+    Raises:
+        AssertionError
+            if the requirements of the input data is not matched
+    """
+    assert "name" in module_object
+    assert "alias" in module_object
+    module_object["display"] = module_object.get("display", module_object["name"])
+    module_object = remove_key_from_dict(module_object, "supported_platforms")
+    module_object["installed"] = False
+    module_object["init"] = [
+        create_module_install_instruction(i) for i in module_object["init"]
+    ]
+    module_object["config"] = [
+        create_module_install_instruction(i) for i in module_object["config"]
+    ]
+    module_object["command"] = create_module_install_instruction(
+        module_object["command"]
+    )
+    return m.Module(**module_object)
+
+
+def create_module_install_instruction(
+    instruction: Union[str, m.ModuleInstallInstructionType]
+) -> m.ModuleInstallInstruction:
+    """Creates the module instruction object for the module
+
+    The instruction can be either a string which is assumed to be the installation instruction or
+    it can be a dict with the installation and its rollback instructions
+
+    Args:
+        instruction: The instruction to be serialized
+
+    Returns:
+        The instruction as a object of `ModuleInstallInstruction` class
+    """
+    if isinstance(instruction, str):
+        return m.ModuleInstallInstruction(instruction)
+    return m.ModuleInstallInstruction(**instruction)
+
+
+def ask_user_for_which_module(old_module: m.Module, new_module: m.Module) -> m.Module:
+    """Sometimes the spec may have already declared two modules with same codename and for the same platform
+
+    In such cases we ask the user to select which one to use for the current session.
+
+    Only one can be used for the current session.
+
+    Please note that the spec allows for multiple modules with same codename and usually they are for different platforms
+    but other wise you need to select one. You can't use multiple modules with same codename in the same session.
+
+    Args:
+        old_module: The old module which is already present in the `module_map`
+        new_module: The new module which happens to share the same codename of the `old_module`
+
+    Returns:
+        The selected module
+    """
+    print("Oops, looks like your spec has two modules with the same codename.")
+    print("But for the current session I can use only one.")
+    print("This is the first module")
+    print(old_module)
+    print("And this is the second module")
+    print(new_module)
+    title = "Do you mind selecting one?"
+    choices = ["First one", "Second one"]
+    selection = questionary.select(title, choices=choices).ask()
+    if selection == "First one":
+        return old_module
+    return new_module
 
 
 def check_for_module_platform_compatibility(
@@ -104,7 +208,7 @@ def check_for_module_platform_compatibility(
         2. Checks if the platform object is a "mock" platform object or not.
            If the user didn't provided platforms block in the spec a "mock"
            platform object as placeholder is generated. So it checks whether is
-           this the mock object or not. If it is then `SchemaComplianceError` is raised.
+           this the mock object or not. If it is then `SpecificationError` is raised.
         3. Checks if the platform name is supported by the module. If yes then returns True.
         4. Nothing else then returns False
 
@@ -116,16 +220,14 @@ def check_for_module_platform_compatibility(
         True if compatible else False
 
     Raises:
-        SchemaComplianceError
+        SpecificationError
+            with error code :ref:`error-code-100`
     """
     if "supported_platforms" not in module:
         return True
     if platform_object["name"] == "MOCK":
-        raise e.SchemaComplianceError(
-            errors=(
-                f"You used the `supported_platforms` key in {module['name']},"
-                "but your spec file didn't have any `platforms` module."
-            )
+        raise e.SpecificationError(
+            module["name"], "S100", "You are missing a platform object"
         )
     if platform_object["name"] in module["supported_platforms"]:
         return True
@@ -182,15 +284,13 @@ def get_platform_object_from_codename(
         platform_codename: name of the platform
 
     Raises:
-        RuleViolationError
-            with error code :ref:`error-code-106`
+        SpecificationError
+            with error code :ref:`error-code-S100`
     """
     for _plat in platform_list:
         if _plat["name"] == platform_codename:
             return _plat
-    raise e.RuleViolationError(
-        106, f"I couldn't find any platform called {platform_codename}"
-    )
+    raise e.SpecificationError(platform_codename, "S100", "You are missing a platform")
 
 
 def get_platform_object_using_system(
@@ -204,9 +304,6 @@ def get_platform_object_using_system(
 
     Returns:
         The `code_name` of current platform
-
-    Raises:
-        PlatformUnsupportedError
     """
     platforms_supported: List[m.PlatformType] = []
     for _p in platform_list:
@@ -217,11 +314,10 @@ def get_platform_object_using_system(
                 current_platform["version"], _p["platform_info"]["version"]
             ):
                 platforms_supported.append(_p)
-    if len(platforms_supported) > 1:
-        return ask_user_for_platform_object(platforms_supported)
-    if len(platforms_supported) < 1:
-        raise e.PlatformUnsupportedError
-    return platforms_supported[0]
+    if len(platforms_supported) == 1:
+        print(f"I see you are using {platforms_supported[0]['name']}")
+        return platforms_supported[0]
+    return ask_user_for_platform_object(platforms_supported)
 
 
 def ask_user_for_platform_object(
@@ -245,10 +341,9 @@ def ask_user_for_platform_object(
         'Hey.. your current platform supports multiple "platform" declared in the spec file'
     )
     title = "Do you mind narrowring it down to one for me?"
-    options = [p["name"] for p in platforms_supported]
-    option, _ = pick.pick(options, title)
-    click.secho(f"Nice choice: {option}", fg="green")
-    return get_platform_object_from_codename(platforms_supported, option)
+    choices = [p["name"] for p in platforms_supported]
+    selection = questionary.select(title, choices=choices).ask()
+    return get_platform_object_from_codename(platforms_supported, selection)
 
 
 def compare_version(version: str, expected_version: str) -> bool:

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Fri 17 Jul 2020 13:57:30 IST
+# Last-Updated: Sat 18 Jul 2020 21:11:14 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -124,3 +124,31 @@ class TestCompareStrings:
 
     def test_negative_arg(self):
         assert s.compare_strings("foo", "bar") is False
+
+
+@pytest.fixture
+def full_document():
+    return f.read("tests/data/module_map_1.toml")
+
+
+class TestGenerateModuleMap:
+    def test_1(self, full_document):
+        """Testing if both foo and bar modules are returned.
+        foo is explicity supported and bar is implicitly.
+        """
+        platform_object = {"name": "macos"}
+        module_map = s.generate_module_map(full_document, platform_object)
+        expected_response = {
+            "foo": m.Module("foo", "app", False, "foo", "foo"),
+            "bar": m.Module("bar", "app", False, "bar", "bar"),
+        }
+        assert module_map == expected_response
+
+    def test_2(self, full_document):
+        """Testing if only bar module is returned.
+        foo is NOT supported and bar is supported implicitly.
+        """
+        platform_object = {"name": "test"}
+        module_map = s.generate_module_map(full_document, platform_object)
+        expected_response = {"bar": m.Module("bar", "app", False, "bar", "bar")}
+        assert module_map == expected_response

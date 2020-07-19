@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Fri 17 Jul 2020 18:46:24 IST
+# Last-Updated: Sat 18 Jul 2020 22:41:11 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -41,56 +41,64 @@ from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
-def main(graph: Dict[str, m.Module], requirements_list: List[str]) -> None:
+def main(module_map: m.ModuleMapType, requirements_list: List[str]) -> None:
     """The entry point function
 
     Args:
-        graph: The dependency list(graph) showing all the modules which has dependencies
+        module_map: The module map of the current platform
         requirements_list: The list of modules to be installed
     """
     for module_name in requirements_list:
-        traverse(graph, module_name)
+        traverse(module_map, module_name)
 
 
-def traverse(graph: Dict[str, m.Module], module_name: str) -> None:
+def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
     """Reverse DFS logic for traversing dependencies.
     Basically it installs all the dependencies first then app.
 
     Args:
-        graph: The dependency list(graph) showing all the modules which has dependencies
+        module_map: The module map of current platform
         module_name: The name of the module to traverse
     """
-    module = graph[module_name]
+    try:
+        module = module_map[module_name]
+    except KeyError:
+        raise e.SpecificationError(
+            error=module_name,
+            error_code="S100",
+            message="The name of the module given by you didn't match with the codenames of the modules",
+        )
     if not module.installed:
         if module.requires is not None:
             for neighbour in module.requires:
-                traverse(graph, neighbour)
+                traverse(module_map, neighbour)
         else:
-            execute(graph, module_name)
+            execute(module_map, module_name)
             module.installed = True
 
 
 def execute(
-    graph: Dict[str, m.Module], module_name: str
-) -> Optional[m.ModuleInstalledResponseType]:
+    module_map: m.ModuleMapType, module_name: str
+) -> m.ModuleInstalledResponseType:
     """Common entry point for installing all the modules.
 
     Args:
-        graph: The dependency list(graph) showing all the modules which has dependencies
+        module_map: The module map of current platform
         module_name: The name of the module to traverse
 
     Returns:
         The response object containing the status of all the commands
 
     Raises:
-        RuleViolationError
-            with error code :ref:`error-code-104`
+        SpecificationError
+            with error code :ref:`error-code-S100`
     """
-    if module_name in graph:
-        module = graph[module_name]
-        return function[module.module_type](module)
-    raise e.RuleViolationError(
-        rule_code=104, message=f"I was unable to find the module: {module_name}"
+    if module_name in module_map:
+        module = module_map[module_name]
+        response = module_install_functions[module.module_type](module)
+        return response
+    raise e.SpecificationError(
+        module_name, "S100", f"I was unable to find the module: {module_name}"
     )
 
 
@@ -166,4 +174,8 @@ def create_folder(module: m.Module):
     raise NotImplementedError
 
 
-function = {"app": install_module, "file": create_file, "folder": create_folder}
+module_install_functions = {
+    "app": install_module,
+    "file": create_file,
+    "folder": create_folder,
+}

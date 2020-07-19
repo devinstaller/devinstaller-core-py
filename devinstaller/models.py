@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Fri 17 Jul 2020 17:17:04 IST
+# Last-Updated: Sun 19 Jul 2020 12:09:16 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,7 +35,13 @@
 
 """All the models including the schema as well as graph models"""
 from dataclasses import dataclass
-from typing import Dict, List, Optional, TypedDict
+from typing import Any, Dict, List, NewType, Optional, TypedDict, Union
+
+
+@dataclass
+class ModuleInstallInstruction:
+    install: str
+    rollback: Optional[str] = None
 
 
 @dataclass
@@ -47,14 +53,14 @@ class Module:
     name: str
     module_type: str
     installed: bool
-    codename: str
+    alias: str
     display: str
-    command: Optional[str] = None
-    config: Optional[List[str]] = None
+    command: Optional[ModuleInstallInstruction] = None
+    config: Optional[List[ModuleInstallInstruction]] = None
     content: Optional[str] = None
     description: Optional[str] = None
     executable: Optional[str] = None
-    init: Optional[List[str]] = None
+    init: Optional[List[ModuleInstallInstruction]] = None
     optionals: Optional[List[str]] = None
     owner: Optional[str] = None
     parent_dir: Optional[str] = None
@@ -67,19 +73,23 @@ class Module:
     symbolic: Optional[bool] = None
 
 
-#
+class ModuleInstallInstructionType(TypedDict):
+    install: str
+    rollback: Optional[str]
+
+
 class ModuleType(TypedDict):
     """Type declaration for all the block
     """
 
     alias: str
-    command: str
-    config: List[str]
+    init: List[Union[ModuleInstallInstructionType, str]]
+    command: Union[ModuleInstallInstructionType, str]
+    config: List[Union[ModuleInstallInstructionType, str]]
     content: str
     description: str
     display: str
     executable: str
-    init: List[str]
     name: str
     optionals: List[str]
     owner: str
@@ -178,7 +188,10 @@ class ModuleInstalledResponseType(TypedDict):
     command: Optional[CommandRunResponseType]
 
 
-def module() -> dict:
+ModuleMapType = NewType("ModuleMapType", Dict[str, Module])
+
+
+def module() -> Dict[str, Any]:
     """
     Returns:
         The schema for the `module` block
@@ -190,18 +203,43 @@ def module() -> dict:
             "schema": {
                 "module_type": {
                     "type": "string",
-                    "default": "app",
-                    "one_of": ["app", "file", "folder", "link", "group"],
+                    "default": "phony",
+                    "allowed": ["app", "file", "folder", "link", "group", "phony"],
                 },
                 "supported_platforms": {"type": "list", "schema": {"type": "string"}},
                 "alias": {"type": "string"},
-                "command": {"type": ["string", "boolean"]},
-                "config": {"type": "list", "schema": {"type": "string"}},
+                "create": {"type": "boolean"},
+                "init": {
+                    "type": "list",
+                    "schema": {
+                        "type": ["string", "dict"],
+                        "schema": {
+                            "install": {"type": "string"},
+                            "rollback": {"type": "string"},
+                        },
+                    },
+                },
+                "command": {
+                    "type": ["string", "dict"],
+                    "schema": {
+                        "install": {"type": "string"},
+                        "rollback": {"type": "string"},
+                    },
+                },
+                "config": {
+                    "type": "list",
+                    "schema": {
+                        "type": ["string", "dict"],
+                        "schema": {
+                            "install": {"type": "string"},
+                            "rollback": {"type": "string"},
+                        },
+                    },
+                },
                 "content": {"type": "string"},
                 "description": {"type": "string"},
                 "display": {"type": "string"},
                 "executable": {"type": "string"},
-                "init": {"type": "list", "schema": {"type": "string"}},
                 "name": {"type": "string", "required": True},
                 "optionals": {"type": "list", "schema": {"type": "string"}},
                 "owner": {"type": "string"},
@@ -219,7 +257,7 @@ def module() -> dict:
     return data
 
 
-def platform() -> dict:
+def platform() -> Dict[str, Any]:
     """
     Returns:
         The schema for the `platform` block
@@ -244,7 +282,7 @@ def platform() -> dict:
     return data
 
 
-def interface() -> dict:
+def interface() -> Dict[str, Any]:
     """
     Returns:
       The schema for the `interface` block
@@ -259,6 +297,7 @@ def interface() -> dict:
                 "supported_platforms": {"type": "list", "schema": {"type": "string"}},
                 "before": {"type": "string"},
                 "after": {"type": "string"},
+                # `requires` other interface
                 "requires": {"type": "list", "schema": {"type": "string"}},
                 "before_each": {"type": "string"},
                 "after_each": {"type": "string"},
@@ -279,7 +318,7 @@ def interface() -> dict:
     return data
 
 
-def schema() -> dict:
+def schema() -> Dict[str, Any]:
     """Used for getting a new instance of the schema for the validating the spec file.
 
     Returns:

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Fri 17 Jul 2020 16:55:47 IST
+# Last-Updated: Sat 18 Jul 2020 18:45:14 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,8 +35,8 @@
 
 """The main entrypoint module for running CLI commands
 """
-
 import os
+from typing import Optional
 
 import click
 
@@ -47,14 +47,14 @@ DEFAULT_DOC_FILE_PATH = os.getcwd() + "/sample.devfile.yml"
 
 
 @click.group()
-def main():
+def main() -> None:
     """Main entrypoint function. Everything in this run before any of the
     subcommand
     """
 
 
 @main.resultcallback()
-def process_result():
+def process_result() -> None:
     """Final callback function. Runs after the end of everything."""
     click.secho("Bye. Have a good day.", fg="green")
 
@@ -77,21 +77,17 @@ def process_result():
         "For more information read the docs."
     ),
 )
-@click.option(
-    "--group",
-    "group",
-    help=(
-        "Name of the group you want to install. "
-        "If not provided then the default group will be installed."
-    ),
-)
-def install(file_name, platform, group):
-    """Install the default group and the modules which it requires."""
+@click.option("--module", "module", help=("Name of the module you want to install. "))
+def install(
+    file_name: Optional[str], platform: Optional[str], module: Optional[str]
+) -> None:
+    """Install the default group and the modules which it requires
+    """
     try:
-        a.install(file_name, platform, group)
-    except e.RuleViolationError as err:
+        a.install(file_path=file_name, platform_codename=platform, module=module)
+    except e.DevinstallerError as err:
         click.secho(str(err), fg="red")
-    except e.SchemaComplianceError as err:
+    except e.SpecificationError as err:
         click.secho(str(err), fg="red")
 
 
@@ -103,11 +99,13 @@ def install(file_name, platform, group):
     default=DEFAULT_DOC_FILE_PATH,
     help="Name of the install file. Default: `install.yaml`",
 )
-def show(file_name):
-    """Show all the groups and modules available for your OS."""
+def show(file_name: Optional[str]) -> None:
+    """Show all the groups and modules available for your OS
+    """
     try:
+        assert file_name is not None
         a.show(file_name)
-    except e.SchemaComplianceError as err:
+    except e.DevinstallerError as err:
         click.secho(str(err), fg="red")
 
 
