@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Tue 21 Jul 2020 21:15:24 IST
+# Last-Updated: Wed 22 Jul 2020 02:48:02 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,8 +36,9 @@
 """Handles the main how to install the modules logic"""
 import subprocess
 import sys
-from typing import List, Union
+from typing import List, Set, Union
 
+import questionary
 from typeguard import typechecked
 
 from devinstaller import commands as c
@@ -53,19 +54,69 @@ def main(module_map: m.ModuleMapType, requirements_list: List[str]) -> None:
         module_map: The module map of the current platform
         requirements_list: The list of modules to be installed
     """
+    orphan_list: Set[str] = set()
     for module_name in requirements_list:
-        traverse(module_map, module_name)
+        orphan_list = traverse(module_map, module_name, orphan_list)
+    if orphan_list != set():
+        if ask_user_for_uninstalling_orphan_modules(orphan_list):
+            uninstall_modules(orphan_list, module_map)
+
+
+@typechecked
+def uninstall_modules(orphan_list: Set[str], module_map: m.ModuleMapType) -> None:
+    """The main function for uninstalling modules.
+
+    This function is used to uninstall orphan modules.
+
+    Args:
+        orphan_list: The "list" of modules which are not used by any other modules
+        module_map: The module map for the current platform
+    """
+    module_uninstall_functions = {
+        "app": uninstall_app_module,
+        "file": uninstall_file_module,
+        "folder": uninstall_folder_module,
+        "link": uninstall_link_module,
+        "phony": uninstall_phony_module,
+    }
+    for module_name in orphan_list:
+        module = module_map[module_name]
+        module_uninstall_functions[module.module_type](module)
     return None
 
 
 @typechecked
-def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
+def ask_user_for_uninstalling_orphan_modules(orphan_list: Set[str]) -> bool:
+    """Asks user for confirmation for the uninstallation of the orphan modules.
+
+    Args:
+        orphan_list: The "list" of modules which are not used by any other modules
+    """
+    print(
+        "Because of failed installation of some modules, there are some"
+        "modules which are installed but not required by any other modules"
+    )
+    orphan_module_names = ", ".join(name for name in orphan_list)
+    print(f"These are the modules: {orphan_module_names}")
+    response = questionary.confirm("Do you want to uninstall?").ask()
+    return response
+
+
+@typechecked
+def traverse(
+    module_map: m.ModuleMapType, module_name: str, orphan_list: Set[str]
+) -> Set[str]:
     """Reverse DFS logic for traversing dependencies.
+
     Basically it installs all the dependencies first then app.
 
     Args:
         module_map: The module map of current platform
         module_name: The name of the module to traverse
+        orphan_list: The list of modules which are not used by any other modules
+
+    Raises:
+        SpecificationError if one of your module requires but the required module itself is not present
     """
     try:
         module = module_map[module_name]
@@ -75,39 +126,79 @@ def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
             error_code="S100",
             message="The name of the module given by you didn't match with the codenames of the modules",
         )
-    if module.status is None:
-        module.status = "in progress"
-        # TODO Refactor both requires and optionals into separate function
-        if module.requires is not None:
-            for neighbour in module.requires and module.status != "failed":
-                traverse(module_map, neighbour)
-                if module_map[neighbour].status == "failed":
-                    print(
-                        f"The module {neighbour} in the requires of {module.alias} has failed"
-                    )
-                    module.status = "failed"
-        if module.optionals is not None:
-            for neighbour in module.optionals and module.status != "failed":
-                traverse(module_map, neighbour)
-                if module_map[neighbour].status == "failed":
-                    print(
-                        f"The module {neighbour} in the optionals of {module.alias} has failed, but the installation will continue"
-                    )
-        else:
-            module.status = execute(module_map, module_name)
-    return None
+    if module.status is not None:
+        if module.alias in orphan_list:
+            orphan_list.remove(module.alias)
+        return orphan_list
+    module.status = "in progress"
+    orphan_list = traverse_requires(
+        module_map=module_map, module=module_map, orphan_list=orphan_list
+    )
+    orphan_list = traverse_optionals(
+        module_map=module_map, module=module_map, orphan_list=orphan_list
+    )
+    orphan_list = traverse_install(module, orphan_list)
+    return orphan_list
 
 
 @typechecked
-def execute(module_map: m.ModuleMapType, module_name: str) -> str:
-    """Common entry point for installing all the modules.
+def traverse_requires(
+    module_map: m.ModuleMapType, module: m.Module, orphan_list: Set[str]
+) -> Set[str]:
+    if module.requires is not None:
+        for index, child in enumerate(module.requires):
+            orphan_list = traverse(module_map, child, orphan_list)
+            if module_map[child].status == "failed":
+                print(
+                    f"The module {child} in the requires of {module.alias} has failed"
+                )
+                module.status = "failed"
+                orphan_list.update(module.requires[:index])
+                return orphan_list
+    return orphan_list
+
+
+@typechecked
+def traverse_optionals(
+    module_map: m.ModuleMapType, module: m.Module, orphan_list: Set[str]
+) -> Set[str]:
+    if module.optionals is not None:
+        for child in module.optionals:
+            orphan_list = traverse(module_map, child, orphan_list)
+            if module_map[child].status == "failed":
+                print(
+                    f"The module {child} in the optionals of {module.alias} has failed, but the installation for remaining modules will continue"
+                )
+    return orphan_list
+
+
+@typechecked
+def traverse_install(module: m.Module, orphan_list: Set[str]) -> Set[str]:
+    try:
+        install_module(module)
+        module.status = "success"
+        return orphan_list
+    except e.ModuleInstallationFailed:
+        print(
+            f"The installation for the module: {module.alias} failed. And all the instructions has been rolled back."
+        )
+        module.status = "failed"
+        if module.requires is not None:
+            orphan_list.update(module.requires)
+        if module.optionals is not None:
+            orphan_list.update(module.optionals)
+        return orphan_list
+
+
+@typechecked
+def install_module(module: m.Module) -> None:
+    """Common entry point for installing any module.
 
     Args:
-        module_map: The module map of current platform
-        module_name: The name of the module to traverse
+        module: The module you want to install
 
     Returns:
-        The response object containing the status of all the commands
+        None if all good
 
     Raises:
         SpecificationError
@@ -117,33 +208,19 @@ def execute(module_map: m.ModuleMapType, module_name: str) -> str:
         "app": install_app_module,
         "file": install_file_module,
         "folder": install_folder_module,
+        "link": install_link_module,
+        "group": install_group_module,
+        "phony": install_phony_module,
     }
-    if module_name in module_map:
-        module = module_map[module_name]
-        response = module_install_functions[module.module_type](module)
-        return response
-    raise e.SpecificationError(
-        module_name, "S100", f"I was unable to find the module: {module_name}"
-    )
-
-
-@typechecked
-def install_app_module(module: m.Module) -> str:
-    """The function which installs app modules
-
-    Args:
-        module: The app module
-
-    Returns:
-        The response object of the module
-    """
-    print("Installing module: {name}...".format(name=module.display))
-    installation_steps = append_if_not_none(module.init, module.command, module.config)
     try:
-        install_steps(installation_steps)
-        # TODO This should return a status: `success`, `failed`
-    except subprocess.CalledProcessError:
-        print("Rolling back commands")
+        module_install_functions[module.module_type](module)
+        return None
+    except KeyError:
+        raise e.SpecificationError(
+            module.module_type,
+            "S100",
+            f"The module_type: {module.module_type} is invalid.",
+        )
 
 
 @typechecked
@@ -170,21 +247,21 @@ def append_if_not_none(
 
 @typechecked
 def rollback_instructions(instructions: List[m.ModuleInstallInstruction]) -> None:
-    """Rollbacks instructions used for the installation of a module
+    """Rollback the installation of a module
 
     Args:
         List of install instructions
 
     Raises:
-        InstallerRollbackFailed if the rollback instructions fails
+        ModuleRollbackFailed if the rollback instructions fails
     """
-    for index, step in enumerate(instructions):
-        if step.revert is not None:
+    for step in instructions:
+        if step.rollback is not None:
             try:
                 print(f"Rolling back `{step.install}` using `{step.rollback}`")
-                c.run(step.rolback)
+                c.run(step.rollback)
             except subprocess.CalledProcessError:
-                raise e.InstallerRollbackFailed
+                raise e.ModuleRollbackFailed
     return None
 
 
@@ -196,8 +273,11 @@ def install_steps(steps: List[m.ModuleInstallInstruction]) -> None:
         steps: The list of steps which needs to be executed
 
     Raises:
-        subprocess.CalledProcessError if the command fails
+        ModuleInstallationFailed if the installation of the module fails
+        ModuleRollbackFailed if the rollback command fails
     """
+    if steps == []:
+        return None
     for index, step in enumerate(steps):
         try:
             c.run(step.install)
@@ -206,10 +286,61 @@ def install_steps(steps: List[m.ModuleInstallInstruction]) -> None:
             revert_list.reverse()
             try:
                 rollback_instructions(revert_list)
-            except e.InstallerRollbackFailed:
-                print("Rollback instructions also failed. Crashing program.")
-                sys.exit(1)
-            raise e.InstallerModuleFailed("Instructions failed. Rolling back")
+            except e.ModuleRollbackFailed:
+                raise e.ModuleRollbackFailed
+            raise e.ModuleInstallationFailed
+    return None
+
+
+def uninstall_app_module(module: m.Module) -> None:
+    """Uninstall the module using its rollback instructions.
+
+    Args:
+        module: The module which you want to uninstall
+    """
+    print(f"Uninstalling module: {module.display}...")
+    installation_steps = append_if_not_none(module.init, module.command, module.config)
+    try:
+        rollback_instructions(installation_steps)
+    except e.ModuleRollbackFailed:
+        print(f"Rollback instructions for {module.display} failed. Crashing program.")
+        sys.exit(1)
+    return None
+
+
+def uninstall_file_module(module: m.Module) -> None:
+    pass
+
+
+def uninstall_folder_module(module: m.Module) -> None:
+    pass
+
+
+def uninstall_link_module(module: m.Module) -> None:
+    pass
+
+
+def uninstall_phony_module(module: m.Module) -> None:
+    pass
+
+
+@typechecked
+def install_app_module(module: m.Module) -> None:
+    """The function which installs app modules
+
+    Args:
+        module: The app module
+
+    Returns:
+        The response object of the module
+    """
+    print(f"Installing module: {module.display}...")
+    installation_steps = append_if_not_none(module.init, module.command, module.config)
+    try:
+        install_steps(installation_steps)
+    except e.ModuleRollbackFailed:
+        print(f"Rollback instructions for {module.display} failed. Crashing program.")
+        sys.exit(1)
     return None
 
 
@@ -225,7 +356,7 @@ def install_file_module(module: m.Module) -> str:
 
 
 @typechecked
-def install_folder_module(module: m.Module) -> str:
+def install_folder_module(module: m.Module) -> None:
     """The function which will create the required folder
 
     Args:
@@ -233,3 +364,15 @@ def install_folder_module(module: m.Module) -> str:
     """
     print("Creating folder: {name}...".format(name=module.display))
     raise NotImplementedError
+
+
+def install_link_module():
+    pass
+
+
+def install_group_module():
+    pass
+
+
+def install_phony_module():
+    pass

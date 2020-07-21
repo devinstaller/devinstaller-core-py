@@ -13,10 +13,10 @@ def test_install_module__skip():
         "name": "module1",
         "display": "module v1",
         "module_type": "app",
+        "command": None,
     }
     mock_data = m.Module(**mock_data)
-    response = i.install_module(mock_data)
-    assert response["command"] is None
+    i.install_module(mock_data)
 
 
 def test_install_module__success(fake_process):
@@ -31,8 +31,7 @@ def test_install_module__success(fake_process):
         "module_type": "app",
     }
     mock_data = m.Module(**mock_data)
-    response = i.install_module(mock_data)
-    assert response["command"]["stdout"] == mock_response
+    i.install_module(mock_data)
 
 
 @pytest.fixture
