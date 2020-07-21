@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Sun 19 Jul 2020 19:10:20 IST
+# Last-Updated: Tue 21 Jul 2020 18:27:31 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -46,7 +46,7 @@ def schema():
 
 class TestSchemaValidity:
     def test_toplevel(self, schema):
-        expected = f.read("tests/data/schema/top_level_schema.json")
+        expected = f.read_file_and_parse("tests/data/schema/top_level_schema.json")
         assert expected["version"] == schema["version"]
         assert expected["author"] == schema["author"]
         assert expected["description"] == schema["description"]
@@ -55,15 +55,15 @@ class TestSchemaValidity:
         assert expected["prog_file"] == schema["prog_file"]
 
     def test_platforms_block(self, schema):
-        expected = f.read("tests/data/schema/platform_schema.json")
+        expected = f.read_file_and_parse("tests/data/schema/platform_schema.json")
         assert expected == schema["platforms"]
 
     def test_modules_block(self, schema):
-        expected = f.read("tests/data/schema/module_schema.json")
+        expected = f.read_file_and_parse("tests/data/schema/module_schema.json")
         assert expected == schema["modules"]
 
     def test_interfaces_block(self, schema):
-        expected = f.read("tests/data/schema/interface_schema.json")
+        expected = f.read_file_and_parse("tests/data/schema/interface_schema.json")
         assert expected == schema["interfaces"]
 
 
@@ -118,7 +118,7 @@ class TestCompareStrings:
 
 @pytest.fixture
 def full_document():
-    return f.read("tests/data/module_map_1.toml")
+    return f.read_file_and_parse("tests/data/module_map_1.toml")
 
 
 class TestGenerateModuleMap:
@@ -129,8 +129,8 @@ class TestGenerateModuleMap:
         platform_object = {"name": "macos"}
         module_map = s.generate_module_map(full_document["modules"], platform_object)
         expected_response = {
-            "foo": m.Module("foo", "app", False, "foo", "foo"),
-            "bar": m.Module("bar", "app", False, "bar", "bar"),
+            "foo": m.Module("foo", "app", "foo", "foo"),
+            "bar": m.Module("bar", "app", "bar", "bar"),
         }
         assert module_map == expected_response
 
@@ -140,31 +140,31 @@ class TestGenerateModuleMap:
         """
         platform_object = {"name": "test"}
         module_map = s.generate_module_map(full_document["modules"], platform_object)
-        expected_response = {"bar": m.Module("bar", "app", False, "bar", "bar")}
+        expected_response = {"bar": m.Module("bar", "app", "bar", "bar")}
         assert module_map == expected_response
 
 
 class TestValidator:
     def test_top_level_success(self):
-        document = f.read("tests/data/schema/top_level_valid.json")
+        document = f.read_file_and_parse("tests/data/schema/top_level_valid.json")
         assert s.validate(document)["valid"]
 
     def test_top_level_fail(self):
-        document = f.read("tests/data/schema/top_level_invalid.json")
+        document = f.read_file_and_parse("tests/data/schema/top_level_invalid.json")
         assert not s.validate(document, m.top_level())["valid"]
 
     def test_platform_success(self):
-        document = f.read("tests/data/schema/platform_valid.json")
+        document = f.read_file_and_parse("tests/data/schema/platform_valid.json")
         assert s.validate(document)["valid"]
 
     def test_module_success(self):
-        document = f.read("tests/data/schema/module_valid.json")
+        document = f.read_file_and_parse("tests/data/schema/module_valid.json")
         assert s.validate(document)["valid"]
 
     def test_interface_success(self):
-        document = f.read("tests/data/schema/interface_valid.json")
+        document = f.read_file_and_parse("tests/data/schema/interface_valid.json")
         assert s.validate(document)["valid"]
 
     def test_full_document_success(self):
-        document = f.read("tests/data/schema/full_document_valid.json")
+        document = f.read_file_and_parse("tests/data/schema/full_document_valid.json")
         assert s.validate(document)["valid"]

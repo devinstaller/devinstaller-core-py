@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sun 19 Jul 2020 18:52:35 IST
+# Last-Updated: Tue 21 Jul 2020 18:16:49 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -55,7 +55,6 @@ class Module:
     # pylint: disable=too-many-instance-attributes
     name: str
     module_type: str
-    installed: bool
     alias: str
     display: str
     command: Optional[ModuleInstallInstruction] = None
@@ -69,11 +68,12 @@ class Module:
     parent_dir: Optional[str] = None
     permission: Optional[str] = None
     requires: Optional[List[str]] = None
+    source: Optional[str] = None
+    status: Optional[str] = None
+    symbolic: Optional[bool] = None
+    target: Optional[str] = None
     url: Optional[str] = None
     version: Optional[str] = None
-    source: Optional[str] = None
-    target: Optional[str] = None
-    symbolic: Optional[bool] = None
 
 
 class ModuleInstallInstructionType(TypedDict):
@@ -89,26 +89,28 @@ class ModuleType(TypedDict):
     """
 
     alias: str
-    init: List[Union[ModuleInstallInstructionType, str]]
     command: Union[ModuleInstallInstructionType, str]
     config: List[Union[ModuleInstallInstructionType, str]]
     content: str
+    create: bool
     description: str
     display: str
-    name: str
     executable: str
+    init: List[Union[ModuleInstallInstructionType, str]]
+    module_type: str
+    name: str
     optionals: List[str]
     owner: str
     parent_dir: str
     permission: str
     requires: List[str]
-    module_type: str
+    rollback: bool
+    source: str
+    supported_platforms: List[str]
+    symbolic: bool
+    target: str
     url: str
     version: str
-    supported_platforms: List[str]
-    source: str
-    target: str
-    symbolic: bool
 
 
 class InterfaceModuleType(TypedDict):
@@ -204,6 +206,122 @@ class ValidateResponseType(TypedDict):
 
 
 ModuleMapType = NewType("ModuleMapType", Dict[str, Module])
+
+ModuleTypes = ["app", "file", "folder", "link", "group", "phony"]
+"""Types of modules
+"""
+
+ModuleInstallStatus = ["success", "failed", "in progress"]
+"""Status allowed for each modules. None is also included in Moduel status
+"""
+
+AppModuleFields = [
+    "alias",
+    "command",
+    "config",
+    "create" "description",
+    "display",
+    "executable",
+    "init",
+    "module_type",
+    "name",
+    "optionals",
+    "requires",
+    "rollback" "supported_platforms",
+    "url",
+    "version",
+]
+"""Fields allowed for module with type `app`
+"""
+
+FileModuleFields = [
+    "alias",
+    "config",
+    "content",
+    "create",
+    "description",
+    "display",
+    "init",
+    "module_type",
+    "name",
+    "optionals",
+    "owner",
+    "parent_dir",
+    "requires",
+    "rollback",
+    "supported_platforms",
+    "url",
+]
+"""Fields allowed for module with type `file`
+"""
+
+FolderModuleFields = [
+    "alias",
+    "config",
+    "create",
+    "description",
+    "display",
+    "init",
+    "module_type",
+    "name",
+    "optionals",
+    "owner",
+    "parent_dir",
+    "permission",
+    "requires",
+    "rollback",
+    "supported_platforms",
+    "url",
+]
+"""Fields allowed for module with type `folder`
+"""
+
+LinkModuleFields = [
+    "alias",
+    "config",
+    "description",
+    "display",
+    "init",
+    "module_type",
+    "name",
+    "optionals",
+    "requires",
+    "rollback",
+    "source",
+    "supported_platforms",
+    "symbolic",
+    "target",
+    "url",
+]
+"""Fields allowed for module with type `link`
+"""
+
+GroupModuleFields = [
+    "alias",
+    "description",
+    "display",
+    "module_type",
+    "name",
+    "optionals",
+    "requires",
+    "supported_platforms",
+    "url",
+]
+"""Fields allowed for module with type `group`
+"""
+
+PhonyModuleFields = [
+    "alias",
+    "config",
+    "description",
+    "display",
+    "module_type",
+    "name",
+    "supported_platforms",
+    "url",
+]
+"""Fields allowed for module with type `phony`
+"""
 
 
 def module() -> Dict[str, Any]:

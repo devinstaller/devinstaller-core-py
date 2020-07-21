@@ -45,7 +45,7 @@ interpretation and its execution.
 
 - Native support for both Shell and Python commands
 - Native support for other program language can be easily done by creating plugins
-- Default config format is =toml= but =yaml= and =json= are also supported.
+- =toml=, =yaml= and =json= file formats are supported
 - Full control over the spec can be handed over
 - Supports Importing other specifications
 
@@ -54,18 +54,6 @@ interpretation and its execution.
 
 #+BEGIN_SRC sh
 dev install
-#+END_SRC
-
-** Specify platform
-
-#+BEGIN_SRC sh
-dev install --platform macos  # dev install -p macos
-#+END_SRC
-
-** Specify both platform and desired preset
-
-#+BEGIN_SRC sh
-dev install --platform macos --preset doom
 #+END_SRC
 
 * Full Documentation

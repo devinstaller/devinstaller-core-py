@@ -26,7 +26,7 @@ Unlike other tools which are static config files and they are interpreted and ex
 
 - Native support for both Shell and Python commands
 - Native support for other program language can be easily done by creating plugins
-- Default config format is `toml` but `yaml` and `json` are also supported.
+- `toml`, `yaml` and `json` file formats are supported
 - Full control over the spec can be handed over
 - Supports Importing other specifications
 
@@ -36,18 +36,6 @@ Unlike other tools which are static config files and they are interpreted and ex
 
 ```sh
 dev install
-```
-
-## Specify platform
-
-```sh
-dev install --platform macos  # dev install -p macos
-```
-
-## Specify both platform and desired preset
-
-```sh
-dev install --platform macos --preset doom
 ```
 
 # Full Documentation

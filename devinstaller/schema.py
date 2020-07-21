@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sun 19 Jul 2020 17:29:29 IST
+# Last-Updated: Tue 21 Jul 2020 18:05:56 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,7 +35,6 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything related to spec file schema"""
-import copy
 import platform
 from typing import Any, Dict, List, Optional, Union, cast
 
@@ -104,7 +103,7 @@ def remove_key_from_dict(input_dictionary: Dict[Any, Any], key: str) -> Dict[Any
     """
     if key not in input_dictionary:
         return input_dictionary
-    new_dictionary = copy.deepcopy(input_dictionary)
+    new_dictionary = input_dictionary.copy()
     new_dictionary.pop(key)
     return new_dictionary
 
@@ -159,7 +158,6 @@ def create_module(module_object: m.ModuleType) -> m.Module:
     temp_obj: Dict[str, Any] = dict(**module_object)
     temp_obj = remove_key_from_dict(temp_obj, "supported_platforms")
     temp_obj["display"] = module_object.get("display", module_object["name"])
-    temp_obj["installed"] = False
     temp_obj["init"] = create_install_steps(module_object, step_name="init")
     temp_obj["config"] = create_install_steps(module_object, step_name="config")
     temp_obj["command"] = create_install_steps(module_object, step_name="command")

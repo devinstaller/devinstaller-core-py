@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Sat 18 Jul 2020 18:21:44 IST
+# Last-Updated: Tue 21 Jul 2020 17:42:50 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -87,3 +87,11 @@ class DevinstallerError(Exception):
             f"\n{ self.message }"
         )
         return response
+
+
+class InstallerRollbackFailed(Exception):
+    pass
+
+
+class InstallerModuleFailed(Exception):
+    pass

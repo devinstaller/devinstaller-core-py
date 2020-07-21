@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Sat 18 Jul 2020 20:13:24 IST
+# Last-Updated: Tue 21 Jul 2020 18:43:20 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,15 +40,17 @@ import re
 from typing import Any, Dict
 
 import anymarkup
+from typeguard import typechecked
 
 from devinstaller import exceptions as e
 
 
-def read(file_path: str) -> Dict[Any, Any]:
-    """Reads the file at the path and returns the data as dict object
+@typechecked
+def parse_contents(file_contents: str, file_format: str = "toml") -> Dict[Any, Any]:
+    """Parse `file_contents` and returns the python object
 
     Args:
-        file_path: The path to the file
+        file_contents: The contents of file
 
     Returns:
         Python object
@@ -57,15 +59,46 @@ def read(file_path: str) -> Dict[Any, Any]:
         SpecificationError
             with code :ref:`error-code-S100`
     """
-    with open(file_path, "r") as stream:
-        try:
-            return anymarkup.parse(stream)
-        except Exception:
-            raise e.SpecificationError(
-                error=file_path,
-                error_code="S100",
-                message="There is some error in your file content",
-            )
+    try:
+        return anymarkup.parse(file_contents, format=file_format)
+    except Exception:
+        raise e.SpecificationError(
+            error=file_contents,
+            error_code="S100",
+            message="There is some error in your file content",
+        )
+
+
+@typechecked
+def read_file(file_path: str) -> str:
+    """Reads the file at the path and returns the string representation
+
+    Args:
+        file_path: The path to the file
+
+    Returns:
+        String representation of the file
+    """
+    # TODO check if the path is starting with dot or two dots
+    full_path = os.path.expanduser(file_path)
+    with open(full_path, "r") as f:
+        return f.read()
+
+
+@typechecked
+def read_file_and_parse(file_path: str) -> Dict[Any, Any]:
+    """Reads the file at path and parse and returns the python object
+
+    It is composed of `read_file` and `parse_contents`
+
+    Args:
+        file_path: The path to the file
+
+    Returns:
+        Python object
+    """
+    file_format = file_path.split(".")[-1]
+    return parse_contents(read_file(file_path), file_format=file_format)
 
 
 def download(url: str) -> Dict[Any, Any]:
@@ -80,7 +113,7 @@ def download(url: str) -> Dict[Any, Any]:
     # TODO
 
 
-def parse_and_download(file_path: str) -> Dict[Any, Any]:
+def check_and_download(file_path: str) -> Dict[Any, Any]:
     """Checks the input_str and downloads or reads the file.
 
     Steps:
@@ -105,11 +138,10 @@ def parse_and_download(file_path: str) -> Dict[Any, Any]:
         result = re.match(pattern, file_path)
         assert result is not None
         method = result.group(1)
-        function = {"file": read, "url": download}
-        full_path = os.path.expanduser(result.group(2))
-        file_contents = function[method](full_path)
-        hash_input = method + full_path + str(file_contents)
-        data = {"digest": hash(hash_input), "contents": file_contents}
+        file_path = result.group(2)
+        function = {"file": read_file_and_parse, "url": download}
+        file_contents = function[method](file_path)
+        data = {"digest": hash(str(file_contents)), "contents": file_contents}
         return data
     except AssertionError:
         raise e.SpecificationError(

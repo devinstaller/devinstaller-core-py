@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Wed 17 Jun 2020 01:09:37 IST
+# Last-Updated: Tue 21 Jul 2020 15:04:32 IST
 #
 # commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,23 +37,14 @@
 import shlex
 import subprocess
 
-from devinstaller import models as m
 
-
-def run(command: str) -> m.CommandRunResponseType:
-    """Reads the file at the path and returns the data as dict object
+def run(command: str) -> None:
+    """Runs the comand and returns None if no error else `subprocess.CalledProcessError` is raised
 
     Args:
         command: The path to the file
 
-    Returns:
-        serialised subprocess python object
+    Raises:
+        subprocess.CalledProcessError
     """
-    data = subprocess.run(shlex.split(command), capture_output=True, check=True)
-    response: m.CommandRunResponseType = {
-        "args": list(data.args),
-        "returncode": data.returncode,
-        "stdout": data.stdout.decode().rstrip(),
-        "stderr": data.stderr.decode().rstrip(),
-    }
-    return response
+    subprocess.run(shlex.split(command), capture_output=True, check=True)

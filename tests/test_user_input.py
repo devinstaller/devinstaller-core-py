@@ -12,14 +12,15 @@ def mock_questionary(mocker):
 def test_ask_user_for_req_list(mock_questionary, mocker):
     module_objects = [
         m.Module(
-            "foo",
-            "app",
-            False,
-            "foo alias",
-            "Foo as displayed",
+            name="foo",
+            module_type="app",
+            alias="foo alias",
+            display="Foo as displayed",
             description="Foo description",
         ),
-        m.Module("bar", "app", False, "bar alias", "Bar as displayed"),
+        m.Module(
+            name="bar", module_type="app", alias="bar alias", display="Bar as displayed"
+        ),
     ]
     app.ask_user_for_the_requirement_list(module_objects)
     mock_questionary.assert_called_with(

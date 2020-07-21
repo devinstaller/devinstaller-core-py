@@ -1,3 +1,5 @@
+version = "v1"
+
 [[modules]]
 name = "foo"
 module_type = "app"

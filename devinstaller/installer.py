@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Sat 18 Jul 2020 22:41:11 IST
+# Last-Updated: Tue 21 Jul 2020 17:57:10 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,13 +34,18 @@
 # -----------------------------------------------------------------------------
 
 """Handles the main how to install the modules logic"""
-from typing import Dict, List, Optional
+import subprocess
+import sys
+from typing import List, Union
+
+from typeguard import typechecked
 
 from devinstaller import commands as c
 from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
+@typechecked
 def main(module_map: m.ModuleMapType, requirements_list: List[str]) -> None:
     """The entry point function
 
@@ -52,6 +57,7 @@ def main(module_map: m.ModuleMapType, requirements_list: List[str]) -> None:
         traverse(module_map, module_name)
 
 
+@typechecked
 def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
     """Reverse DFS logic for traversing dependencies.
     Basically it installs all the dependencies first then app.
@@ -68,18 +74,28 @@ def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
             error_code="S100",
             message="The name of the module given by you didn't match with the codenames of the modules",
         )
-    if not module.installed:
+    if module.status is None:
+        module.status = "in progress"
         if module.requires is not None:
-            for neighbour in module.requires:
+            for neighbour in module.requires and module.status != "failed":
                 traverse(module_map, neighbour)
+                if module_map[neighbour].status == "failed":
+                    print(
+                        f"The module {neighbour} in the requires of {module.alias} has failed"
+                    )
+                    module.status = "failed"
+        if module.optionals is not None:
+            for neighbour in module.optionals and module.status != "failed":
+                traverse(module_map, neighbour)
+                if module_map[neighbour].status == "failed":
+                    print(
+                        f"The module {neighbour} in the optionals of {module.alias} has failed, but the installation will continue"
+                    )
         else:
-            execute(module_map, module_name)
-            module.installed = True
+            module.status = execute(module_map, module_name)
 
 
-def execute(
-    module_map: m.ModuleMapType, module_name: str
-) -> m.ModuleInstalledResponseType:
+def execute(module_map: m.ModuleMapType, module_name: str) -> str:
     """Common entry point for installing all the modules.
 
     Args:
@@ -93,6 +109,11 @@ def execute(
         SpecificationError
             with error code :ref:`error-code-S100`
     """
+    module_install_functions = {
+        "app": install_module,
+        "file": create_file,
+        "folder": create_folder,
+    }
     if module_name in module_map:
         module = module_map[module_name]
         response = module_install_functions[module.module_type](module)
@@ -102,7 +123,7 @@ def execute(
     )
 
 
-def install_module(module: m.Module) -> m.ModuleInstalledResponseType:
+def install_module(module: m.Module) -> str:
     """The function which installs app modules
 
     Args:
@@ -112,46 +133,75 @@ def install_module(module: m.Module) -> m.ModuleInstalledResponseType:
         The response object of the module
     """
     print("Installing module: {name}...".format(name=module.display))
-    response: m.ModuleInstalledResponseType = {
-        "init": install_steps(module.init),
-        "command": install_command(module),
-        "config": install_steps(module.config),
-    }
-    return response
+    installation_steps = append_if_not_none(module.init, module.command, module.config)
+    try:
+        install_steps(installation_steps)
+    except subprocess.CalledProcessError:
+        print("Rolling back commands")
 
 
-def install_command(module: m.Module) -> Optional[m.CommandRunResponseType]:
-    """The function which installs the module.
+@typechecked
+def append_if_not_none(
+    *data: Union[m.ModuleInstallInstruction, List[m.ModuleInstallInstruction], None]
+) -> List[m.ModuleInstallInstruction]:
+    """Returns a list with all the data combined.
+
+    This is used to combine the `init`, `command` and `config` instructions so that they can be run in a single function.
 
     Args:
-        module: The app module
-
-    Returns:
-        The response object of the main install command
+        Any number of arguments. The arguments are expected to be of either ModuleInstallInstruction
+        or list of ModuleInstallInstruction
     """
-    if module.command is None:
-        print("skipping installation for {name}".format(name=module.display))
-        return None
-    return c.run(module.command)
+    temp_list = []
+    for i in data:
+        if i is not None:
+            if isinstance(i, list):
+                temp_list += i
+            else:
+                temp_list.append(i)
+    return temp_list
 
 
-def install_steps(
-    steps: Optional[List[str]],
-) -> Optional[List[m.CommandRunResponseType]]:
+def rollback_instructions(instructions: List[m.ModuleInstallInstruction]) -> None:
+    """Rollbacks instructions used for the installation of a module
+
+    Args:
+        List of install instructions
+
+    Raises:
+        InstallerRollbackFailed if the rollback instructions fails
+    """
+    for index, step in enumerate(instructions):
+        if step.revert is not None:
+            try:
+                print(f"Rolling back `{step.install}` using `{step.rollback}`")
+                c.run(step.rolback)
+            except subprocess.CalledProcessError:
+                raise e.InstallerRollbackFailed
+
+
+@typechecked
+def install_steps(steps: List[m.ModuleInstallInstruction]) -> None:
     """The function which handles installing of multi step commands.
 
     Args:
         steps: The list of steps which needs to be executed
 
-    Returns:
-        List of response object corresponding to each step
+    Raises:
+        subprocess.CalledProcessError if the command fails
     """
-    if steps is not None:
-        response: List[m.CommandRunResponseType] = []
-        for step in steps:
-            response.append(c.run(step))
-        return response
-    return None
+    for index, step in enumerate(steps):
+        try:
+            c.run(step.install)
+        except subprocess.CalledProcessError:
+            revert_list = steps[:index]
+            revert_list.reverse()
+            try:
+                rollback_instructions(revert_list)
+            except e.InstallerRollbackFailed:
+                print("Rollback instructions also failed. Crashing program.")
+                sys.exit(1)
+            raise e.InstallerModuleFailed("Instructions failed. Rolling back")
 
 
 def create_file(module: m.Module):
@@ -172,10 +222,3 @@ def create_folder(module: m.Module):
     """
     print("Creating folder: {name}...".format(name=module.display))
     raise NotImplementedError
-
-
-module_install_functions = {
-    "app": install_module,
-    "file": create_file,
-    "folder": create_folder,
-}
