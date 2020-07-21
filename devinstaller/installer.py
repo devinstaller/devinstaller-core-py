@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Tue 21 Jul 2020 17:57:10 IST
+# Last-Updated: Tue 21 Jul 2020 21:15:24 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -55,6 +55,7 @@ def main(module_map: m.ModuleMapType, requirements_list: List[str]) -> None:
     """
     for module_name in requirements_list:
         traverse(module_map, module_name)
+    return None
 
 
 @typechecked
@@ -76,6 +77,7 @@ def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
         )
     if module.status is None:
         module.status = "in progress"
+        # TODO Refactor both requires and optionals into separate function
         if module.requires is not None:
             for neighbour in module.requires and module.status != "failed":
                 traverse(module_map, neighbour)
@@ -93,8 +95,10 @@ def traverse(module_map: m.ModuleMapType, module_name: str) -> None:
                     )
         else:
             module.status = execute(module_map, module_name)
+    return None
 
 
+@typechecked
 def execute(module_map: m.ModuleMapType, module_name: str) -> str:
     """Common entry point for installing all the modules.
 
@@ -110,9 +114,9 @@ def execute(module_map: m.ModuleMapType, module_name: str) -> str:
             with error code :ref:`error-code-S100`
     """
     module_install_functions = {
-        "app": install_module,
-        "file": create_file,
-        "folder": create_folder,
+        "app": install_app_module,
+        "file": install_file_module,
+        "folder": install_folder_module,
     }
     if module_name in module_map:
         module = module_map[module_name]
@@ -123,7 +127,8 @@ def execute(module_map: m.ModuleMapType, module_name: str) -> str:
     )
 
 
-def install_module(module: m.Module) -> str:
+@typechecked
+def install_app_module(module: m.Module) -> str:
     """The function which installs app modules
 
     Args:
@@ -136,6 +141,7 @@ def install_module(module: m.Module) -> str:
     installation_steps = append_if_not_none(module.init, module.command, module.config)
     try:
         install_steps(installation_steps)
+        # TODO This should return a status: `success`, `failed`
     except subprocess.CalledProcessError:
         print("Rolling back commands")
 
@@ -162,6 +168,7 @@ def append_if_not_none(
     return temp_list
 
 
+@typechecked
 def rollback_instructions(instructions: List[m.ModuleInstallInstruction]) -> None:
     """Rollbacks instructions used for the installation of a module
 
@@ -178,6 +185,7 @@ def rollback_instructions(instructions: List[m.ModuleInstallInstruction]) -> Non
                 c.run(step.rolback)
             except subprocess.CalledProcessError:
                 raise e.InstallerRollbackFailed
+    return None
 
 
 @typechecked
@@ -202,9 +210,11 @@ def install_steps(steps: List[m.ModuleInstallInstruction]) -> None:
                 print("Rollback instructions also failed. Crashing program.")
                 sys.exit(1)
             raise e.InstallerModuleFailed("Instructions failed. Rolling back")
+    return None
 
 
-def create_file(module: m.Module):
+@typechecked
+def install_file_module(module: m.Module) -> str:
     """The function which will create the required file
 
     Args:
@@ -214,7 +224,8 @@ def create_file(module: m.Module):
     raise NotImplementedError
 
 
-def create_folder(module: m.Module):
+@typechecked
+def install_folder_module(module: m.Module) -> str:
     """The function which will create the required folder
 
     Args:

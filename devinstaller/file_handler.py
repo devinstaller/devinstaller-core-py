@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Tue 21 Jul 2020 18:43:20 IST
+# Last-Updated: Tue 21 Jul 2020 21:09:11 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -101,6 +101,7 @@ def read_file_and_parse(file_path: str) -> Dict[Any, Any]:
     return parse_contents(read_file(file_path), file_format=file_format)
 
 
+@typechecked
 def download(url: str) -> Dict[Any, Any]:
     """Downloads file from the internet
 
@@ -113,6 +114,7 @@ def download(url: str) -> Dict[Any, Any]:
     # TODO
 
 
+@typechecked
 def check_and_download(file_path: str) -> Dict[Any, Any]:
     """Checks the input_str and downloads or reads the file.
 
@@ -151,6 +153,7 @@ def check_and_download(file_path: str) -> Dict[Any, Any]:
         )
 
 
+@typechecked
 def hash(input_data: str) -> str:
     """Hashes the input string and returns its digest
     """

@@ -60,6 +60,7 @@ def install(
     i.main(module_map, requirement_list)
 
 
+@typechecked
 def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[str]:
     """Ask the user for which modules to be installed
 
@@ -80,6 +81,7 @@ def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[st
     return data
 
 
+@typechecked
 def get_choice_text(name: str, description: Optional[str]) -> str:
     """Returns the choice text for displaying to the user
 

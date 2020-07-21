@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Tue 21 Jul 2020 18:05:56 IST
+# Last-Updated: Tue 21 Jul 2020 21:07:49 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,12 +40,14 @@ from typing import Any, Dict, List, Optional, Union, cast
 
 import cerberus
 import questionary
+from typeguard import typechecked
 
 # from devinstaller import commands as c
 from devinstaller import exceptions as e
 from devinstaller import models as m
 
 
+@typechecked
 def validate(
     document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
 ) -> m.ValidateResponseType:
@@ -67,6 +69,7 @@ def validate(
     return data
 
 
+@typechecked
 def get_validated_document(
     document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
 ) -> m.FullDocumentType:
@@ -89,6 +92,7 @@ def get_validated_document(
     raise e.SpecificationError(str(data["errors"]), "S100")
 
 
+@typechecked
 def remove_key_from_dict(input_dictionary: Dict[Any, Any], key: str) -> Dict[Any, Any]:
     """Remove the key and its value from the dictionary
 
@@ -108,6 +112,7 @@ def remove_key_from_dict(input_dictionary: Dict[Any, Any], key: str) -> Dict[Any
     return new_dictionary
 
 
+@typechecked
 def generate_module_map(
     modules_list: List[m.ModuleType], platform_object: m.PlatformType
 ) -> m.ModuleMapType:
@@ -137,6 +142,7 @@ def generate_module_map(
     return response
 
 
+@typechecked
 def create_module(module_object: m.ModuleType) -> m.Module:
     """Creates the module object for the `module_map` using the module dict.
 
@@ -168,6 +174,7 @@ def create_module(module_object: m.ModuleType) -> m.Module:
     return m.Module(**temp_obj)
 
 
+@typechecked
 def create_install_steps(
     module_object: m.ModuleType, step_name: str
 ) -> Union[List[m.ModuleInstallInstruction], m.ModuleInstallInstruction, None]:
@@ -192,6 +199,7 @@ def create_install_steps(
     return None
 
 
+@typechecked
 def create_module_install_instruction(
     instruction: Union[str, m.ModuleInstallInstructionType]
 ) -> m.ModuleInstallInstruction:
@@ -211,6 +219,7 @@ def create_module_install_instruction(
     return m.ModuleInstallInstruction(**instruction)
 
 
+@typechecked
 def ask_user_for_which_module(old_module: m.Module, new_module: m.Module) -> m.Module:
     """Sometimes the spec may have already declared two modules with same codename and for the same platform
 
@@ -242,6 +251,7 @@ def ask_user_for_which_module(old_module: m.Module, new_module: m.Module) -> m.M
     return new_module
 
 
+@typechecked
 def check_for_module_platform_compatibility(
     platform_object: m.PlatformType, module: m.ModuleType
 ) -> bool:
@@ -280,6 +290,7 @@ def check_for_module_platform_compatibility(
     return False
 
 
+@typechecked
 def get_platform_object(
     full_document: m.FullDocumentType, platform_code_name: Optional[str] = None
 ) -> m.PlatformType:
@@ -307,6 +318,7 @@ def get_platform_object(
     )
 
 
+@typechecked
 def get_mock_platform_object() -> m.PlatformType:
     """Returns a mock platform object
 
@@ -320,6 +332,7 @@ def get_mock_platform_object() -> m.PlatformType:
     }
 
 
+@typechecked
 def get_platform_object_from_codename(
     platform_list: List[m.PlatformType], platform_codename: str
 ) -> m.PlatformType:
@@ -339,6 +352,7 @@ def get_platform_object_from_codename(
     raise e.SpecificationError(platform_codename, "S100", "You are missing a platform")
 
 
+@typechecked
 def get_platform_object_using_system(
     platform_list: List[m.PlatformType], current_platform: m.PlatformInfoType
 ) -> m.PlatformType:
@@ -366,6 +380,7 @@ def get_platform_object_using_system(
     return ask_user_for_platform_object(platforms_supported)
 
 
+@typechecked
 def ask_user_for_platform_object(
     platforms_supported: List[m.PlatformType],
 ) -> m.PlatformType:
@@ -392,6 +407,7 @@ def ask_user_for_platform_object(
     return get_platform_object_from_codename(platforms_supported, selection)
 
 
+@typechecked
 def compare_version(version: str, expected_version: str) -> bool:
     """Compares the version of the current platform and the version info in the spec file.
 
@@ -406,6 +422,7 @@ def compare_version(version: str, expected_version: str) -> bool:
     return False
 
 
+@typechecked
 def compare_strings(*args: str) -> bool:
     """Compare all the strings with each other (case insensitive)
 
@@ -422,6 +439,7 @@ def compare_strings(*args: str) -> bool:
     return True
 
 
+@typechecked
 def get_current_platform() -> m.PlatformInfoType:
     """Get the current platform object
 
