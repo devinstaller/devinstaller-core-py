@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Tue 21 Jul 2020 18:16:49 IST
+# Last-Updated: Tue 21 Jul 2020 21:05:15 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -76,7 +76,7 @@ class Module:
     version: Optional[str] = None
 
 
-class ModuleInstallInstructionType(TypedDict):
+class ModuleInstallInstructionType(TypedDict, total=False):
     """Type declaration for the instruction for `init`, `command` and `config`
     """
 
@@ -84,7 +84,7 @@ class ModuleInstallInstructionType(TypedDict):
     rollback: Optional[str]
 
 
-class ModuleType(TypedDict):
+class ModuleType(TypedDict, total=False):
     """Type declaration for all the block
     """
 
@@ -113,7 +113,7 @@ class ModuleType(TypedDict):
     version: str
 
 
-class InterfaceModuleType(TypedDict):
+class InterfaceModuleType(TypedDict, total=False):
     """Type declaration for the `modules` in the interface block
     """
 
@@ -122,7 +122,7 @@ class InterfaceModuleType(TypedDict):
     after: str
 
 
-class InterfaceType(TypedDict):
+class InterfaceType(TypedDict, total=False):
     """Type declaration for the interface block
     """
 
@@ -137,7 +137,7 @@ class InterfaceType(TypedDict):
     modules: List[InterfaceModuleType]
 
 
-class PlatformInfoType(TypedDict):
+class PlatformInfoType(TypedDict, total=False):
     """Type declaration for the platform info
     """
 
@@ -145,7 +145,7 @@ class PlatformInfoType(TypedDict):
     version: str
 
 
-class PlatformType(TypedDict):
+class PlatformType(TypedDict, total=False):
     """Type declaration for the `platform` block
     """
 
@@ -154,7 +154,7 @@ class PlatformType(TypedDict):
     platform_info: PlatformInfoType
 
 
-class PlatformIncludeType(TypedDict):
+class PlatformIncludeType(TypedDict, total=False):
     """Type declaration for the platform include block
     """
 
@@ -162,7 +162,7 @@ class PlatformIncludeType(TypedDict):
     prog_file: str
 
 
-class FullDocumentType(TypedDict):
+class FullDocumentType(TypedDict, total=False):
     """Type declaration for the whole spec file
     """
 
