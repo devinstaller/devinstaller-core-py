@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Wed 22 Jul 2020 18:28:42 IST
+# Last-Updated: Wed 22 Jul 2020 19:23:10 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -42,7 +42,7 @@ spec_errors = {
     "S101": "There was an error parsing the `file_path` statement",
 }
 
-dev_errors = {"D100": "Schema object not found."}
+dev_errors = {"D100": "Schema object not found.", "D101": "Invalid error code"}
 
 
 class SpecificationError(Exception):
@@ -53,6 +53,9 @@ class SpecificationError(Exception):
     """
 
     def __init__(self, error: str, error_code: str = "S100", message: str = "") -> None:
+        allowed_error_codes = spec_errors.keys()
+        if error_code not in allowed_error_codes:
+            raise DevinstallerError("Error code", error_code="D101")
         self.error = error
         self.error_code = error_code
         self.message = message
@@ -75,6 +78,9 @@ class DevinstallerError(Exception):
     """
 
     def __init__(self, error: str, error_code: str, message: str = "") -> None:
+        allowed_error_codes = dev_errors.keys()
+        if error_code not in allowed_error_codes:
+            raise DevinstallerError("Error code", error_code="D101")
         self.error = error
         self.error_code = error_code
         self.message = message
