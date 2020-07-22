@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Tue 21 Jul 2020 18:27:31 IST
+# Last-Updated: Wed 22 Jul 2020 17:21:27 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -33,7 +33,6 @@
 # -----------------------------------------------------------------------------
 import pytest
 
-from devinstaller import exceptions as e
 from devinstaller import file_handler as f
 from devinstaller import models as m
 from devinstaller import schema as s
@@ -118,7 +117,13 @@ class TestCompareStrings:
 
 @pytest.fixture
 def full_document():
-    return f.read_file_and_parse("tests/data/module_map_1.toml")
+    data = {
+        "modules": [
+            {"name": "foo", "module_type": "app", "supported_platforms": ["macos"]},
+            {"name": "bar", "module_type": "app"},
+        ]
+    }
+    return data
 
 
 class TestGenerateModuleMap:
@@ -129,8 +134,8 @@ class TestGenerateModuleMap:
         platform_object = {"name": "macos"}
         module_map = s.generate_module_map(full_document["modules"], platform_object)
         expected_response = {
-            "foo": m.Module("foo", "app", "foo", "foo"),
-            "bar": m.Module("bar", "app", "bar", "bar"),
+            "foo": m.Module(name="foo", module_type="app", alias="foo", display="foo"),
+            "bar": m.Module(name="bar", module_type="app", alias="bar", display="bar"),
         }
         assert module_map == expected_response
 

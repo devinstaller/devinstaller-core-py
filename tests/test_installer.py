@@ -2,7 +2,6 @@ import shlex
 
 import pytest
 
-from devinstaller import exceptions as e
 from devinstaller import installer as i
 from devinstaller import models as m
 
@@ -51,7 +50,6 @@ class TestAppendUtility:
             m.ModuleInstallInstruction("b"),
             m.ModuleInstallInstruction("c"),
         ]
-        breakpoint()
         actual_response = i.append_if_not_none(mock_init, mock_command)
         assert expected_response == actual_response
 
@@ -76,3 +74,23 @@ class TestAppendUtility:
         expected_response = []
         actual_response = i.append_if_not_none(mock_init, mock_command)
         assert expected_response == actual_response
+
+
+@pytest.fixture
+def mock_module_map():
+    module_map = {
+        "a": m.Module(
+            name="a", module_type="app", requires=["b", "c"], alias="a", display="a"
+        ),
+        "b": m.Module(
+            name="b", module_type="app", optionals=["d"], alias="b", display="b"
+        ),
+        "c": m.Module(name="c", module_type="app", alias="c", display="c"),
+        "d": m.Module(name="d", module_type="app", alias="d", display="d"),
+    }
+    return module_map
+
+
+class TestTraverse:
+    def test_1(self, mock_module_map):
+        i.main(module_map=mock_module_map, requirements_list=["a"])

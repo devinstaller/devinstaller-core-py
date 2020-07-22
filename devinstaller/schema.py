@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Tue 21 Jul 2020 21:07:49 IST
+# Last-Updated: Wed 22 Jul 2020 17:17:52 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -46,10 +46,12 @@ from typeguard import typechecked
 from devinstaller import exceptions as e
 from devinstaller import models as m
 
+DEVFILE_SCHEMA = m.schema()
+
 
 @typechecked
 def validate(
-    document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
+    document: Dict[Any, Any], schema: Dict[Any, Any] = DEVFILE_SCHEMA
 ) -> m.ValidateResponseType:
     """Validate the given document with the schema
 
@@ -126,7 +128,7 @@ def generate_module_map(
     Returns:
         The `module_map` object for that specific platform
     """
-    response: m.ModuleMapType = m.ModuleMapType({})
+    response: m.ModuleMapType = {}
     for module_object in modules_list:
         if check_for_module_platform_compatibility(platform_object, module_object):
             assert "name" in module_object

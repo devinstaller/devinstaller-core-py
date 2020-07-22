@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Tue 21 Jul 2020 21:05:15 IST
+# Last-Updated: Wed 22 Jul 2020 13:35:15 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -205,7 +205,7 @@ class ValidateResponseType(TypedDict):
     errors: Dict[Any, Any]
 
 
-ModuleMapType = NewType("ModuleMapType", Dict[str, Module])
+ModuleMapType = Dict[str, Module]
 
 ModuleTypes = ["app", "file", "folder", "link", "group", "phony"]
 """Types of modules

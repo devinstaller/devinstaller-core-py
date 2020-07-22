@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed 22 Jul 2020 02:48:02 IST
+# Last-Updated: Wed 22 Jul 2020 13:49:41 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -116,7 +116,8 @@ def traverse(
         orphan_list: The list of modules which are not used by any other modules
 
     Raises:
-        SpecificationError if one of your module requires but the required module itself is not present
+        SpecificationError
+            if one of your module requires but the required module itself is not present
     """
     try:
         module = module_map[module_name]
@@ -132,10 +133,10 @@ def traverse(
         return orphan_list
     module.status = "in progress"
     orphan_list = traverse_requires(
-        module_map=module_map, module=module_map, orphan_list=orphan_list
+        module_map=module_map, module=module, orphan_list=orphan_list
     )
     orphan_list = traverse_optionals(
-        module_map=module_map, module=module_map, orphan_list=orphan_list
+        module_map=module_map, module=module, orphan_list=orphan_list
     )
     orphan_list = traverse_install(module, orphan_list)
     return orphan_list
@@ -229,11 +230,12 @@ def append_if_not_none(
 ) -> List[m.ModuleInstallInstruction]:
     """Returns a list with all the data combined.
 
-    This is used to combine the `init`, `command` and `config` instructions so that they can be run in a single function.
+    This is used to combine the `init`, `command` and `config` instructions so
+    that they can be run in a single function.
 
     Args:
-        Any number of arguments. The arguments are expected to be of either ModuleInstallInstruction
-        or list of ModuleInstallInstruction
+        Any number of arguments. The arguments are expected to be of either
+        ModuleInstallInstruction or list of ModuleInstallInstruction
     """
     temp_list = []
     for i in data:
@@ -253,7 +255,8 @@ def rollback_instructions(instructions: List[m.ModuleInstallInstruction]) -> Non
         List of install instructions
 
     Raises:
-        ModuleRollbackFailed if the rollback instructions fails
+        ModuleRollbackFailed
+            if the rollback instructions fails
     """
     for step in instructions:
         if step.rollback is not None:
@@ -273,8 +276,10 @@ def install_steps(steps: List[m.ModuleInstallInstruction]) -> None:
         steps: The list of steps which needs to be executed
 
     Raises:
-        ModuleInstallationFailed if the installation of the module fails
-        ModuleRollbackFailed if the rollback command fails
+        ModuleInstallationFailed
+            if the installation of the module fails
+        ModuleRollbackFailed
+            if the rollback command fails
     """
     if steps == []:
         return None
