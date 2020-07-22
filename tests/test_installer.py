@@ -80,7 +80,7 @@ class TestAppendUtility:
 def mock_module_map():
     module_map = {
         "a": m.Module(
-            name="a", module_type="app", requires=["b", "c"], alias="a", display="a"
+            name="a", module_type="app", requires=["c"], alias="a", display="a"
         ),
         "b": m.Module(
             name="b", module_type="app", optionals=["d"], alias="b", display="b"
@@ -94,3 +94,7 @@ def mock_module_map():
 class TestTraverse:
     def test_1(self, mock_module_map):
         i.main(module_map=mock_module_map, requirements_list=["a"])
+        assert "success" == mock_module_map["a"].status
+        assert None == mock_module_map["b"].status
+        assert "success" == mock_module_map["c"].status
+        assert None == mock_module_map["d"].status

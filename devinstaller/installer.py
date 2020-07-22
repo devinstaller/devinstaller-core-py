@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed 22 Jul 2020 13:49:41 IST
+# Last-Updated: Wed 22 Jul 2020 18:31:12 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,9 +34,8 @@
 # -----------------------------------------------------------------------------
 
 """Handles the main how to install the modules logic"""
-import subprocess
 import sys
-from typing import List, Set, Union
+from typing import Callable, Dict, List, Set, Union
 
 import questionary
 from typeguard import typechecked
@@ -44,6 +43,7 @@ from typeguard import typechecked
 from devinstaller import commands as c
 from devinstaller import exceptions as e
 from devinstaller import models as m
+from devinstaller import utilities as u
 
 
 @typechecked
@@ -72,7 +72,7 @@ def uninstall_modules(orphan_list: Set[str], module_map: m.ModuleMapType) -> Non
         orphan_list: The "list" of modules which are not used by any other modules
         module_map: The module map for the current platform
     """
-    module_uninstall_functions = {
+    module_uninstall_functions: Dict[str, Callable[[m.Module], None]] = {
         "app": uninstall_app_module,
         "file": uninstall_file_module,
         "folder": uninstall_folder_module,
@@ -98,7 +98,7 @@ def ask_user_for_uninstalling_orphan_modules(orphan_list: Set[str]) -> bool:
     )
     orphan_module_names = ", ".join(name for name in orphan_list)
     print(f"These are the modules: {orphan_module_names}")
-    response = questionary.confirm("Do you want to uninstall?").ask()
+    response = u.ask_user_confirmation("Do you want to uninstall?")
     return response
 
 
@@ -205,7 +205,7 @@ def install_module(module: m.Module) -> None:
         SpecificationError
             with error code :ref:`error-code-S100`
     """
-    module_install_functions = {
+    module_install_functions: Dict[str, Callable[[m.Module], None]] = {
         "app": install_app_module,
         "file": install_file_module,
         "folder": install_folder_module,
@@ -263,7 +263,7 @@ def rollback_instructions(instructions: List[m.ModuleInstallInstruction]) -> Non
             try:
                 print(f"Rolling back `{step.install}` using `{step.rollback}`")
                 c.run(step.rollback)
-            except subprocess.CalledProcessError:
+            except e.CommandFailed:
                 raise e.ModuleRollbackFailed
     return None
 
@@ -286,7 +286,7 @@ def install_steps(steps: List[m.ModuleInstallInstruction]) -> None:
     for index, step in enumerate(steps):
         try:
             c.run(step.install)
-        except subprocess.CalledProcessError:
+        except e.CommandFailed:
             revert_list = steps[:index]
             revert_list.reverse()
             try:
@@ -371,13 +371,13 @@ def install_folder_module(module: m.Module) -> None:
     raise NotImplementedError
 
 
-def install_link_module():
+def install_link_module(module: m.Module) -> None:
     pass
 
 
-def install_group_module():
+def install_group_module(module: m.Module) -> None:
     pass
 
 
-def install_phony_module():
+def install_phony_module(module: m.Module) -> None:
     pass

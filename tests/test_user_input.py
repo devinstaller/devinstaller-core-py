@@ -6,10 +6,11 @@ from devinstaller import models as m
 
 @pytest.fixture
 def mock_questionary(mocker):
-    return mocker.patch("questionary.checkbox")
+    return mocker.patch("devinstaller.utilities.ask_user_for_multi_select")
 
 
-def test_ask_user_for_req_list(mock_questionary, mocker):
+@pytest.fixture
+def mock_module_objects():
     module_objects = [
         m.Module(
             name="foo",
@@ -22,8 +23,11 @@ def test_ask_user_for_req_list(mock_questionary, mocker):
             name="bar", module_type="app", alias="bar alias", display="Bar as displayed"
         ),
     ]
-    app.ask_user_for_the_requirement_list(module_objects)
-    mock_questionary.assert_called_with(
-        "Do you mind selected a few for me?",
-        choices=["Foo as displayed - Foo description", "Bar as displayed"],
-    )
+    return module_objects
+
+
+def test_ask_user_for_req_list(mock_questionary, mock_module_objects):
+    mock_questionary.return_value = ["Bar as displayed"]
+    actual_response = app.ask_user_for_the_requirement_list(mock_module_objects)
+    expected_response = ["bar alias"]
+    assert expected_response == actual_response

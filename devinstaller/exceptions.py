@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Tue 21 Jul 2020 21:34:27 IST
+# Last-Updated: Wed 22 Jul 2020 18:28:42 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,6 +35,7 @@
 
 """Houses all the custom exceptions in the app
 """
+import subprocess
 
 spec_errors = {
     "S100": "Your devfile is not a valid.",
@@ -95,3 +96,9 @@ class ModuleRollbackFailed(Exception):
 
 class ModuleInstallationFailed(Exception):
     pass
+
+
+class CommandFailed(subprocess.CalledProcessError):
+    """Wrapper exception around the standard `subprocess.CalledProcessError`
+    exception.
+    """

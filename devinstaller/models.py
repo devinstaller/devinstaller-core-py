@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed 22 Jul 2020 13:35:15 IST
+# Last-Updated: Wed 22 Jul 2020 18:39:25 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,7 +35,7 @@
 
 """All the models including the schema as well as graph models"""
 from dataclasses import dataclass
-from typing import Any, Dict, List, NewType, Optional, TypedDict, Union
+from typing import Any, Dict, List, Literal, Optional, TypedDict, Union
 
 
 @dataclass
@@ -74,6 +74,11 @@ class Module:
     target: Optional[str] = None
     url: Optional[str] = None
     version: Optional[str] = None
+
+    def __str__(self) -> str:
+        if self.description is None:
+            return f"{self.display}"
+        return f"{self.display} - {self.description}"
 
 
 class ModuleInstallInstructionType(TypedDict, total=False):
@@ -213,6 +218,11 @@ ModuleTypes = ["app", "file", "folder", "link", "group", "phony"]
 
 ModuleInstallStatus = ["success", "failed", "in progress"]
 """Status allowed for each modules. None is also included in Moduel status
+"""
+
+ModuleInstallInstructionKeys = Literal["init", "command", "config"]
+"""These are the keys allowed for converting installation steps into
+`ModuleInstallInstruction` object
 """
 
 AppModuleFields = [

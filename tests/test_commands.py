@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 03:00:14 IST
-# Last-Updated: Tue 21 Jul 2020 18:04:23 IST
+# Last-Updated: Wed 22 Jul 2020 18:08:17 IST
 #
 # test_commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,12 +36,12 @@ import shlex
 import pytest
 
 from devinstaller import commands as c
+from devinstaller import exceptions as e
 
 
-@pytest.mark.xfail
 def test_command_run(fake_process):
-    command = "dev --version"
-    mock_command = shlex.split(command)
-    mock_response = shlex.split(expected_response)
-    fake_process.register_subprocess(mock_command, stdout=mock_response)
-    c.run(command)
+    with pytest.raises(e.CommandFailed):
+        command = "dev --version"
+        mock_command = shlex.split(command)
+        fake_process.register_subprocess(mock_command, returncode=1)
+        c.run(command)

@@ -2,7 +2,6 @@
 """
 from typing import Any, Dict, List, Optional
 
-import questionary
 from typeguard import typechecked
 
 from devinstaller import exceptions as e
@@ -10,6 +9,7 @@ from devinstaller import file_handler as f
 from devinstaller import installer as i
 from devinstaller import models as m
 from devinstaller import schema as s
+from devinstaller import utilities as u
 
 
 @typechecked
@@ -45,7 +45,7 @@ def install(
             with error code :ref:`error-code-D100`
     """
     if file_path is not None:
-        schema_object: Dict[Any, Any] = f.read(file_path)
+        schema_object: Dict[Any, Any] = f.read_file_and_parse(file_path=file_path)
     elif spec_object is not None:
         schema_object = spec_object
     else:
@@ -72,29 +72,13 @@ def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[st
     """
     print("Hey... You haven't selected which module to be installed")
     title = "Do you mind selected a few for me?"
-    choices = {get_choice_text(m.display, m.description): m for m in module_objects}
-    selections = questionary.checkbox(title, choices=list(choices.keys())).ask()
+    choices = {str(mod): mod for mod in module_objects}
+    selections = u.ask_user_for_multi_select(title, choices=list(choices.keys()))
     data: List[str] = []
     for _s in selections:
         _m = choices[_s]
         data.append(_m.alias)
     return data
-
-
-@typechecked
-def get_choice_text(name: str, description: Optional[str]) -> str:
-    """Returns the choice text for displaying to the user
-
-    Args:
-        name: Name of the module
-        description: Optional description you want to print
-
-    Returns:
-        Text which is displayed to the user
-    """
-    if description is None:
-        return f"{name}"
-    return f"{name} - {description}"
 
 
 def show(file_name: str) -> None:

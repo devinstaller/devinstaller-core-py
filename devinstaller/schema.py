@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Wed 22 Jul 2020 17:17:52 IST
+# Last-Updated: Wed 22 Jul 2020 18:34:35 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -39,12 +39,12 @@ import platform
 from typing import Any, Dict, List, Optional, Union, cast
 
 import cerberus
-import questionary
 from typeguard import typechecked
 
 # from devinstaller import commands as c
 from devinstaller import exceptions as e
 from devinstaller import models as m
+from devinstaller import utilities as u
 
 DEVFILE_SCHEMA = m.schema()
 
@@ -178,7 +178,7 @@ def create_module(module_object: m.ModuleType) -> m.Module:
 
 @typechecked
 def create_install_steps(
-    module_object: m.ModuleType, step_name: str
+    module_object: m.ModuleType, step_name: m.ModuleInstallInstructionKeys
 ) -> Union[List[m.ModuleInstallInstruction], m.ModuleInstallInstruction, None]:
     """Creates either an object or a list of objects of class `ModuleInstallInstruction`.
 
@@ -247,7 +247,7 @@ def ask_user_for_which_module(old_module: m.Module, new_module: m.Module) -> m.M
     print(new_module)
     title = "Do you mind selecting one?"
     choices = ["First one", "Second one"]
-    selection = questionary.select(title, choices=choices).ask()
+    selection = u.ask_user_to_select(title, choices)
     if selection == "First one":
         return old_module
     return new_module
@@ -405,7 +405,7 @@ def ask_user_for_platform_object(
     )
     title = "Do you mind narrowring it down to one for me?"
     choices = [p["name"] for p in platforms_supported]
-    selection = questionary.select(title, choices=choices).ask()
+    selection = u.ask_user_to_select(title, choices)
     return get_platform_object_from_codename(platforms_supported, selection)
 
 
