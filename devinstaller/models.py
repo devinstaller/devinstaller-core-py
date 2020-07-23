@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Wed 22 Jul 2020 18:39:25 IST
+# Last-Updated: Fri 24 Jul 2020 02:08:20 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,54 +34,18 @@
 # -----------------------------------------------------------------------------
 
 """All the models including the schema as well as graph models"""
-from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, TypedDict, Union
 
-
-@dataclass
-class ModuleInstallInstruction:
-    """The class used to serialize`init`, `command` and `config` commands into objects
-    """
-
-    install: str
-    rollback: Optional[str] = None
-
-
-@dataclass
-class Module:
-    """The class which will be used by all the modules
-    """
-
-    # pylint: disable=too-many-instance-attributes
-    name: str
-    module_type: str
-    alias: str
-    display: str
-    command: Optional[ModuleInstallInstruction] = None
-    config: Optional[List[ModuleInstallInstruction]] = None
-    content: Optional[str] = None
-    description: Optional[str] = None
-    executable: Optional[str] = None
-    init: Optional[List[ModuleInstallInstruction]] = None
-    optionals: Optional[List[str]] = None
-    owner: Optional[str] = None
-    parent_dir: Optional[str] = None
-    permission: Optional[str] = None
-    requires: Optional[List[str]] = None
-    source: Optional[str] = None
-    status: Optional[str] = None
-    symbolic: Optional[bool] = None
-    target: Optional[str] = None
-    url: Optional[str] = None
-    version: Optional[str] = None
-
-    def __str__(self) -> str:
-        if self.description is None:
-            return f"{self.display}"
-        return f"{self.display} - {self.description}"
+from devinstaller.app_module import AppModule
+from devinstaller.file_module import FileModule
+from devinstaller.folder_module import FolderModule
+from devinstaller.group_module import GroupModule
+from devinstaller.link_module import LinkModule
+from devinstaller.module_dependency import ModuleDependency
+from devinstaller.phony_module import PhonyModule
 
 
-class ModuleInstallInstructionType(TypedDict, total=False):
+class TypeModuleInstallInstruction(TypedDict, total=False):
     """Type declaration for the instruction for `init`, `command` and `config`
     """
 
@@ -89,19 +53,19 @@ class ModuleInstallInstructionType(TypedDict, total=False):
     rollback: Optional[str]
 
 
-class ModuleType(TypedDict, total=False):
+class TypeCommonModule(TypedDict, total=False):
     """Type declaration for all the block
     """
 
     alias: str
-    command: Union[ModuleInstallInstructionType, str]
-    config: List[Union[ModuleInstallInstructionType, str]]
+    command: Union[TypeModuleInstallInstruction, str]
+    config: List[Union[TypeModuleInstallInstruction, str]]
     content: str
     create: bool
     description: str
     display: str
     executable: str
-    init: List[Union[ModuleInstallInstructionType, str]]
+    init: List[Union[TypeModuleInstallInstruction, str]]
     module_type: str
     name: str
     optionals: List[str]
@@ -118,7 +82,7 @@ class ModuleType(TypedDict, total=False):
     version: str
 
 
-class InterfaceModuleType(TypedDict, total=False):
+class TypeInterfaceModule(TypedDict, total=False):
     """Type declaration for the `modules` in the interface block
     """
 
@@ -127,7 +91,7 @@ class InterfaceModuleType(TypedDict, total=False):
     after: str
 
 
-class InterfaceType(TypedDict, total=False):
+class TypeInterface(TypedDict, total=False):
     """Type declaration for the interface block
     """
 
@@ -139,10 +103,10 @@ class InterfaceType(TypedDict, total=False):
     requires: List[str]
     before_each: str
     after_each: str
-    modules: List[InterfaceModuleType]
+    modules: List[TypeInterfaceModule]
 
 
-class PlatformInfoType(TypedDict, total=False):
+class TypePlatformInfo(TypedDict, total=False):
     """Type declaration for the platform info
     """
 
@@ -150,16 +114,16 @@ class PlatformInfoType(TypedDict, total=False):
     version: str
 
 
-class PlatformType(TypedDict, total=False):
+class TypePlatform(TypedDict, total=False):
     """Type declaration for the `platform` block
     """
 
     name: str
     description: str
-    platform_info: PlatformInfoType
+    platform_info: TypePlatformInfo
 
 
-class PlatformIncludeType(TypedDict, total=False):
+class TypePlatformInclude(TypedDict, total=False):
     """Type declaration for the platform include block
     """
 
@@ -167,7 +131,7 @@ class PlatformIncludeType(TypedDict, total=False):
     prog_file: str
 
 
-class FullDocumentType(TypedDict, total=False):
+class TypeFullDocument(TypedDict, total=False):
     """Type declaration for the whole spec file
     """
 
@@ -176,32 +140,13 @@ class FullDocumentType(TypedDict, total=False):
     description: str
     url: str
     prog_file: str
-    include: List[PlatformIncludeType]
-    platforms: List[PlatformType]
-    modules: List[ModuleType]
-    interface: List[InterfaceType]
+    include: List[TypePlatformInclude]
+    platforms: List[TypePlatform]
+    modules: List[TypeCommonModule]
+    interface: List[TypeInterface]
 
 
-class CommandRunResponseType(TypedDict):
-    """Type declaration for response from the `command.run`
-    """
-
-    args: List[str]
-    returncode: int
-    stdout: str
-    stderr: str
-
-
-class ModuleInstalledResponseType(TypedDict):
-    """Type declaration for the response of the module install
-    """
-
-    init: Optional[List[CommandRunResponseType]]
-    config: Optional[List[CommandRunResponseType]]
-    command: Optional[CommandRunResponseType]
-
-
-class ValidateResponseType(TypedDict):
+class TypeValidateResponse(TypedDict):
     """Type declaration for the response of the `devinstaller.schema.validate` function
     """
 
@@ -210,11 +155,11 @@ class ValidateResponseType(TypedDict):
     errors: Dict[Any, Any]
 
 
-ModuleMapType = Dict[str, Module]
+TypeAnyModule = Union[
+    AppModule, FileModule, FolderModule, LinkModule, GroupModule, PhonyModule
+]
 
-ModuleTypes = ["app", "file", "folder", "link", "group", "phony"]
-"""Types of modules
-"""
+TypeModuleMap = Dict[str, TypeAnyModule]
 
 ModuleInstallStatus = ["success", "failed", "in progress"]
 """Status allowed for each modules. None is also included in Moduel status
@@ -223,114 +168,6 @@ ModuleInstallStatus = ["success", "failed", "in progress"]
 ModuleInstallInstructionKeys = Literal["init", "command", "config"]
 """These are the keys allowed for converting installation steps into
 `ModuleInstallInstruction` object
-"""
-
-AppModuleFields = [
-    "alias",
-    "command",
-    "config",
-    "create" "description",
-    "display",
-    "executable",
-    "init",
-    "module_type",
-    "name",
-    "optionals",
-    "requires",
-    "rollback" "supported_platforms",
-    "url",
-    "version",
-]
-"""Fields allowed for module with type `app`
-"""
-
-FileModuleFields = [
-    "alias",
-    "config",
-    "content",
-    "create",
-    "description",
-    "display",
-    "init",
-    "module_type",
-    "name",
-    "optionals",
-    "owner",
-    "parent_dir",
-    "requires",
-    "rollback",
-    "supported_platforms",
-    "url",
-]
-"""Fields allowed for module with type `file`
-"""
-
-FolderModuleFields = [
-    "alias",
-    "config",
-    "create",
-    "description",
-    "display",
-    "init",
-    "module_type",
-    "name",
-    "optionals",
-    "owner",
-    "parent_dir",
-    "permission",
-    "requires",
-    "rollback",
-    "supported_platforms",
-    "url",
-]
-"""Fields allowed for module with type `folder`
-"""
-
-LinkModuleFields = [
-    "alias",
-    "config",
-    "description",
-    "display",
-    "init",
-    "module_type",
-    "name",
-    "optionals",
-    "requires",
-    "rollback",
-    "source",
-    "supported_platforms",
-    "symbolic",
-    "target",
-    "url",
-]
-"""Fields allowed for module with type `link`
-"""
-
-GroupModuleFields = [
-    "alias",
-    "description",
-    "display",
-    "module_type",
-    "name",
-    "optionals",
-    "requires",
-    "supported_platforms",
-    "url",
-]
-"""Fields allowed for module with type `group`
-"""
-
-PhonyModuleFields = [
-    "alias",
-    "config",
-    "description",
-    "display",
-    "module_type",
-    "name",
-    "supported_platforms",
-    "url",
-]
-"""Fields allowed for module with type `phony`
 """
 
 
@@ -355,26 +192,26 @@ def module() -> Dict[str, Any]:
                 "init": {
                     "type": "list",
                     "schema": {
-                        "type": ["string", "dict"],
+                        "type": "dict",
                         "schema": {
-                            "install": {"type": "string"},
+                            "install": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
                         },
                     },
                 },
                 "command": {
-                    "type": ["string", "dict"],
+                    "type": "dict",
                     "schema": {
-                        "install": {"type": "string"},
+                        "install": {"type": "string", "required": True},
                         "rollback": {"type": "string"},
                     },
                 },
                 "config": {
                     "type": "list",
                     "schema": {
-                        "type": ["string", "dict"],
+                        "type": "dict",
                         "schema": {
-                            "install": {"type": "string"},
+                            "install": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
                         },
                     },

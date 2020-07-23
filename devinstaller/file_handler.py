@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Thu 23 Jul 2020 01:21:23 IST
+# Last-Updated: Fri 24 Jul 2020 01:31:51 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -151,7 +151,7 @@ def check_and_download(file_path: str) -> Dict[Any, Any]:
         assert result is not None
         method = result.group(1)
         file_path = result.group(2)
-        function = {"file": read_file_and_parse, "url": download}
+        function = {"file": read_file_and_parse, "url": download_url}
         file_contents = function[method](file_path)
         data = {"digest": hash(str(file_contents)), "contents": file_contents}
         return data

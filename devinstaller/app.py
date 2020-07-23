@@ -1,12 +1,11 @@
 """The main module which is used by CLI and Library
 """
-from typing import Any, Dict, List, Optional
+from typing import Any, Dict, List, Optional, Set
 
 from typeguard import typechecked
 
 from devinstaller import exceptions as e
 from devinstaller import file_handler as f
-from devinstaller import installer as i
 from devinstaller import models as m
 from devinstaller import schema as s
 from devinstaller import utilities as u
@@ -52,16 +51,24 @@ def install(
         raise e.DevinstallerError("Schema object not found", "D100")
     validated_schema_object = s.get_validated_document(schema_object)
     platform_object = s.get_platform_object(validated_schema_object, platform_codename)
-    module_map = s.generate_module_map(
-        validated_schema_object["modules"], platform_object
+    dependency_graph = m.ModuleDependency(
+        module_list=validated_schema_object["modules"], platform_object=platform_object
     )
     if requirements_list is None:
-        requirement_list = ask_user_for_the_requirement_list(list(module_map.values()))
-    i.main(module_map, requirement_list)
+        requirement_list = ask_user_for_the_requirement_list(
+            dependency_graph.module_list()
+        )
+    dependency_graph.install(requirement_list)
+    orphan_modules_names = dependency_graph.orphan_modules
+    if orphan_modules_names != set():
+        if ask_user_for_uninstalling_orphan_modules(orphan_modules_names):
+            dependency_graph.uninstall_orphan_modules()
 
 
 @typechecked
-def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[str]:
+def ask_user_for_the_requirement_list(
+    module_objects: List[m.TypeAnyModule],
+) -> List[str]:
     """Ask the user for which modules to be installed
 
     Args:
@@ -77,6 +84,7 @@ def ask_user_for_the_requirement_list(module_objects: List[m.Module]) -> List[st
     data: List[str] = []
     for _s in selections:
         _m = choices[_s]
+        assert _m.alias is not None
         data.append(_m.alias)
     return data
 
@@ -85,3 +93,20 @@ def show(file_name: str) -> None:
     """TODO
     """
     # TODO Write the function to show all the modules defined in the spec file
+
+
+@typechecked
+def ask_user_for_uninstalling_orphan_modules(orphan_list: Set[str]) -> bool:
+    """Asks user for confirmation for the uninstallation of the orphan modules.
+
+    Args:
+        orphan_list: The "list" of modules which are not used by any other modules
+    """
+    print(
+        "Because of failed installation of some modules, there are some"
+        "modules which are installed but not required by any other modules"
+    )
+    orphan_module_names = ", ".join(name for name in orphan_list)
+    print(f"These are the modules: {orphan_module_names}")
+    response = u.ask_user_confirmation("Do you want to uninstall?")
+    return response

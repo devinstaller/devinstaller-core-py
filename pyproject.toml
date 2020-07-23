@@ -27,6 +27,7 @@ anymarkup = "^0.8.1"
 typeguard = "^2.9.1"
 questionary = "^1.5.2"
 requests = "^2.24.0"
+pydantic = "^1.6.1"
 
 [tool.poetry.dev-dependencies]
 sphinx = "^3.0.4"
