@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon  1 Jun 2020 14:12:09 IST
-# Last-Updated: Wed 22 Jul 2020 18:31:12 IST
+# Last-Updated: Wed 22 Jul 2020 19:41:37 IST
 #
 # installer.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -146,16 +146,25 @@ def traverse(
 def traverse_requires(
     module_map: m.ModuleMapType, module: m.Module, orphan_list: Set[str]
 ) -> Set[str]:
-    if module.requires is not None:
-        for index, child in enumerate(module.requires):
-            orphan_list = traverse(module_map, child, orphan_list)
-            if module_map[child].status == "failed":
-                print(
-                    f"The module {child} in the requires of {module.alias} has failed"
-                )
-                module.status = "failed"
-                orphan_list.update(module.requires[:index])
-                return orphan_list
+    """Recusively traverse the requires field of the module for its dependencies
+
+    Args:
+        module_map: The module map for the current platform
+        module: The module you want to traverse
+        orphan_list: The list of modules not used by any other modules
+
+    Returns:
+        The updated orphan_list
+    """
+    if module.requires is None:
+        return orphan_list
+    for index, child in enumerate(module.requires):
+        orphan_list = traverse(module_map, child, orphan_list)
+        if module_map[child].status == "failed":
+            print(f"The module {child} in the requires of {module.alias} has failed")
+            module.status = "failed"
+            orphan_list.update(module.requires[:index])
+            return orphan_list
     return orphan_list
 
 
@@ -163,25 +172,41 @@ def traverse_requires(
 def traverse_optionals(
     module_map: m.ModuleMapType, module: m.Module, orphan_list: Set[str]
 ) -> Set[str]:
-    if module.optionals is not None:
-        for child in module.optionals:
-            orphan_list = traverse(module_map, child, orphan_list)
-            if module_map[child].status == "failed":
-                print(
-                    f"The module {child} in the optionals of {module.alias} has failed, but the installation for remaining modules will continue"
-                )
+    """Recusively traverse the optionals field of the module for its dependencies
+
+    Args:
+        module_map: The module map for the current platform
+        module: The module you want to traverse
+        orphan_list: The list of modules not used by any other modules
+
+    Returns:
+        The updated orphan_list
+    """
+    if module.optionals is None:
+        return orphan_list
+    for child in module.optionals:
+        orphan_list = traverse(module_map, child, orphan_list)
+        if module_map[child].status == "failed":
+            print(
+                f"The module {child} in the optionals of {module.alias} has failed, "
+                "but the installation for remaining modules will continue"
+            )
     return orphan_list
 
 
 @typechecked
 def traverse_install(module: m.Module, orphan_list: Set[str]) -> Set[str]:
+    """The main function which handles the installation as well as its final installation
+    status
+    """
     try:
         install_module(module)
         module.status = "success"
         return orphan_list
     except e.ModuleInstallationFailed:
         print(
-            f"The installation for the module: {module.alias} failed. And all the instructions has been rolled back."
+            f"The installation for the module: {module.alias} failed. "
+            "And all the instructions has been rolled back."
         )
         module.status = "failed"
         if module.requires is not None:

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Tue 21 Jul 2020 21:09:11 IST
+# Last-Updated: Thu 23 Jul 2020 01:21:23 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,6 +40,7 @@ import re
 from typing import Any, Dict
 
 import anymarkup
+import requests
 from typeguard import typechecked
 
 from devinstaller import exceptions as e
@@ -102,16 +103,25 @@ def read_file_and_parse(file_path: str) -> Dict[Any, Any]:
 
 
 @typechecked
-def download(url: str) -> Dict[Any, Any]:
+def download_url(url: str) -> str:
     """Downloads file from the internet
 
     Args:
         url: Url of the file
 
     Returns:
-        Python object
+        String representation of file
     """
-    # TODO
+    response = requests.get(url)
+    return response.content.decode("utf-8")
+
+
+@typechecked
+def write_file(file_content: str, file_name: str) -> None:
+    """Downloads file from the internet and saves to file
+    """
+    with open(file_name, "w") as f:
+        f.write(file_content)
 
 
 @typechecked

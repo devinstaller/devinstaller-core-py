@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Wed 22 Jul 2020 18:34:35 IST
+# Last-Updated: Wed 22 Jul 2020 20:09:04 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -55,6 +55,8 @@ def validate(
 ) -> m.ValidateResponseType:
     """Validate the given document with the schema
 
+    TODO update docs
+
     Args:
         document: Python object which has to be validated
         schema: It can also take in custom schema for validation. Default is the Full file schema
@@ -76,6 +78,8 @@ def get_validated_document(
     document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
 ) -> m.FullDocumentType:
     """Validate the given document with the schema
+
+    TODO update docs
 
     Args:
         document: Python object which has to be validated
@@ -428,10 +432,9 @@ def compare_version(version: str, expected_version: str) -> bool:
 def compare_strings(*args: str) -> bool:
     """Compare all the strings with each other (case insensitive)
 
-    Args:
-        Any number of string arguments.
-        At least one argument required else it will return False.
-        If one argument then it will return True.
+    Takes in any number of string arguments.
+    At least one argument required else it will return False.
+    If one argument then it will return True.
 
     Returns:
         True if all matches else False

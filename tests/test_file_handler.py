@@ -23,3 +23,7 @@ class TestParseAndDownload:
     def test_local(self, mock_read):
         f.check_and_download("file: ~/devfile.toml")
         mock_read.assert_called_with("~/devfile.toml")
+
+
+def test_download():
+    pass
