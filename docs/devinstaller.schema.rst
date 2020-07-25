@@ -1,4 +1,4 @@
-devinstaller.schema module
+Schema
 ==========================
 
 .. automodule:: devinstaller.schema

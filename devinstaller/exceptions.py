@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Wed 22 Jul 2020 19:23:10 IST
+# Last-Updated: Sat 25 Jul 2020 20:53:28 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -50,6 +50,12 @@ class SpecificationError(Exception):
 
     These errors are unique to the specification. All programs implementing devinstaller
     specification raises the same error.
+
+    If the `error_code` itself is not valid then it will raise `DevinstallerError` exception
+
+    Raises:
+        DevinstallerError:
+            with error code :ref:`error-code-D101`
     """
 
     def __init__(self, error: str, error_code: str = "S100", message: str = "") -> None:
@@ -75,6 +81,12 @@ class DevinstallerError(Exception):
     """Exception when there is a runtime error.
 
     These errors are unique to the implementaion of devinstaller runtime.
+
+    If the `error_code` itself is not valid then it will raise `DevinstallerError` exception
+
+    Raises:
+        DevinstallerError:
+            with error code :ref:`error-code-D101`
     """
 
     def __init__(self, error: str, error_code: str, message: str = "") -> None:

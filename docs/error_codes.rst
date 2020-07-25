@@ -17,7 +17,6 @@ Specification errors
       print("==================")
       print(f"{value}")
 
-
 .. _devinstaller-errors:
 
 **********************

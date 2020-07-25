@@ -1,4 +1,4 @@
-devinstaller.commands module
+Commands
 ============================
 
 .. automodule:: devinstaller.commands

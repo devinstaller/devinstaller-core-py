@@ -1,4 +1,4 @@
-devinstaller.file\_handler module
+File handler
 =================================
 
 .. automodule:: devinstaller.file_handler

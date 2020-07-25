@@ -73,6 +73,12 @@ intersphinx_mapping = {
     "python": ("https://docs.python.org/3", None),
     "click": ("https://click.palletsprojects.com/en/7.x/", None),
     "cerberus": ("https://docs.python-cerberus.org/en/stable/", None),
+    "typeguard": ("https://typeguard.readthedocs.io/en/latest/", None),
+    "requests": ("https://requests.readthedocs.io/en/master/", None),
+    # colorama sphinx docs N/A
+    # questionary sphinx docs N/A
+    # pydantic sphinx docs N/A
+    # anymarkup sphinx docs N/A
 }
 
 

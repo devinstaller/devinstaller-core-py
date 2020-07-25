@@ -8,6 +8,8 @@ Welcome to Devinstaller's documentation!
    design_process
    specification
    api
+   error_codes
+   main
    contributing
 
 

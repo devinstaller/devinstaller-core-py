@@ -1,5 +1,6 @@
-devinstaller.app module
-=======================
+========================
+App
+========================
 
 .. automodule:: devinstaller.app
    :members:

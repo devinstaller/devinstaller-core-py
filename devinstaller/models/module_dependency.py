@@ -214,7 +214,7 @@ def check_platform_compatibility(
 
     Raises:
         SpecificationError
-            with error code :ref:`error-code-100`
+            with error code :ref:`error-code-S100`
     """
     if "supported_platforms" not in module:
         return True

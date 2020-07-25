@@ -1,4 +1,4 @@
-devinstaller.exceptions module
+Exceptions
 ==============================
 
 .. automodule:: devinstaller.exceptions

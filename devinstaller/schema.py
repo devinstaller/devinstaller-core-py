@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sat 25 Jul 2020 17:46:39 IST
+# Last-Updated: Sat 25 Jul 2020 20:49:29 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -76,7 +76,7 @@ def get_validated_document(document: Dict[Any, Any]) -> TypeFullDocument:
 
     Raises:
         SpecificationError
-            with error code :ref:`error-code-100`
+            with error code :ref:`error-code-S100`
     """
     data = validate(document, schema=schema())
     if data["valid"]:

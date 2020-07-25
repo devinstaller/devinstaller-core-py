@@ -3,13 +3,12 @@ API
 
 .. toctree::
    :maxdepth: 3
-   :caption: Table of Contents
+   :caption: Modules
 
-   app
-   commands
-   error_codes
-   exceptions
-   file_handler
-   main
-   models
-   schema
+   devinstaller.app
+   devinstaller.commands
+   devinstaller.exceptions
+   devinstaller.file_handler
+   devinstaller.models
+   devinstaller.schema
+   devinstaller.utilities

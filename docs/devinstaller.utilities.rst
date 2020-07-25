@@ -1,4 +1,4 @@
-devinstaller.utilities module
+Utilities
 =============================
 
 .. automodule:: devinstaller.utilities
