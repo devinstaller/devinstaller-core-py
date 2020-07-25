@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sat 25 Jul 2020 15:47:26 IST
+# Last-Updated: Sat 25 Jul 2020 17:20:03 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,14 +36,12 @@
 """All the models including the schema as well as graph models"""
 from typing import Any, Dict, List, Literal, Optional, TypedDict, Union
 
-from devinstaller.app_module import AppModule
-from devinstaller.file_module import FileModule
-from devinstaller.folder_module import FolderModule
-from devinstaller.group_module import GroupModule
-from devinstaller.link_module import LinkModule
-from devinstaller.module_dependency import ModuleDependency
-from devinstaller.phony_module import PhonyModule
-from devinstaller.platform_model import Platform
+from devinstaller.models.app_module import AppModule
+from devinstaller.models.file_module import FileModule
+from devinstaller.models.folder_module import FolderModule
+from devinstaller.models.group_module import GroupModule
+from devinstaller.models.link_module import LinkModule
+from devinstaller.models.phony_module import PhonyModule
 
 
 class TypeModuleInstallInstruction(TypedDict, total=False):

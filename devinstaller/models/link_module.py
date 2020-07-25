@@ -2,17 +2,17 @@ from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
 
-from devinstaller import base_module as b
+from devinstaller.models.base_module import BaseModule, ModuleInstallInstruction
 
 
 @dataclass
-class LinkModule(b.BaseModule):
+class LinkModule(BaseModule):
     """The class which will be used by all the modules
     """
 
     # pylint: disable=too-many-instance-attributes
-    init: Optional[List[b.ModuleInstallInstruction]] = None
-    config: Optional[List[b.ModuleInstallInstruction]] = None
+    init: Optional[List[ModuleInstallInstruction]] = None
+    config: Optional[List[ModuleInstallInstruction]] = None
     optionals: Optional[List[str]] = None
     owner: Optional[str] = None
     requires: Optional[List[str]] = None

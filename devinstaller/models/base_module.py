@@ -1,10 +1,14 @@
-from typing import Any, Dict, List, Literal, Optional, TypedDict, Union
+from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
-from devinstaller import commands as c
-from devinstaller import exceptions as e
+from devinstaller.commands import run
+from devinstaller.exceptions import (
+    CommandFailed,
+    ModuleInstallationFailed,
+    ModuleRollbackFailed,
+)
 
 
 @dataclass
@@ -65,15 +69,15 @@ class BaseModule:
             return None
         for index, inst in enumerate(instructions):
             try:
-                c.run(inst.install)
-            except e.CommandFailed:
+                run(inst.install)
+            except CommandFailed:
                 rollback_list = instructions[:index]
                 rollback_list.reverse()
                 try:
                     self.rollback_instructions(rollback_list)
-                except e.ModuleRollbackFailed:
-                    raise e.ModuleRollbackFailed
-                raise e.ModuleInstallationFailed
+                except ModuleRollbackFailed:
+                    raise ModuleRollbackFailed
+                raise ModuleInstallationFailed
         return None
 
     @typechecked
@@ -93,7 +97,7 @@ class BaseModule:
             if inst.rollback is not None:
                 try:
                     print(f"Rolling back `{inst.install}` using `{inst.rollback}`")
-                    c.run(inst.rollback)
-                except e.CommandFailed:
-                    raise e.ModuleRollbackFailed
+                    run(inst.rollback)
+                except CommandFailed:
+                    raise ModuleRollbackFailed
         return None

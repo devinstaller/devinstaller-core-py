@@ -2,9 +2,16 @@ from typing import Any, Dict, List, Set
 
 from typeguard import typechecked
 
-from devinstaller import exceptions as e
-from devinstaller import models as m
-from devinstaller import utilities as u
+from devinstaller.exceptions import ModuleInstallationFailed, SpecificationError
+from devinstaller.models.app_module import AppModule
+from devinstaller.models.common_models import TypeAnyModule, TypeCommonModule
+from devinstaller.models.file_module import FileModule
+from devinstaller.models.folder_module import FolderModule
+from devinstaller.models.group_module import GroupModule
+from devinstaller.models.link_module import LinkModule
+from devinstaller.models.phony_module import PhonyModule
+from devinstaller.models.platform_model import Platform
+from devinstaller.utilities import UserInteract, remove_key
 
 
 class ModuleDependency:
@@ -13,25 +20,25 @@ class ModuleDependency:
 
     @typechecked
     def __init__(
-        self, module_list: List[m.TypeCommonModule], platform_object: m.Platform
+        self, module_list: List[TypeCommonModule], platform_object: Platform
     ) -> None:
         """Create dependency graph
         """
-        self.graph: Dict[str, m.TypeAnyModule] = {}
+        self.graph: Dict[str, TypeAnyModule] = {}
         self.orphan_modules: Set[str] = set()
         module_classes: Dict[str, Any] = {
-            "app": m.AppModule,
-            "file": m.FileModule,
-            "folder": m.FolderModule,
-            "link": m.LinkModule,
-            "group": m.GroupModule,
-            "phony": m.PhonyModule,
+            "app": AppModule,
+            "file": FileModule,
+            "folder": FolderModule,
+            "link": LinkModule,
+            "group": GroupModule,
+            "phony": PhonyModule,
         }
         for module_object in module_list:
             if check_platform_compatibility(platform_object, module_object):
                 module_type = module_object["module_type"]
-                module_object = u.remove_key(module_object, "supported_platforms")
-                module_object = u.remove_key(module_object, "module_type")
+                module_object = remove_key(module_object, "supported_platforms")
+                module_object = remove_key(module_object, "module_type")
                 new_module = module_classes[module_type](**module_object)
                 assert new_module.alias is not None
                 codename = new_module.alias
@@ -48,7 +55,7 @@ class ModuleDependency:
             self.graph[module_name].uninstall()
         return None
 
-    def module_list(self) -> List[m.TypeAnyModule]:
+    def module_list(self) -> List[TypeAnyModule]:
         """Returns the list of all the modules that have been initialized by the Module dependency
         """
         return list(self.graph.values())
@@ -85,7 +92,7 @@ class ModuleDependency:
         try:
             module = self.graph[module_name]
         except KeyError:
-            raise e.SpecificationError(
+            raise SpecificationError(
                 error=module_name,
                 error_code="S100",
                 message="The name of the module given by you didn't match with the codenames of the modules",
@@ -113,7 +120,7 @@ class ModuleDependency:
             The updated orphan_list
         """
         module = self.graph[module_name]
-        if isinstance(module, m.PhonyModule):
+        if isinstance(module, PhonyModule):
             return None
         if module.requires is None:
             return None
@@ -141,7 +148,7 @@ class ModuleDependency:
             The updated orphan_list
         """
         module = self.graph[module_name]
-        if isinstance(module, m.PhonyModule):
+        if isinstance(module, PhonyModule):
             return None
         if module.optionals is None:
             return None
@@ -164,13 +171,13 @@ class ModuleDependency:
             module.install()
             module.status = "success"
             return None
-        except e.ModuleInstallationFailed:
+        except ModuleInstallationFailed:
             print(
                 f"The installation for the module: {module.alias} failed. "
                 "And all the instructions has been rolled back."
             )
             module.status = "failed"
-            if isinstance(module, m.PhonyModule):
+            if isinstance(module, PhonyModule):
                 return None
             if module.requires is not None:
                 self.orphan_modules.update(module.requires)
@@ -181,7 +188,7 @@ class ModuleDependency:
 
 @typechecked
 def check_platform_compatibility(
-    platform_object: m.Platform, module: m.TypeCommonModule
+    platform_object: Platform, module: TypeCommonModule
 ) -> bool:
     """Checks if the given module is compatible with the current platform.
 
@@ -210,7 +217,7 @@ def check_platform_compatibility(
     if "supported_platforms" not in module:
         return True
     if platform_object.codename == "MOCK":
-        raise e.SpecificationError(
+        raise SpecificationError(
             module["name"], "S100", "You are missing a platform object"
         )
     if platform_object.codename in module["supported_platforms"]:
@@ -220,8 +227,8 @@ def check_platform_compatibility(
 
 @typechecked
 def select_module(
-    old_module: m.TypeAnyModule, new_module: m.TypeAnyModule
-) -> m.TypeAnyModule:
+    old_module: TypeAnyModule, new_module: TypeAnyModule
+) -> TypeAnyModule:
     """Sometimes the spec may have already declared two modules with same codename and for the same platform
 
     In such cases we ask the user to select which one to use for the current session.
@@ -246,7 +253,7 @@ def select_module(
     print(new_module)
     title = "Do you mind selecting one?"
     choices = ["First one", "Second one"]
-    selection = u.UserInteract.select(title, choices)
+    selection = UserInteract.select(title, choices)
     if selection == "First one":
         return old_module
     return new_module

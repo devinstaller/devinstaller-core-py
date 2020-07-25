@@ -2,13 +2,14 @@ from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
 
-from devinstaller import base_module as b
+from devinstaller.models.base_module import BaseModule
 
 
 @dataclass
-class PhonyModule(b.BaseModule):
+class GroupModule(BaseModule):
     """The class which will be used by all the modules
     """
 
     # pylint: disable=too-many-instance-attributes
-    config: Optional[List[b.ModuleInstallInstruction]] = None
+    optionals: Optional[List[str]] = None
+    requires: Optional[List[str]] = None

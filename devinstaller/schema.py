@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sat 25 Jul 2020 15:46:53 IST
+# Last-Updated: Sat 25 Jul 2020 17:24:45 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,16 +40,16 @@ from typing import Any, Dict, cast
 import cerberus
 from typeguard import typechecked
 
-from devinstaller import exceptions as e
-from devinstaller import models as m
+from devinstaller.exceptions import SpecificationError
+from devinstaller.models import TypeFullDocument, TypeValidateResponse, schema
 
-DEVFILE_SCHEMA = m.schema()
+DEVFILE_SCHEMA = schema()
 
 
 @typechecked
 def validate(
     document: Dict[Any, Any], schema: Dict[Any, Any] = DEVFILE_SCHEMA
-) -> m.TypeValidateResponse:
+) -> TypeValidateResponse:
     """Validate the given document with the schema
 
     TODO update docs
@@ -62,7 +62,7 @@ def validate(
         A dict with its validity, document and its errors.
     """
     _v = cerberus.Validator(schema)
-    data: m.TypeValidateResponse = {
+    data: TypeValidateResponse = {
         "valid": _v.validate(document),
         "document": _v.document,
         "errors": _v.errors,
@@ -72,8 +72,8 @@ def validate(
 
 @typechecked
 def get_validated_document(
-    document: Dict[Any, Any], schema: Dict[Any, Any] = m.schema()
-) -> m.TypeFullDocument:
+    document: Dict[Any, Any], schema: Dict[Any, Any] = schema()
+) -> TypeFullDocument:
     """Validate the given document with the schema
 
     TODO update docs
@@ -91,5 +91,5 @@ def get_validated_document(
     """
     data = validate(document)
     if data["valid"]:
-        return cast(m.TypeFullDocument, data["document"])
-    raise e.SpecificationError(str(data["errors"]), "S100")
+        return cast(TypeFullDocument, data["document"])
+    raise SpecificationError(str(data["errors"]), "S100")
