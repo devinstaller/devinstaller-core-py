@@ -4,8 +4,6 @@ from typing import Any, Dict, List, Union
 import questionary
 from typeguard import typechecked
 
-from devinstaller.models import ModuleInstallInstruction, TypePlatformInfo
-
 
 class UserInteract:
     @staticmethod
@@ -93,22 +91,6 @@ def compare_strings(*args: str) -> bool:
 
 
 @typechecked
-def get_current_platform() -> TypePlatformInfo:
-    """Get the current platform object
-
-    Returns:
-        The current platform object
-    """
-    data: TypePlatformInfo = {
-        "system": platform.system(),
-        "version": platform.version(),
-    }
-    if data["system"] == "Darwin":
-        data["version"] = platform.mac_ver()[0]
-    return data
-
-
-@typechecked
 def compare_version(version: str, expected_version: str) -> bool:
     """Compares the version of the current platform and the version info in the spec file.
 
@@ -121,26 +103,3 @@ def compare_version(version: str, expected_version: str) -> bool:
     if version == expected_version:
         return True
     return False
-
-
-@typechecked
-def create_instruction_list(
-    *data: Union[ModuleInstallInstruction, List[ModuleInstallInstruction], None],
-) -> List[ModuleInstallInstruction]:
-    """Returns a list with all the data combined.
-
-    This is used to combine the `init`, `command` and `config` instructions so
-    that they can be run in a single function.
-
-    Args:
-        Any number of arguments. The arguments are expected to be of either
-        ModuleInstallInstruction or list of ModuleInstallInstruction
-    """
-    temp_list = []
-    for i in data:
-        if i is not None:
-            if isinstance(i, list):
-                temp_list += i
-            else:
-                temp_list.append(i)
-    return temp_list

@@ -1,3 +1,5 @@
+"""Link module
+"""
 from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
@@ -21,3 +23,9 @@ class LinkModule(BaseModule):
     target: Optional[str] = None
     create: bool = True
     rollback: bool = True
+
+    def install(self):
+        pass
+
+    def uninstall(self):
+        pass

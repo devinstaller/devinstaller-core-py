@@ -1,3 +1,5 @@
+"""Group module
+"""
 from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
@@ -13,3 +15,9 @@ class GroupModule(BaseModule):
     # pylint: disable=too-many-instance-attributes
     optionals: Optional[List[str]] = None
     requires: Optional[List[str]] = None
+
+    def install(self):
+        pass
+
+    def uninstall(self):
+        pass

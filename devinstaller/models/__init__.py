@@ -1,10 +1,12 @@
-from .base_module import ModuleInstallInstruction
-from .common_models import (
+"""All the models
+"""
+from devinstaller.models.base_module import ModuleInstallInstruction
+from devinstaller.models.common_models import (
     TypeAnyModule,
     TypeFullDocument,
     TypePlatformInfo,
     TypeValidateResponse,
     schema,
 )
-from .module_dependency import ModuleDependency
-from .platform_model import Platform
+from devinstaller.models.module_dependency import ModuleDependency
+from devinstaller.models.platform_model import Platform

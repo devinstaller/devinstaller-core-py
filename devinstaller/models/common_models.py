@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sat 25 Jul 2020 17:20:03 IST
+# Last-Updated: Sat 25 Jul 2020 18:57:12 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -162,11 +162,21 @@ TypeModuleMap = Dict[str, TypeAnyModule]
 
 ModuleInstallStatus = ["success", "failed", "in progress"]
 """Status allowed for each modules. None is also included in Moduel status
+
+Values allowed:
+    1. `success`
+    2. `failed`
+    3. `in progress`
 """
 
 ModuleInstallInstructionKeys = Literal["init", "command", "config"]
 """These are the keys allowed for converting installation steps into
 `ModuleInstallInstruction` object
+
+Values allowed:
+    1. `init`
+    2. `command`
+    3. `config`
 """
 
 

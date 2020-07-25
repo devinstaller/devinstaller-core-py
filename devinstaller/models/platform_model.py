@@ -1,18 +1,19 @@
+"""Platform model
+"""
+import platform
 from typing import List, Optional
 
 from typeguard import typechecked
 
 from devinstaller.exceptions import SpecificationError
 from devinstaller.models.common_models import TypePlatform, TypePlatformInfo
-from devinstaller.utilities import (
-    UserInteract,
-    compare_strings,
-    compare_version,
-    get_current_platform,
-)
+from devinstaller.utilities import UserInteract, compare_strings, compare_version
 
 
 class Platform:
+    """Class for creating the current platform object
+    """
+
     @typechecked
     def __init__(
         self,
@@ -83,11 +84,11 @@ class Platform:
                     platforms_supported.append(_p)
                 elif compare_version(_p_info["version"], self.info["version"]):
                     platforms_supported.append(_p)
-        if len(platforms_supported) != 1:
-            self.resolve(platforms_supported)
+        if len(platforms_supported) == 1:
+            print(f"I see you are using {platforms_supported[0]['name']}")
+            self.codename = platforms_supported[0]["name"]
             return None
-        print(f"I see you are using {platforms_supported[0]['name']}")
-        self.codename = platforms_supported[0]["name"]
+        self.resolve(platforms_supported)
         return None
 
     @typechecked
@@ -113,4 +114,19 @@ class Platform:
         choices = [p["name"] for p in platforms_supported]
         selection = UserInteract.select(title, choices)
         self.codename = selection
-        return None
+
+
+@typechecked
+def get_current_platform() -> TypePlatformInfo:
+    """Get the current platform object
+
+    Returns:
+        The current platform object
+    """
+    data: TypePlatformInfo = {
+        "system": platform.system(),
+        "version": platform.version(),
+    }
+    if data["system"] == "Darwin":
+        data["version"] = platform.mac_ver()[0]
+    return data

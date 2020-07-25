@@ -10,7 +10,6 @@ API
    error_codes
    exceptions
    file_handler
-   installer
    main
    models
    schema

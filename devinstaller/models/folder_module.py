@@ -1,3 +1,5 @@
+"""Folder module
+"""
 from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
@@ -20,3 +22,9 @@ class FolderModule(BaseModule):
     parent_dir: Optional[str] = None
     permission: Optional[str] = None
     rollback: bool = True
+
+    def install(self):
+        pass
+
+    def uninstall(self):
+        pass

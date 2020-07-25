@@ -2,6 +2,7 @@
 
 * What is Devinstaller?
 
+Devinstaller is a general purpose orchestration tool for developers.
 Devinstaller started its life as a dotfile manager but now its has developed
 into a unique tool to handle developer environments and their tools.
 
@@ -13,18 +14,6 @@ interpretation and its execution.
 
 #+BEGIN_SRC sh
 dev install
-#+END_SRC
-
-** Specify platform
-
-#+BEGIN_SRC sh
-dev install --platform macos  # dev install -p macos
-#+END_SRC
-
-** Specify both platform and desired preset
-
-#+BEGIN_SRC sh
-dev install --platform macos --preset doom
 #+END_SRC
 
 * Local Variables :noexport:

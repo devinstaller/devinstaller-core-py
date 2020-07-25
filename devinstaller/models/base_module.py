@@ -39,9 +39,13 @@ class BaseModule:
         return f"{self.display} - {self.description}"
 
     def install(self) -> None:
+        """Abstract install function for each module to be immplemented
+        """
         raise NotImplementedError
 
     def uninstall(self) -> None:
+        """Abstract uninstall function for each module to be immplemented
+        """
         raise NotImplementedError
 
     def __post_init_post_parse__(self):

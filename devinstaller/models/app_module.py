@@ -1,11 +1,36 @@
+"""App module
+"""
 import sys
-from typing import List, Optional
+from typing import List, Optional, Union
 
 from pydantic.dataclasses import dataclass
+from typeguard import typechecked
 
 from devinstaller.exceptions import ModuleRollbackFailed
 from devinstaller.models.base_module import BaseModule, ModuleInstallInstruction
-from devinstaller.utilities import create_instruction_list
+
+
+@typechecked
+def create_instruction_list(
+    *data: Union[ModuleInstallInstruction, List[ModuleInstallInstruction], None],
+) -> List[ModuleInstallInstruction]:
+    """Returns a list with all the data combined.
+
+    This is used to combine the `init`, `command` and `config` instructions so
+    that they can be run in a single function.
+
+    Args:
+        Any number of arguments. The arguments are expected to be of either
+        ModuleInstallInstruction or list of ModuleInstallInstruction
+    """
+    temp_list = []
+    for i in data:
+        if i is not None:
+            if isinstance(i, list):
+                temp_list += i
+            else:
+                temp_list.append(i)
+    return temp_list
 
 
 @dataclass
@@ -40,7 +65,6 @@ class AppModule(BaseModule):
         except ModuleRollbackFailed:
             print(f"Rollback instructions for {self.display} failed. Crashing program.")
             sys.exit(1)
-        return None
 
     def uninstall(self) -> None:
         """Uninstall the module using its rollback instructions.
@@ -57,4 +81,3 @@ class AppModule(BaseModule):
         except ModuleRollbackFailed:
             print(f"Rollback instructions for {self.display} failed. Crashing program.")
             sys.exit(1)
-        return None

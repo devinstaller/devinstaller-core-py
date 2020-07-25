@@ -1,3 +1,5 @@
+"""Module dependency graph and other stuffs
+"""
 from typing import Any, Dict, List, Set
 
 from typeguard import typechecked
@@ -48,12 +50,14 @@ class ModuleDependency:
                     )
                 else:
                     self.graph[codename] = new_module
-        return None
 
     def uninstall_orphan_modules(self) -> None:
+        """Uninstall orphan modules
+
+        Modules which are not used by any other modules
+        """
         for module_name in self.orphan_modules:
             self.graph[module_name].uninstall()
-        return None
 
     def module_list(self) -> List[TypeAnyModule]:
         """Returns the list of all the modules that have been initialized by the Module dependency
@@ -72,7 +76,6 @@ class ModuleDependency:
         """
         for module_name in requirement_list:
             self.traverse(module_name)
-        return None
 
     @typechecked
     def traverse(self, module_name: str) -> None:
@@ -183,7 +186,6 @@ class ModuleDependency:
                 self.orphan_modules.update(module.requires)
             if module.optionals is not None:
                 self.orphan_modules.update(module.optionals)
-            return None
 
 
 @typechecked

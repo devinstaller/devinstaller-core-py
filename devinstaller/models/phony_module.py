@@ -1,3 +1,5 @@
+"""Phony module
+"""
 from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
@@ -12,3 +14,9 @@ class PhonyModule(BaseModule):
 
     # pylint: disable=too-many-instance-attributes
     config: Optional[List[ModuleInstallInstruction]] = None
+
+    def install(self):
+        pass
+
+    def uninstall(self):
+        pass
