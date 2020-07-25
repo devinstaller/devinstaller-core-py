@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sat 25 Jul 2020 17:24:45 IST
+# Last-Updated: Sat 25 Jul 2020 17:46:39 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -43,20 +43,14 @@ from typeguard import typechecked
 from devinstaller.exceptions import SpecificationError
 from devinstaller.models import TypeFullDocument, TypeValidateResponse, schema
 
-DEVFILE_SCHEMA = schema()
-
 
 @typechecked
-def validate(
-    document: Dict[Any, Any], schema: Dict[Any, Any] = DEVFILE_SCHEMA
-) -> TypeValidateResponse:
-    """Validate the given document with the schema
-
-    TODO update docs
+def validate(document: Dict[Any, Any], schema: Dict[Any, Any]) -> TypeValidateResponse:
+    """Check if the given document is valid or not
 
     Args:
         document: Python object which has to be validated
-        schema: It can also take in custom schema for validation. Default is the Full file schema
+        schema: Schema to check for its validity
 
     Returns:
         A dict with its validity, document and its errors.
@@ -71,16 +65,11 @@ def validate(
 
 
 @typechecked
-def get_validated_document(
-    document: Dict[Any, Any], schema: Dict[Any, Any] = schema()
-) -> TypeFullDocument:
-    """Validate the given document with the schema
-
-    TODO update docs
+def get_validated_document(document: Dict[Any, Any]) -> TypeFullDocument:
+    """Validate the given document against the Devinstaller specification
 
     Args:
         document: Python object which has to be validated
-        schema: It can also take in custom schema for validation. Default is the Full file schema
 
     Returns:
         Validated object
@@ -89,7 +78,7 @@ def get_validated_document(
         SpecificationError
             with error code :ref:`error-code-100`
     """
-    data = validate(document)
+    data = validate(document, schema=schema())
     if data["valid"]:
         return cast(TypeFullDocument, data["document"])
     raise SpecificationError(str(data["errors"]), "S100")
