@@ -50,7 +50,9 @@ def install(
     else:
         raise e.DevinstallerError("Schema object not found", "D100")
     validated_schema_object = s.get_validated_document(schema_object)
-    platform_object = s.get_platform_object(validated_schema_object, platform_codename)
+    platform_object = get_platform_object(
+        full_document=validated_schema_object, platform_codename=platform_codename
+    )
     dependency_graph = m.ModuleDependency(
         module_list=validated_schema_object["modules"], platform_object=platform_object
     )
@@ -63,6 +65,20 @@ def install(
     if orphan_modules_names != set():
         if ask_user_for_uninstalling_orphan_modules(orphan_modules_names):
             dependency_graph.uninstall_orphan_modules()
+    return None
+
+
+@typechecked
+def get_platform_object(
+    full_document: m.TypeFullDocument, platform_codename: Optional[str] = None
+) -> m.Platform:
+    """Create the platform object and return it
+    """
+    platform_list = full_document.get("platforms", None)
+    platform_object = m.Platform(
+        platform_list=platform_list, platform_codename=platform_codename
+    )
+    return platform_object
 
 
 @typechecked
@@ -80,7 +96,7 @@ def ask_user_for_the_requirement_list(
     print("Hey... You haven't selected which module to be installed")
     title = "Do you mind selected a few for me?"
     choices = {str(mod): mod for mod in module_objects}
-    selections = u.ask_user_for_multi_select(title, choices=list(choices.keys()))
+    selections = u.UserInteract.checkbox(title, choices=list(choices.keys()))
     data: List[str] = []
     for _s in selections:
         _m = choices[_s]
@@ -108,5 +124,5 @@ def ask_user_for_uninstalling_orphan_modules(orphan_list: Set[str]) -> bool:
     )
     orphan_module_names = ", ".join(name for name in orphan_list)
     print(f"These are the modules: {orphan_module_names}")
-    response = u.ask_user_confirmation("Do you want to uninstall?")
+    response = u.UserInteract.confirm("Do you want to uninstall?")
     return response

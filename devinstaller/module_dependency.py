@@ -13,7 +13,7 @@ class ModuleDependency:
 
     @typechecked
     def __init__(
-        self, module_list: List[m.TypeCommonModule], platform_object: m.TypePlatform
+        self, module_list: List[m.TypeCommonModule], platform_object: m.Platform
     ) -> None:
         """Create dependency graph
         """
@@ -181,7 +181,7 @@ class ModuleDependency:
 
 @typechecked
 def check_platform_compatibility(
-    platform_object: m.TypePlatform, module: m.TypeCommonModule
+    platform_object: m.Platform, module: m.TypeCommonModule
 ) -> bool:
     """Checks if the given module is compatible with the current platform.
 
@@ -209,11 +209,11 @@ def check_platform_compatibility(
     """
     if "supported_platforms" not in module:
         return True
-    if platform_object["name"] == "MOCK":
+    if platform_object.codename == "MOCK":
         raise e.SpecificationError(
             module["name"], "S100", "You are missing a platform object"
         )
-    if platform_object["name"] in module["supported_platforms"]:
+    if platform_object.codename in module["supported_platforms"]:
         return True
     return False
 
@@ -246,7 +246,7 @@ def select_module(
     print(new_module)
     title = "Do you mind selecting one?"
     choices = ["First one", "Second one"]
-    selection = u.ask_user_to_select(title, choices)
+    selection = u.UserInteract.select(title, choices)
     if selection == "First one":
         return old_module
     return new_module

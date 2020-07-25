@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Fri 24 Jul 2020 02:08:20 IST
+# Last-Updated: Sat 25 Jul 2020 15:47:26 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -43,6 +43,7 @@ from devinstaller.group_module import GroupModule
 from devinstaller.link_module import LinkModule
 from devinstaller.module_dependency import ModuleDependency
 from devinstaller.phony_module import PhonyModule
+from devinstaller.platform_model import Platform
 
 
 class TypeModuleInstallInstruction(TypedDict, total=False):
@@ -187,6 +188,15 @@ def module() -> Dict[str, Any]:
                     "allowed": ["app", "file", "folder", "link", "group", "phony"],
                 },
                 "supported_platforms": {"type": "list", "schema": {"type": "string"}},
+                "bind": {"type": "list", "schema": {"type": "string"}},
+                "uninstall": {"type": "list", "schema": {"type": "string"}},
+                "constants": {
+                    "type": "list",
+                    "schema": {
+                        "name": {"type": "string", "required": True},
+                        "value": {"type": "string", "required": True, "nullable": True},
+                    },
+                },
                 "alias": {"type": "string"},
                 "create": {"type": "boolean"},
                 "init": {
@@ -216,7 +226,13 @@ def module() -> Dict[str, Any]:
                         },
                     },
                 },
-                "content": {"type": "string"},
+                "content": {
+                    "type": "dict",
+                    "schema": {
+                        "digest": {"type": "string"},
+                        "path": {"type": "string"},
+                    },
+                },
                 "description": {"type": "string"},
                 "display": {"type": "string"},
                 "executable": {"type": "string"},
@@ -298,7 +314,30 @@ def interface() -> Dict[str, Any]:
     return data
 
 
+def constant() -> Dict[str, Any]:
+    """
+    Returns:
+        Schema for validating the `constant` block
+    """
+    data = {
+        "type": "list",
+        "schema": {
+            "type": "dict",
+            "schema": {
+                "alias": {"type": "string"},
+                "name": {"type": "string", "required": True},
+                "value": {"type": "string", "required": True, "nullable": True},
+            },
+        },
+    }
+    return data
+
+
 def top_level() -> Dict[str, Any]:
+    """
+    Returns:
+        Schema for validating the top level block
+    """
     data = {
         "version": {"type": "string"},
         "author": {"type": "string"},
@@ -326,6 +365,7 @@ def schema() -> Dict[str, Any]:
       The schema for the whole spec
     """
     data = dict(**top_level())
+    data["constants"] = constant()
     data["platforms"] = platform()
     data["modules"] = module()
     data["interfaces"] = interface()
