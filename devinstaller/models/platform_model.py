@@ -7,7 +7,7 @@ from typeguard import typechecked
 
 from devinstaller.exceptions import SpecificationError
 from devinstaller.models.common_models import TypePlatform, TypePlatformInfo
-from devinstaller.utilities import UserInteract, compare_strings, compare_version
+from devinstaller.utilities import Compare, UserInteract
 
 
 class Platform:
@@ -79,10 +79,10 @@ class Platform:
         platforms_supported: List[TypePlatform] = []
         for _p in platform_list:
             _p_info: TypePlatformInfo = _p["platform_info"]
-            if compare_strings(_p_info["system"], self.info["system"]):
+            if Compare.strings(_p_info["system"], self.info["system"]):
                 if "version" not in _p_info:
                     platforms_supported.append(_p)
-                elif compare_version(_p_info["version"], self.info["version"]):
+                elif Compare.version(_p_info["version"], self.info["version"]):
                     platforms_supported.append(_p)
         if len(platforms_supported) == 1:
             print(f"I see you are using {platforms_supported[0]['name']}")

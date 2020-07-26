@@ -4,16 +4,11 @@ from typing import Any, Dict, List, Optional, Set
 
 from typeguard import typechecked
 
-from devinstaller.exceptions import DevinstallerError
-from devinstaller.file_handler import read_file_and_parse
-from devinstaller.models import (
-    ModuleDependency,
-    Platform,
-    TypeAnyModule,
-    TypeFullDocument,
-)
-from devinstaller.schema import get_validated_document
-from devinstaller.utilities import UserInteract
+from devinstaller import exceptions as e
+from devinstaller import file_handler as f
+from devinstaller import models as m
+from devinstaller import schema as s
+from devinstaller import utilities as u
 
 
 @typechecked
@@ -49,16 +44,16 @@ def install(
             with error code :ref:`error-code-D100`
     """
     if file_path is not None:
-        schema_object: Dict[Any, Any] = read_file_and_parse(file_path=file_path)
+        schema_object: Dict[Any, Any] = f.read_file_and_parse(file_path=file_path)
     elif spec_object is not None:
         schema_object = spec_object
     else:
-        raise DevinstallerError("Schema object not found", "D100")
-    validated_schema_object = get_validated_document(schema_object)
+        raise e.DevinstallerError("Schema object not found", "D100")
+    validated_schema_object = s.get_validated_document(schema_object)
     platform_object = get_platform_object(
         full_document=validated_schema_object, platform_codename=platform_codename
     )
-    dependency_graph = ModuleDependency(
+    dependency_graph = m.ModuleDependency(
         module_list=validated_schema_object["modules"], platform_object=platform_object
     )
     if requirements_list is None:
@@ -75,12 +70,12 @@ def install(
 
 @typechecked
 def get_platform_object(
-    full_document: TypeFullDocument, platform_codename: Optional[str] = None
-) -> Platform:
+    full_document: m.TypeFullDocument, platform_codename: Optional[str] = None
+) -> m.Platform:
     """Create the platform object and return it
     """
     platform_list = full_document.get("platforms", None)
-    platform_object = Platform(
+    platform_object = m.Platform(
         platform_list=platform_list, platform_codename=platform_codename
     )
     return platform_object
@@ -88,7 +83,7 @@ def get_platform_object(
 
 @typechecked
 def ask_user_for_the_requirement_list(
-    module_objects: List[TypeAnyModule],
+    module_objects: List[m.TypeAnyModule],
 ) -> List[str]:
     """Ask the user for which modules to be installed
 
@@ -101,7 +96,7 @@ def ask_user_for_the_requirement_list(
     print("Hey... You haven't selected which module to be installed")
     title = "Do you mind selected a few for me?"
     choices = {str(mod): mod for mod in module_objects}
-    selections = UserInteract.checkbox(title, choices=list(choices.keys()))
+    selections = u.UserInteract.checkbox(title, choices=list(choices.keys()))
     data: List[str] = []
     for _s in selections:
         _m = choices[_s]
@@ -129,5 +124,5 @@ def ask_user_for_uninstalling_orphan_modules(orphan_list: Set[str]) -> bool:
     )
     orphan_module_names = ", ".join(name for name in orphan_list)
     print(f"These are the modules: {orphan_module_names}")
-    response = UserInteract.confirm("Do you want to uninstall?")
+    response = u.UserInteract.confirm("Do you want to uninstall?")
     return response

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sat 25 Jul 2020 20:49:29 IST
+# Last-Updated: Sun 26 Jul 2020 14:15:13 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,12 +40,14 @@ from typing import Any, Dict, cast
 import cerberus
 from typeguard import typechecked
 
-from devinstaller.exceptions import SpecificationError
-from devinstaller.models import TypeFullDocument, TypeValidateResponse, schema
+from devinstaller import exceptions as e
+from devinstaller import models as m
 
 
 @typechecked
-def validate(document: Dict[Any, Any], schema: Dict[Any, Any]) -> TypeValidateResponse:
+def validate(
+    document: Dict[Any, Any], schema: Dict[Any, Any]
+) -> m.TypeValidateResponse:
     """Check if the given document is valid or not
 
     Args:
@@ -56,7 +58,7 @@ def validate(document: Dict[Any, Any], schema: Dict[Any, Any]) -> TypeValidateRe
         A dict with its validity, document and its errors.
     """
     _v = cerberus.Validator(schema)
-    data: TypeValidateResponse = {
+    data: m.TypeValidateResponse = {
         "valid": _v.validate(document),
         "document": _v.document,
         "errors": _v.errors,
@@ -65,7 +67,7 @@ def validate(document: Dict[Any, Any], schema: Dict[Any, Any]) -> TypeValidateRe
 
 
 @typechecked
-def get_validated_document(document: Dict[Any, Any]) -> TypeFullDocument:
+def get_validated_document(document: Dict[Any, Any]) -> m.TypeFullDocument:
     """Validate the given document against the Devinstaller specification
 
     Args:
@@ -78,7 +80,7 @@ def get_validated_document(document: Dict[Any, Any]) -> TypeFullDocument:
         SpecificationError
             with error code :ref:`error-code-S100`
     """
-    data = validate(document, schema=schema())
+    data = validate(document, schema=m.schema())
     if data["valid"]:
-        return cast(TypeFullDocument, data["document"])
-    raise SpecificationError(str(data["errors"]), "S100")
+        return cast(m.TypeFullDocument, data["document"])
+    raise e.SpecificationError(str(data["errors"]), "S100")

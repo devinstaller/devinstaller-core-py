@@ -74,32 +74,34 @@ def remove_key(input_dictionary: Dict[Any, Any], key: str) -> Dict[Any, Any]:
     return new_dictionary
 
 
-@typechecked
-def compare_strings(*args: str) -> bool:
-    """Compare all the strings with each other (case insensitive)
+class Compare:
+    @staticmethod
+    @typechecked
+    def strings(*args: str) -> bool:
+        """Compare all the strings with each other (case insensitive)
 
-    Takes in any number of string arguments.
-    At least one argument required else it will return False.
-    If one argument then it will return True.
+        Takes in any number of string arguments.
+        At least one argument required else it will return False.
+        If one argument then it will return True.
 
-    Returns:
-        True if all matches else False
-    """
-    if len({v.casefold() for v in args}) != 1:
-        return False
-    return True
-
-
-@typechecked
-def compare_version(version: str, expected_version: str) -> bool:
-    """Compares the version of the current platform and the version info in the spec file.
-
-    TODO Works with both the platforms block and the modules block?
-
-    Uses the semver specification to compare.
-    """
-    # TODO How to compare using the semver specification.
-    # TODO What about the modules which doesnt' use the semver spec?
-    if version == expected_version:
+        Returns:
+            True if all matches else False
+        """
+        if len({v.casefold() for v in args}) != 1:
+            return False
         return True
-    return False
+
+    @staticmethod
+    @typechecked
+    def version(version: str, expected_version: str) -> bool:
+        """Compares the version of the current platform and the version info in the spec file.
+
+        TODO Works with both the platforms block and the modules block?
+        TODO How to compare using the semver specification.
+        TODO What about the modules which doesnt' use the semver spec?
+
+        Uses the semver specification to compare.
+        """
+        if version == expected_version:
+            return True
+        return False

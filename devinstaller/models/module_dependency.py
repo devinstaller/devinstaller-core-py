@@ -18,6 +18,10 @@ from devinstaller.utilities import UserInteract, remove_key
 
 class ModuleDependency:
     """Module dependency class
+
+    Args:
+        graph: The dependency graph
+        orphan_modules: The "list" of modules not used by any other modules
     """
 
     @typechecked
@@ -67,7 +71,7 @@ class ModuleDependency:
     def install(self, requirement_list: List[str]) -> None:
         """Install all the modules you want
 
-        The `traverse ` function can install only one module and its dependencies, but
+        The `traverse` function can install only one module and its dependencies, but
         this method can install more than one module.
 
         It is a wrapper around the `traverse` method.

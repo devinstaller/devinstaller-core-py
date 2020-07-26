@@ -13,7 +13,7 @@ class PhonyModule(BaseModule):
     """
 
     # pylint: disable=too-many-instance-attributes
-    config: Optional[List[ModuleInstallInstruction]] = None
+    commands: Optional[List[str]] = None
 
     def install(self):
         pass

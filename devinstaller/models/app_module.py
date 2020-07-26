@@ -6,31 +6,30 @@ from typing import List, Optional, Union
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
-from devinstaller.exceptions import ModuleRollbackFailed
+from devinstaller import commands as c
+from devinstaller.exceptions import ModuleInstallationFailed, ModuleRollbackFailed
 from devinstaller.models.base_module import BaseModule, ModuleInstallInstruction
 
+# @typechecked
+# def create_instruction_list(
+#     *data: Union[ModuleInstallInstruction, List[ModuleInstallInstruction], None],
+# ) -> List[ModuleInstallInstruction]:
+#     """Returns a list with all the data combined.
 
-@typechecked
-def create_instruction_list(
-    *data: Union[ModuleInstallInstruction, List[ModuleInstallInstruction], None],
-) -> List[ModuleInstallInstruction]:
-    """Returns a list with all the data combined.
+#     This is used to combine the `init`, `command` and `config` instructions so
+#     that they can be run in a single function.
 
-    This is used to combine the `init`, `command` and `config` instructions so
-    that they can be run in a single function.
-
-    Args:
-        Any number of arguments. The arguments are expected to be of either
-        ModuleInstallInstruction or list of ModuleInstallInstruction
-    """
-    temp_list = []
-    for i in data:
-        if i is not None:
-            if isinstance(i, list):
-                temp_list += i
-            else:
-                temp_list.append(i)
-    return temp_list
+#     Any number of arguments. The arguments are expected to be of either
+#     ModuleInstallInstruction or list of ModuleInstallInstruction
+#     """
+#     temp_list = []
+#     for i in data:
+#         if i is not None:
+#             if isinstance(i, list):
+#                 temp_list += i
+#             else:
+#                 temp_list.append(i)
+#     return temp_list
 
 
 @dataclass
@@ -43,9 +42,8 @@ class AppModule(BaseModule):
     executable: Optional[str] = None
     optionals: Optional[List[str]] = None
     requires: Optional[List[str]] = None
-    init: Optional[List[ModuleInstallInstruction]] = None
-    command: Optional[ModuleInstallInstruction] = None
-    config: Optional[List[ModuleInstallInstruction]] = None
+    install_inst: Optional[List[ModuleInstallInstruction]] = None
+    uninstall_inst: Optional[List[str]] = None
 
     def install(self) -> None:
         """The function which installs app modules
@@ -57,13 +55,11 @@ class AppModule(BaseModule):
             The response object of the module
         """
         print(f"Installing module: {self.display}...")
-        installation_steps = create_instruction_list(
-            self.init, self.command, self.config
-        )
+        # installation_steps = create_instruction_list(self.install_inst)
         try:
-            self.execute_instructions(installation_steps)
+            self.execute_instructions(self.install_inst)
         except ModuleRollbackFailed:
-            print(f"Rollback instructions for {self.display} failed. Crashing program.")
+            print(f"Rollback instructions for {self.display} failed. Quitting program.")
             sys.exit(1)
 
     def uninstall(self) -> None:
@@ -73,11 +69,12 @@ class AppModule(BaseModule):
             module: The module which you want to uninstall
         """
         print(f"Uninstalling module: {self.display}...")
-        uninstallation_steps = create_instruction_list(
-            self.init, self.command, self.config
-        ).reverse()
+        if self.uninstall_inst is None:
+            print(f"No uninstallation instructions found for {self.display}.")
+            return None
         try:
-            self.rollback_instructions(uninstallation_steps)
-        except ModuleRollbackFailed:
-            print(f"Rollback instructions for {self.display} failed. Crashing program.")
+            for i in self.uninstall_inst:
+                c.run(i)
+        except ModuleInstallationFailed:
+            print(f"Uninstallation of {self.display} failed. Quitting program.")
             sys.exit(1)

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sat 25 Jul 2020 18:57:12 IST
+# Last-Updated: Sun 26 Jul 2020 14:52:07 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -169,15 +169,19 @@ Values allowed:
     3. `in progress`
 """
 
-ModuleInstallInstructionKeys = Literal["init", "command", "config"]
+ModuleInstallInstructionKeys = Literal["init", "commands", "config"]
 """These are the keys allowed for converting installation steps into
 `ModuleInstallInstruction` object
 
 Values allowed:
     1. `init`
-    2. `command`
+    2. `commands`
     3. `config`
 """
+
+
+def convert_to_instruction_dict(installation_str: str) -> Dict[str, str]:
+    return {"install": installation_str}
 
 
 def module() -> Dict[str, Any]:
@@ -211,29 +215,37 @@ def module() -> Dict[str, Any]:
                     "type": "list",
                     "schema": {
                         "type": "dict",
+                        "coerce": (str, convert_to_instruction_dict),
                         "schema": {
                             "install": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
                         },
                     },
                 },
-                "command": {
-                    "type": "dict",
+                "install_inst": {
+                    "type": "list",
                     "schema": {
-                        "install": {"type": "string", "required": True},
-                        "rollback": {"type": "string"},
+                        "type": "dict",
+                        "coerce": (str, convert_to_instruction_dict),
+                        "schema": {
+                            "cmd": {"type": "string", "required": True},
+                            "rollback": {"type": "string"},
+                        },
                     },
                 },
                 "config": {
                     "type": "list",
                     "schema": {
                         "type": "dict",
+                        "coerce": (str, convert_to_instruction_dict),
                         "schema": {
                             "install": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
                         },
                     },
                 },
+                "commands": {"type": "list", "schema": {"type": "string"}},
+                "uninstall_inst": {"type": "list", "schema": {"type": "string"}},
                 "content": {
                     "type": "dict",
                     "schema": {
@@ -332,9 +344,15 @@ def constant() -> Dict[str, Any]:
         "schema": {
             "type": "dict",
             "schema": {
-                "alias": {"type": "string"},
                 "name": {"type": "string", "required": True},
-                "value": {"type": "string", "required": True, "nullable": True},
+                "inherit": {"type": "list", "schema": {"type": "string"}},
+                "data": {
+                    "type": "list",
+                    "schema": {
+                        "name": {"type": "string", "required": True},
+                        "value": {"type": "string", "required": True, "nullable": True},
+                    },
+                },
             },
         },
     }
