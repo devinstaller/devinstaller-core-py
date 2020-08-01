@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Fri 24 Jul 2020 01:31:51 IST
+# Last-Updated: Sat  1 Aug 2020 15:30:47 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,7 +37,7 @@
 import hashlib
 import os
 import re
-from typing import Any, Dict
+from typing import Any, Callable, Dict
 
 import anymarkup
 import requests
@@ -125,7 +125,7 @@ def write_file(file_content: str, file_name: str) -> None:
 
 
 @typechecked
-def check_and_download(file_path: str) -> Dict[Any, Any]:
+def get_data(file_path: str) -> Dict[Any, Any]:
     """Checks the input_str and downloads or reads the file.
 
     Steps:
@@ -146,12 +146,16 @@ def check_and_download(file_path: str) -> Dict[Any, Any]:
     """
 
     try:
-        pattern = r"^(url|file): (.*)"
+        pattern = r"^(url|file|data): (.*)"
         result = re.match(pattern, file_path)
         assert result is not None
         method = result.group(1)
         file_path = result.group(2)
-        function = {"file": read_file_and_parse, "url": download_url}
+        function: Dict[str, Callable[[str], str]] = {
+            "file": read_file_and_parse,
+            "url": download_url,
+            "data": lambda x: x,
+        }
         file_contents = function[method](file_path)
         data = {"digest": hash(str(file_contents)), "contents": file_contents}
         return data
@@ -159,7 +163,7 @@ def check_and_download(file_path: str) -> Dict[Any, Any]:
         raise e.SpecificationError(
             error=file_path,
             error_code="S101",
-            message="The file_path you gave didn't start with `url: ` or `file: `.",
+            message="The file_path you gave didn't start with a method.",
         )
 
 

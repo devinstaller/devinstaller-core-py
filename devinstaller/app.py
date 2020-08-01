@@ -43,13 +43,7 @@ def install(
         ImplementationError
             with error code :ref:`error-code-D100`
     """
-    if file_path is not None:
-        schema_object: Dict[Any, Any] = f.read_file_and_parse(file_path=file_path)
-    elif spec_object is not None:
-        schema_object = spec_object
-    else:
-        raise e.DevinstallerError("Schema object not found", "D100")
-    validated_schema_object = s.get_validated_document(schema_object)
+    validated_schema_object = core(file_path=file_path, spec_object=spec_object)
     platform_object = get_platform_object(
         full_document=validated_schema_object, platform_codename=platform_codename
     )
@@ -68,14 +62,46 @@ def install(
     return None
 
 
+def run(
+    interface_name: Optional[str] = None,
+    file_path: Optional[str] = None,
+    spec_object: Optional[Dict[Any, Any]] = None,
+) -> m.TypeFullDocument:
+    """The `run` function.
+
+    This function is used for the interface block.
+    """
+    validated_schema_object = core(file_path, spec_object)
+    interface = m.get_interface(
+        interface_list=validated_schema_object["interfaces"],
+        interface_name=interface_name,
+    )
+
+
+def core(
+    file_path: Optional[str] = None, spec_object: Optional[Dict[Any, Any]] = None
+) -> m.TypeFullDocument:
+    """The core function.
+
+    Validates and returns the schema object.
+    """
+    if file_path is not None:
+        schema_object: Dict[Any, Any] = f.read_file_and_parse(file_path=file_path)
+    elif spec_object is not None:
+        schema_object = spec_object
+    else:
+        raise e.DevinstallerError("Schema object not found", "D100")
+    return s.get_validated_document(schema_object)
+
+
 @typechecked
 def get_platform_object(
     full_document: m.TypeFullDocument, platform_codename: Optional[str] = None
-) -> m.Platform:
+) -> m.PlatformBlock:
     """Create the platform object and return it
     """
     platform_list = full_document.get("platforms", None)
-    platform_object = m.Platform(
+    platform_object = m.PlatformBlock(
         platform_list=platform_list, platform_codename=platform_codename
     )
     return platform_object

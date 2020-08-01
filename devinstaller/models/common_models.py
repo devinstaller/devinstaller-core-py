@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sun 26 Jul 2020 14:52:07 IST
+# Last-Updated: Sat  1 Aug 2020 16:32:29 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -96,10 +96,8 @@ class TypeInterface(TypedDict, total=False):
 
     name: str
     description: str
-    supported_platforms: List[str]
     before: str
     after: str
-    requires: List[str]
     before_each: str
     after_each: str
     modules: List[TypeInterfaceModule]
@@ -142,7 +140,7 @@ class TypeFullDocument(TypedDict, total=False):
     include: List[TypePlatformInclude]
     platforms: List[TypePlatform]
     modules: List[TypeCommonModule]
-    interface: List[TypeInterface]
+    interfaces: List[TypeInterface]
 
 
 class TypeValidateResponse(TypedDict):
@@ -201,12 +199,11 @@ def module() -> Dict[str, Any]:
                 },
                 "supported_platforms": {"type": "list", "schema": {"type": "string"}},
                 "bind": {"type": "list", "schema": {"type": "string"}},
-                "uninstall": {"type": "list", "schema": {"type": "string"}},
                 "constants": {
                     "type": "list",
                     "schema": {
-                        "name": {"type": "string", "required": True},
-                        "value": {"type": "string", "required": True, "nullable": True},
+                        "key": {"type": "string", "required": True},
+                        "value": {"type": "string", "required": True},
                     },
                 },
                 "alias": {"type": "string"},
@@ -217,7 +214,7 @@ def module() -> Dict[str, Any]:
                         "type": "dict",
                         "coerce": (str, convert_to_instruction_dict),
                         "schema": {
-                            "install": {"type": "string", "required": True},
+                            "cmd": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
                         },
                     },
@@ -239,7 +236,7 @@ def module() -> Dict[str, Any]:
                         "type": "dict",
                         "coerce": (str, convert_to_instruction_dict),
                         "schema": {
-                            "install": {"type": "string", "required": True},
+                            "cmd": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
                         },
                     },
@@ -310,11 +307,8 @@ def interface() -> Dict[str, Any]:
             "schema": {
                 "name": {"type": "string", "required": True},
                 "description": {"type": "string"},
-                "supported_platforms": {"type": "list", "schema": {"type": "string"}},
                 "before": {"type": "string"},
                 "after": {"type": "string"},
-                # `requires` other interface
-                "requires": {"type": "list", "schema": {"type": "string"}},
                 "before_each": {"type": "string"},
                 "after_each": {"type": "string"},
                 "modules": {
@@ -349,8 +343,8 @@ def constant() -> Dict[str, Any]:
                 "data": {
                     "type": "list",
                     "schema": {
-                        "name": {"type": "string", "required": True},
-                        "value": {"type": "string", "required": True, "nullable": True},
+                        "key": {"type": "string", "required": True},
+                        "value": {"type": "string", "required": True},
                     },
                 },
             },

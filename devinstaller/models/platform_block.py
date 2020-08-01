@@ -10,7 +10,7 @@ from devinstaller.models.common_models import TypePlatform, TypePlatformInfo
 from devinstaller.utilities import Compare, UserInteract
 
 
-class Platform:
+class PlatformBlock:
     """Class for creating the current platform object
     """
 
@@ -57,13 +57,24 @@ class Platform:
             SpecificationError
                 with error code :ref:`error-code-S100`
         """
-        for _plat in platform_list:
-            if _plat["name"] == platform_codename:
-                self.codename = platform_codename
-                return None
-        raise SpecificationError(
-            platform_codename, "S100", "You are missing a platform"
-        )
+        platform_results = []
+        for plat in platform_list:
+            if plat["name"] == platform_codename:
+                platform_results.append(plat)
+        if len(platform_results) < 1:
+            raise SpecificationError(
+                error=platform_codename,
+                error_code="S100",
+                message="The platform name did not match with any platforms in the spec file.",
+            )
+        if len(platform_results) > 1:
+            raise SpecificationError(
+                error=str(platform_results),
+                error_code="S100",
+                message="Your spec file have more than one platform with the same name.",
+            )
+        self.codename = platform_codename
+        return None
 
     @typechecked
     def check_platform(self, platform_list: List[TypePlatform]) -> None:
@@ -88,8 +99,18 @@ class Platform:
             print(f"I see you are using {platforms_supported[0]['name']}")
             self.codename = platforms_supported[0]["name"]
             return None
-        self.resolve(platforms_supported)
-        return None
+        if len(platforms_supported) > 1:
+            print(
+                'Hey.. your current platform supports multiple "platform" declared in the spec file'
+            )
+            self.resolve(platforms_supported)
+            return None
+        if len(platforms_supported) < 1:
+            print(
+                "Hey.. I couldn't find the platform you are looking for. Can you do this manually?"
+            )
+            self.resolve(platform_list)
+            return None
 
     @typechecked
     def resolve(self, platforms_supported: List[TypePlatform]) -> None:
@@ -107,10 +128,7 @@ class Platform:
         Returns:
             The required platform object
         """
-        print(
-            'Hey.. your current platform supports multiple "platform" declared in the spec file'
-        )
-        title = "Do you mind narrowring it down to one for me?"
+        title = "Can you select one platform for me?"
         choices = [p["name"] for p in platforms_supported]
         selection = UserInteract.select(title, choices)
         self.codename = selection

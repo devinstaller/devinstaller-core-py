@@ -3,37 +3,17 @@
 import sys
 from typing import List, Optional, Union
 
+from pydantic import validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
 from devinstaller import commands as c
 from devinstaller.exceptions import ModuleInstallationFailed, ModuleRollbackFailed
-from devinstaller.models.base_module import BaseModule, ModuleInstallInstruction
-
-# @typechecked
-# def create_instruction_list(
-#     *data: Union[ModuleInstallInstruction, List[ModuleInstallInstruction], None],
-# ) -> List[ModuleInstallInstruction]:
-#     """Returns a list with all the data combined.
-
-#     This is used to combine the `init`, `command` and `config` instructions so
-#     that they can be run in a single function.
-
-#     Any number of arguments. The arguments are expected to be of either
-#     ModuleInstallInstruction or list of ModuleInstallInstruction
-#     """
-#     temp_list = []
-#     for i in data:
-#         if i is not None:
-#             if isinstance(i, list):
-#                 temp_list += i
-#             else:
-#                 temp_list.append(i)
-#     return temp_list
+from devinstaller.models import base_module
 
 
 @dataclass
-class AppModule(BaseModule):
+class AppModule(base_module.BaseModule):
     """The class which will be used by all the modules
     """
 
@@ -42,8 +22,22 @@ class AppModule(BaseModule):
     executable: Optional[str] = None
     optionals: Optional[List[str]] = None
     requires: Optional[List[str]] = None
-    install_inst: Optional[List[ModuleInstallInstruction]] = None
+    install_inst: Optional[List[base_module.ModuleInstallInstruction]] = None
     uninstall_inst: Optional[List[str]] = None
+    bind: Optional[List[str]] = None
+
+    def __post_init_post_parse__(self):
+        if self.install_inst is None:
+            return None
+        for i in self.install_inst:
+            i.cmd = i.cmd.format(**self.constants)
+            i.rollback = (
+                i.rollback.format(**self.constants) if i.rollback is not None else None
+            )
+        if self.uninstall_inst is None:
+            return None
+        for i in self.uninstall_inst:
+            i = i.format(**self.constants)
 
     def install(self) -> None:
         """The function which installs app modules

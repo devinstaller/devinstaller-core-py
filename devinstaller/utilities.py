@@ -1,5 +1,4 @@
-import platform
-from typing import Any, Dict, List, Union
+from typing import Any, Dict, List
 
 import questionary
 from typeguard import typechecked

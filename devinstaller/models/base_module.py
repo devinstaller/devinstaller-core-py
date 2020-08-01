@@ -1,5 +1,6 @@
-from typing import List, Optional
+from typing import Dict, List, Optional
 
+from pydantic import validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
@@ -13,10 +14,10 @@ from devinstaller.exceptions import (
 
 @dataclass
 class ModuleInstallInstruction:
-    """The class used to serialize`init`, `command` and `config` commands into objects
+    """The class used to convert `init`, `command` and `config` into objects
     """
 
-    install: str
+    cmd: str
     rollback: Optional[str] = None
 
 
@@ -32,6 +33,19 @@ class BaseModule:
     description: Optional[str] = None
     url: Optional[str] = None
     status: Optional[str] = None
+    constants: Optional[Dict[str, str]] = None
+
+    @validator("constants", pre=True)
+    @typechecked
+    def convert_constant(
+        cls, constants: Optional[List[Dict[str, str]]]
+    ) -> Dict[str, str]:
+        data: Dict[str, str] = {}
+        if constants is None:
+            return data
+        for i in constants:
+            data[i["key"]] = i["value"]
+        return data
 
     def __str__(self) -> str:
         if self.description is None:
@@ -73,7 +87,7 @@ class BaseModule:
             return None
         for index, inst in enumerate(instructions):
             try:
-                run(inst.install)
+                run(inst.cmd)
             except CommandFailed:
                 rollback_list = instructions[:index]
                 rollback_list.reverse()
@@ -100,7 +114,7 @@ class BaseModule:
         for inst in instructions:
             if inst.rollback is not None:
                 try:
-                    print(f"Rolling back `{inst.install}` using `{inst.rollback}`")
+                    print(f"Rolling back `{inst.cmd}` using `{inst.rollback}`")
                     run(inst.rollback)
                 except CommandFailed:
                     raise ModuleRollbackFailed

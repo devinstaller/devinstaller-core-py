@@ -12,7 +12,7 @@ from devinstaller.models.folder_module import FolderModule
 from devinstaller.models.group_module import GroupModule
 from devinstaller.models.link_module import LinkModule
 from devinstaller.models.phony_module import PhonyModule
-from devinstaller.models.platform_model import Platform
+from devinstaller.models.platform_block import PlatformBlock
 from devinstaller.utilities import UserInteract, remove_key
 
 
@@ -26,7 +26,7 @@ class ModuleDependency:
 
     @typechecked
     def __init__(
-        self, module_list: List[TypeCommonModule], platform_object: Platform
+        self, module_list: List[TypeCommonModule], platform_object: PlatformBlock
     ) -> None:
         """Create dependency graph
         """
@@ -194,7 +194,7 @@ class ModuleDependency:
 
 @typechecked
 def check_platform_compatibility(
-    platform_object: Platform, module: TypeCommonModule
+    platform_object: PlatformBlock, module: TypeCommonModule
 ) -> bool:
     """Checks if the given module is compatible with the current platform.
 
