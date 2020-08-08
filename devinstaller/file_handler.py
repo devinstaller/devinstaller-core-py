@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Sat  1 Aug 2020 15:30:47 IST
+# Last-Updated: Sat  1 Aug 2020 18:17:53 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -44,6 +44,7 @@ import requests
 from typeguard import typechecked
 
 from devinstaller import exceptions as e
+from devinstaller import models as m
 
 
 @typechecked
@@ -117,54 +118,49 @@ def download_url(url: str) -> str:
 
 
 @typechecked
-def write_file(file_content: str, file_name: str) -> None:
+def write_file(file_content: str, file_path: str) -> None:
     """Downloads file from the internet and saves to file
     """
-    with open(file_name, "w") as f:
+    with open(file_path, "w") as f:
         f.write(file_content)
 
 
 @typechecked
-def get_data(file_path: str) -> Dict[Any, Any]:
+def get_data(file_path: str) -> m.FileResponse:
     """Checks the input_str and downloads or reads the file.
 
+    Methods:
+        url:
+            downloads the file
+        file:
+            reads the file
+        data:
+            returns the data as is
+
     Steps:
-        1. Extract the method: `file` or `url`
-        2. If file then expand the file path and stores it for checking dependency cycle and downloads the file
-        3. If url the stores the it for checking the dependency cycle
-        4. Either way reads the file and returns the object.
+        1. Extract the method
+        2. Use the method to get the file
+        3. hash the contents and returns the response object
 
     Args:
         file_path: path to file. Follows the spec format
 
     Returns:
-        Python dict
+        Response object with digest and its contents
 
     Raises:
         SpecificationError
             with error code :ref:`error-code-S101`
     """
-
-    try:
-        pattern = r"^(url|file|data): (.*)"
-        result = re.match(pattern, file_path)
-        assert result is not None
-        method = result.group(1)
-        file_path = result.group(2)
-        function: Dict[str, Callable[[str], str]] = {
-            "file": read_file_and_parse,
-            "url": download_url,
-            "data": lambda x: x,
-        }
-        file_contents = function[method](file_path)
-        data = {"digest": hash(str(file_contents)), "contents": file_contents}
-        return data
-    except AssertionError:
-        raise e.SpecificationError(
-            error=file_path,
-            error_code="S101",
-            message="The file_path you gave didn't start with a method.",
-        )
+    method = check_path(file_path).method
+    function: Dict[str, Callable[[str], str]] = {
+        "file": read_file,
+        "url": download_url,
+        "data": lambda x: x,
+    }
+    file_contents = function[method](file_path)
+    data = m.FileResponse(digest=hash(str(file_contents)), contents=file_contents)
+    return data
 
 
 @typechecked
@@ -172,3 +168,26 @@ def hash(input_data: str) -> str:
     """Hashes the input string and returns its digest
     """
     return hashlib.sha256(input_data.encode("utf-8")).hexdigest()
+
+
+def check_path(file_path: str) -> m.PathResponse:
+    """Check if the given path is adhearing to the spec
+
+    Args:
+        file_path: The file path according to the spec
+
+    Returns:
+        the spec object
+    """
+    try:
+        pattern = r"^(url|file|data): (.*)"
+        result = re.match(pattern, file_path)
+        assert result is not None
+        data = m.PathResponse(method=result.group(1), path=result.group(2))
+        return data
+    except AssertionError:
+        raise e.SpecificationError(
+            error=file_path,
+            error_code="S101",
+            message="The file_path you gave didn't start with a method.",
+        )

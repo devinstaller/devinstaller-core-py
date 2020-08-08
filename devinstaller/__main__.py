@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Sat 18 Jul 2020 18:45:14 IST
+# Last-Updated: Sat  8 Aug 2020 15:20:44 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -40,10 +40,11 @@ from typing import Optional
 
 import click
 
-from devinstaller import app as a
 from devinstaller import exceptions as e
+from devinstaller import host
 
-DEFAULT_DOC_FILE_PATH = os.getcwd() + "/sample.devfile.yml"
+DEFAULT_SPEC_FILE_PATH = os.getcwd() + "/sample.devfile.toml"
+DEFAULT_PROG_FILE_PATH = os.getcwd() + "/sample.devfile.py"
 
 
 @click.group()
@@ -61,11 +62,18 @@ def process_result() -> None:
 
 @main.command()
 @click.option(
-    "-f",
-    "--file",
-    "file_name",
-    default=DEFAULT_DOC_FILE_PATH,
-    help="Name of the install file. Default: `install.yaml`",
+    "-s",
+    "--spec-file",
+    "spec_file",
+    default=DEFAULT_SPEC_FILE_PATH,
+    help="Path to the spec file.",
+)
+@click.option(
+    "-p",
+    "--prog-file",
+    "prog_file",
+    default=DEFAULT_PROG_FILE_PATH,
+    help="Path to the prog file.",
 )
 @click.option(
     "-p",
@@ -79,12 +87,17 @@ def process_result() -> None:
 )
 @click.option("--module", "module", help=("Name of the module you want to install. "))
 def install(
-    file_name: Optional[str], platform: Optional[str], module: Optional[str]
+    spec_file: str, platform: Optional[str], module: Optional[List[str]]
 ) -> None:
     """Install the default group and the modules which it requires
     """
     try:
-        a.install(file_path=file_name, platform_codename=platform, module=module)
+        d = host.Devinstaller()
+        d.install(
+            spec_file_path=spec_file,
+            platform_codename=platform,
+            requirements_list=[module],
+        )
     except e.DevinstallerError as err:
         click.secho(str(err), fg="red")
     except e.SpecificationError as err:
@@ -93,31 +106,45 @@ def install(
 
 @main.command()
 @click.option(
-    "-f",
-    "--file",
-    "file_name",
-    default=DEFAULT_DOC_FILE_PATH,
-    help="Name of the install file. Default: `install.yaml`",
+    "-s",
+    "--spec-file",
+    "spec_file",
+    default=DEFAULT_SPEC_FILE_PATH,
+    help="Path to the spec file.",
 )
-def show(file_name: Optional[str]) -> None:
+def show(spec_file: str) -> None:
     """Show all the groups and modules available for your OS
     """
     try:
-        assert file_name is not None
-        a.show(file_name)
+        d = host.Devinstaller()
+        d.show(spec_file)
     except e.DevinstallerError as err:
         click.secho(str(err), fg="red")
 
 
-# @main.command()
-# @click.argument("commands", nargs=-1)
-# def run(commands):
-#     """where COMMANDS is your regular bash command
-
-#     Example: Here `dev run brew install pipenv clang emacs` will install all
-#     the packages using brew and add it into the spec automagically.
-#     """
-#     pass
+@main.command()
+@click.option("--interface", "interface", help=("Name of the interface"))
+@click.option(
+    "-s",
+    "--spec-file",
+    "spec_file",
+    default=DEFAULT_SPEC_FILE_PATH,
+    help="Path to the spec file.",
+)
+@click.option(
+    "-p",
+    "--prog-file",
+    "prog_file",
+    default=DEFAULT_PROG_FILE_PATH,
+    help="Path to the prog file.",
+)
+@click.option("-p", "--platform", "platform", help=("Name of the current platform"))
+def run(interface, spec_file, prog_file, platform):
+    try:
+        d = host.Devinstaller()
+        d.run(spec_file_path=spec_file, platform_codename=platform, interface=interface)
+    except e.DevinstallerError as err:
+        click.secho(str(err), fg="red")
 
 
 if __name__ == "__main__":

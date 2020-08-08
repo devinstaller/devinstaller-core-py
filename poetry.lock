@@ -638,7 +638,7 @@ python-versions = "*"
 version = "0.7.5"
 
 [[package]]
-category = "dev"
+category = "main"
 description = "plugin and hook calling mechanisms for python"
 name = "pluggy"
 optional = false
@@ -1215,7 +1215,7 @@ python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*"
 version = "0.12.0"
 
 [metadata]
-content-hash = "f688eaa401cb19ed0869928673a223e69011e17dbc08363707a0fe7f642b671f"
+content-hash = "abe93b33b922aa0a6a02b29ce4aac5db84e662c479c104395305e193310b5460"
 python-versions = "^3.8"
 
 [metadata.files]

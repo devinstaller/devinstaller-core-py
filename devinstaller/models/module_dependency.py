@@ -1,9 +1,10 @@
 """Module dependency graph and other stuffs
 """
-from typing import Any, Dict, List, Set
+from typing import Any, Dict, List, Optional, Set
 
 from typeguard import typechecked
 
+from devinstaller import commands as c
 from devinstaller.exceptions import ModuleInstallationFailed, SpecificationError
 from devinstaller.models.app_module import AppModule
 from devinstaller.models.common_models import TypeAnyModule, TypeCommonModule
@@ -26,7 +27,11 @@ class ModuleDependency:
 
     @typechecked
     def __init__(
-        self, module_list: List[TypeCommonModule], platform_object: PlatformBlock
+        self,
+        module_list: List[TypeCommonModule],
+        platform_object: PlatformBlock,
+        before_each: Optional[str] = None,
+        after_each: Optional[str] = None,
     ) -> None:
         """Create dependency graph
         """
@@ -43,6 +48,8 @@ class ModuleDependency:
         for module_object in module_list:
             if check_platform_compatibility(platform_object, module_object):
                 module_type = module_object["module_type"]
+                module_object["before"] = before_each
+                module_object["after"] = after_each
                 module_object = remove_key(module_object, "supported_platforms")
                 module_object = remove_key(module_object, "module_type")
                 new_module = module_classes[module_type](**module_object)
@@ -175,7 +182,9 @@ class ModuleDependency:
         """
         module = self.graph[module_name]
         try:
+            c.launch_python(module.before)
             module.install()
+            c.launch_python(module.after)
             module.status = "success"
             return None
         except ModuleInstallationFailed:

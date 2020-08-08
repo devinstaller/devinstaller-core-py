@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Wed 22 Jul 2020 18:27:28 IST
+# Last-Updated: Sat  1 Aug 2020 21:20:16 IST
 #
 # commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -34,13 +34,15 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything related to running shell commands"""
+import re
 import shlex
 import subprocess
 
 from devinstaller import exceptions as e
+from devinstaller import models as m
 
 
-def run(command: str) -> None:
+def run_shell(command: str) -> None:
     """Runs the comand and returns None if no error else `subprocess.CalledProcessError` is raised
 
     Args:
@@ -53,3 +55,36 @@ def run(command: str) -> None:
         subprocess.run(shlex.split(command), capture_output=True, check=True)
     except subprocess.CalledProcessError as err:
         raise e.CommandFailed(returncode=err.returncode, cmd=err.cmd)
+
+
+def run_python(python_code: str):
+    pass
+
+
+def launch_python(python_fun_name: str):
+    pass
+
+
+def run(command: str) -> None:
+    """Run shell or python command
+    """
+    res = check_cmd(command)
+    command_functions = {"py": run_python, "sh": run_shell}
+    command_functions[res.prog](res.cmd)
+
+
+def check_cmd(command: str) -> m.CommandResponse:
+    """Check the command and returns the command response object
+    """
+    try:
+        pattern = r"^(py|sh): (.*)"
+        result = re.match(pattern, command)
+        assert result is not None
+        data = m.CommandResponse(prog=result.group(0), cmd=result.group(1))
+        return data
+    except AssertionError:
+        raise e.SpecificationError(
+            error=command,
+            error_code="S100",
+            message="The command didn't conform to the spec",
+        )

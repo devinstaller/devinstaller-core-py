@@ -4,7 +4,7 @@ from pydantic import validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
-from devinstaller.commands import run
+from devinstaller.commands import run_shell
 from devinstaller.exceptions import (
     CommandFailed,
     ModuleInstallationFailed,
@@ -33,6 +33,8 @@ class BaseModule:
     description: Optional[str] = None
     url: Optional[str] = None
     status: Optional[str] = None
+    before: Optional[str] = None
+    after: Optional[str] = None
     constants: Optional[Dict[str, str]] = None
 
     @validator("constants", pre=True)

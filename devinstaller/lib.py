@@ -1,9 +1,14 @@
 """The main module which is used by CLI and Library
 """
+import importlib.util
+import os
+import tempfile
+import types
 from typing import Any, Dict, List, Optional, Set
 
 from typeguard import typechecked
 
+import devinstaller
 from devinstaller import exceptions as e
 from devinstaller import file_handler as f
 from devinstaller import models as m
@@ -11,73 +16,81 @@ from devinstaller import schema as s
 from devinstaller import utilities as u
 
 
+@devinstaller.hookimpl
 @typechecked
-def install(
-    file_path: Optional[str] = None,
-    spec_object: Optional[Dict[Any, Any]] = None,
-    platform_codename: Optional[str] = None,
-    requirements_list: Optional[List[str]] = None,
-) -> None:
-    """Install the default preset and the modules which it requires.
-
-    There are two ways this function works.
-
-    1. Passing the file_path (Default method for the CLI usage)
-    2. Passing the spec_object
-
-    If you pass the file path then it takes the precedance and the file is read
-    and the object is loaded.
-
-    If not then it checks for the schema_object and if it is not present then
-    `ImplementationError` is raised.
-
-    And in either case the object will be validated before further processing.
+def load_devfile(
+    schema_object: m.TypeFullDocument, prog_file_path: Optional[str] = None
+) -> types.ModuleType:
+    """Loads the file and returns the module
 
     Args:
-        file_path: Takes in path to the spec file
-        spec_object: Takes in the full spec file as a python dict
-        platform_codename: The name of the platform
-        module: The name of the module to installed
+        schema_object: The full schema object
+        prog_file_path: The path to the `prog_file`
 
-    raises:
-        ImplementationError
-            with error code :ref:`error-code-D100`
+    Returns:
+        The module
     """
-    validated_schema_object = core(file_path=file_path, spec_object=spec_object)
+    if prog_file_path is None:
+        prog_file_path = schema_object["prog_file"]
+    res = f.check_path(prog_file_path)
+    file_functions = {
+        "file": lambda path: path,
+        "url": download_devfile,
+        "data": download_devfile,
+    }
+    module_path = file_functions[res.method](res.path)
+    dev_module = load_python_module(module_path)
+    if res.method == "url" or res.method == "data":
+        os.remove(module_path)
+    return dev_module
+
+
+@devinstaller.hookimpl
+@typechecked
+def download_devfile(file_path: str) -> str:
+    """Downloads the devfile so that it can be loaded
+
+    Args:
+        file_path: The path to the file
+
+    Returns:
+        The path where the file is saved
+    """
+    temp = f.get_data(file_path=file_path)
+    temp_file_path = tempfile.mkstemp()[1]
+    f.write_file(temp.contents, file_path=temp_file_path)
+    return temp_file_path
+
+
+@devinstaller.hookimpl
+@typechecked
+def load_python_module(
+    file_path: str, module_name: str = "devfile"
+) -> types.ModuleType:
+    """Loads the module
+    """
+    spec = importlib.util.spec_from_file_location(module_name, file_path)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+    return module
+
+
+@devinstaller.hookimpl
+@typechecked
+def create_dependency_graph(
+    schema_object: m.TypeFullDocument, platform_codename: str
+) -> m.ModuleDependency:
     platform_object = get_platform_object(
-        full_document=validated_schema_object, platform_codename=platform_codename
+        full_document=schema_object, platform_codename=platform_codename
     )
     dependency_graph = m.ModuleDependency(
-        module_list=validated_schema_object["modules"], platform_object=platform_object
+        module_list=schema_object["modules"], platform_object=platform_object
     )
-    if requirements_list is None:
-        requirement_list = ask_user_for_the_requirement_list(
-            dependency_graph.module_list()
-        )
-    dependency_graph.install(requirement_list)
-    orphan_modules_names = dependency_graph.orphan_modules
-    if orphan_modules_names != set():
-        if ask_user_for_uninstalling_orphan_modules(orphan_modules_names):
-            dependency_graph.uninstall_orphan_modules()
-    return None
+    return dependency_graph
 
 
-def run(
-    interface_name: Optional[str] = None,
-    file_path: Optional[str] = None,
-    spec_object: Optional[Dict[Any, Any]] = None,
-) -> m.TypeFullDocument:
-    """The `run` function.
-
-    This function is used for the interface block.
-    """
-    validated_schema_object = core(file_path, spec_object)
-    interface = m.get_interface(
-        interface_list=validated_schema_object["interfaces"],
-        interface_name=interface_name,
-    )
-
-
+@devinstaller.hookimpl
+@typechecked
 def core(
     file_path: Optional[str] = None, spec_object: Optional[Dict[Any, Any]] = None
 ) -> m.TypeFullDocument:
@@ -94,6 +107,7 @@ def core(
     return s.get_validated_document(schema_object)
 
 
+@devinstaller.hookimpl
 @typechecked
 def get_platform_object(
     full_document: m.TypeFullDocument, platform_codename: Optional[str] = None
@@ -107,10 +121,9 @@ def get_platform_object(
     return platform_object
 
 
+@devinstaller.hookimpl
 @typechecked
-def ask_user_for_the_requirement_list(
-    module_objects: List[m.TypeAnyModule],
-) -> List[str]:
+def get_requirement_list(module_objects: List[m.TypeAnyModule],) -> List[str]:
     """Ask the user for which modules to be installed
 
     Args:
@@ -131,14 +144,9 @@ def ask_user_for_the_requirement_list(
     return data
 
 
-def show(file_name: str) -> None:
-    """TODO
-    """
-    # TODO Write the function to show all the modules defined in the spec file
-
-
+@devinstaller.hookimpl
 @typechecked
-def ask_user_for_uninstalling_orphan_modules(orphan_list: Set[str]) -> bool:
+def get_user_confirmation(orphan_list: Set[str]) -> bool:
     """Asks user for confirmation for the uninstallation of the orphan modules.
 
     Args:

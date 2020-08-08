@@ -2,6 +2,9 @@
 """
 from devinstaller.models.base_module import ModuleInstallInstruction
 from devinstaller.models.common_models import (
+    CommandResponse,
+    FileResponse,
+    PathResponse,
     TypeAnyModule,
     TypeFullDocument,
     TypeInterface,
