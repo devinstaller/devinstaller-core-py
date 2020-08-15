@@ -38,6 +38,7 @@ class AppModule(base_module.BaseModule):
             return None
         for i in self.uninstall_inst:
             i = i.format(**self.constants)
+        return None
 
     def install(self) -> None:
         """The function which installs app modules
@@ -52,6 +53,7 @@ class AppModule(base_module.BaseModule):
         # installation_steps = create_instruction_list(self.install_inst)
         try:
             self.execute_instructions(self.install_inst)
+            return None
         except ModuleRollbackFailed:
             print(f"Rollback instructions for {self.display} failed. Quitting program.")
             sys.exit(1)
@@ -69,6 +71,7 @@ class AppModule(base_module.BaseModule):
         try:
             for i in self.uninstall_inst:
                 c.run(i)
+            return None
         except ModuleInstallationFailed:
             print(f"Uninstallation of {self.display} failed. Quitting program.")
             sys.exit(1)

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Sat  1 Aug 2020 18:17:53 IST
+# Last-Updated: Mon 10 Aug 2020 01:50:05 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,6 +37,7 @@
 import hashlib
 import os
 import re
+from dataclasses import dataclass
 from typing import Any, Callable, Dict
 
 import anymarkup
@@ -44,7 +45,24 @@ import requests
 from typeguard import typechecked
 
 from devinstaller import exceptions as e
-from devinstaller import models as m
+
+
+@dataclass
+class FileResponse:
+    """Response object for the `devinstaller.file_handler.get_data`
+    """
+
+    digest: str
+    contents: str
+
+
+@dataclass
+class PathResponse:
+    """Response object for the `devinstaller.file_handler.check_path`
+    """
+
+    method: str
+    path: str
 
 
 @typechecked
@@ -83,8 +101,8 @@ def read_file(file_path: str) -> str:
     """
     # TODO check if the path is starting with dot or two dots
     full_path = os.path.expanduser(file_path)
-    with open(full_path, "r") as f:
-        return f.read()
+    with open(full_path, "r") as _f:
+        return _f.read()
 
 
 @typechecked
@@ -126,7 +144,7 @@ def write_file(file_content: str, file_path: str) -> None:
 
 
 @typechecked
-def get_data(file_path: str) -> m.FileResponse:
+def get_data(file_path: str) -> FileResponse:
     """Checks the input_str and downloads or reads the file.
 
     Methods:
@@ -159,18 +177,18 @@ def get_data(file_path: str) -> m.FileResponse:
         "data": lambda x: x,
     }
     file_contents = function[method](file_path)
-    data = m.FileResponse(digest=hash(str(file_contents)), contents=file_contents)
+    data = FileResponse(digest=hash_data(str(file_contents)), contents=file_contents)
     return data
 
 
 @typechecked
-def hash(input_data: str) -> str:
+def hash_data(input_data: str) -> str:
     """Hashes the input string and returns its digest
     """
     return hashlib.sha256(input_data.encode("utf-8")).hexdigest()
 
 
-def check_path(file_path: str) -> m.PathResponse:
+def check_path(file_path: str) -> PathResponse:
     """Check if the given path is adhearing to the spec
 
     Args:
@@ -183,7 +201,7 @@ def check_path(file_path: str) -> m.PathResponse:
         pattern = r"^(url|file|data): (.*)"
         result = re.match(pattern, file_path)
         assert result is not None
-        data = m.PathResponse(method=result.group(1), path=result.group(2))
+        data = PathResponse(method=result.group(1), path=result.group(2))
         return data
     except AssertionError:
         raise e.SpecificationError(

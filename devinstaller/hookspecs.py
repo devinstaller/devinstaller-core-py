@@ -7,6 +7,8 @@ from devinstaller import models as m
 
 hookspec = pluggy.HookspecMarker("devinstaller")
 
+# pylint: disable=unused-argument
+
 
 @hookspec
 def create_dependency_graph(

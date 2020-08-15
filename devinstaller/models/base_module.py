@@ -4,7 +4,7 @@ from pydantic import validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
-from devinstaller.commands import run_shell
+from devinstaller.commands import run
 from devinstaller.exceptions import (
     CommandFailed,
     ModuleInstallationFailed,
@@ -40,7 +40,7 @@ class BaseModule:
     @validator("constants", pre=True)
     @typechecked
     def convert_constant(
-        cls, constants: Optional[List[Dict[str, str]]]
+        self, constants: Optional[List[Dict[str, str]]]
     ) -> Dict[str, str]:
         data: Dict[str, str] = {}
         if constants is None:
@@ -120,4 +120,3 @@ class BaseModule:
                     run(inst.rollback)
                 except CommandFailed:
                     raise ModuleRollbackFailed
-        return None

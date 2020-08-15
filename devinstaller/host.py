@@ -84,7 +84,7 @@ class Devinstaller:
         prog_file_path: Optional[str] = None,
         spec_object: Optional[Dict[Any, Any]] = None,
         platform_codename: Optional[str] = None,
-    ) -> m.TypeFullDocument:
+    ) -> None:
         """The `run` function.
 
         This function is used for the interface block.

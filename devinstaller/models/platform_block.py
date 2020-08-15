@@ -111,6 +111,7 @@ class PlatformBlock:
             )
             self.resolve(platform_list)
             return None
+        return None
 
     @typechecked
     def resolve(self, platforms_supported: List[TypePlatform]) -> None:

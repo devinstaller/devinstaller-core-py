@@ -180,11 +180,16 @@ class ModuleDependency:
         """The main function which handles the installation as well as its final installation
         status
         """
+
+        def check_function_name(function_name: Optional[str]) -> None:
+            if function_name is not None:
+                c.launch_python(function_name)
+
         module = self.graph[module_name]
         try:
-            c.launch_python(module.before)
+            check_function_name(module.before)
             module.install()
-            c.launch_python(module.after)
+            check_function_name(module.after)
             module.status = "success"
             return None
         except ModuleInstallationFailed:

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:10:17 IST
-# Last-Updated: Sat  8 Aug 2020 15:20:44 IST
+# Last-Updated: Mon 10 Aug 2020 01:11:15 IST
 #
 # __main__.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -36,7 +36,7 @@
 """The main entrypoint module for running CLI commands
 """
 import os
-from typing import Optional
+from typing import List, Optional
 
 import click
 

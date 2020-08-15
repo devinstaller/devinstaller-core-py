@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Sat  1 Aug 2020 21:20:16 IST
+# Last-Updated: Mon 10 Aug 2020 01:49:41 IST
 #
 # commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -37,9 +37,18 @@
 import re
 import shlex
 import subprocess
+from dataclasses import dataclass
 
 from devinstaller import exceptions as e
-from devinstaller import models as m
+
+
+@dataclass
+class CommandResponse:
+    """Response object for the `devinstaller.comands.check_cmd`
+    """
+
+    prog: str
+    cmd: str
 
 
 def run_shell(command: str) -> None:
@@ -73,14 +82,14 @@ def run(command: str) -> None:
     command_functions[res.prog](res.cmd)
 
 
-def check_cmd(command: str) -> m.CommandResponse:
+def check_cmd(command: str) -> CommandResponse:
     """Check the command and returns the command response object
     """
     try:
         pattern = r"^(py|sh): (.*)"
         result = re.match(pattern, command)
         assert result is not None
-        data = m.CommandResponse(prog=result.group(0), cmd=result.group(1))
+        data = CommandResponse(prog=result.group(0), cmd=result.group(1))
         return data
     except AssertionError:
         raise e.SpecificationError(

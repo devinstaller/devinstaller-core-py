@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sat  1 Aug 2020 21:18:33 IST
+# Last-Updated: Mon 10 Aug 2020 01:43:03 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -81,6 +81,8 @@ class TypeCommonModule(TypedDict, total=False):
     target: str
     url: str
     version: str
+    before: Optional[str]
+    after: Optional[str]
 
 
 class TypeInterfaceModule(TypedDict, total=False):
@@ -152,33 +154,6 @@ class TypeValidateResponse(TypedDict):
     valid: bool
     document: Dict[Any, Any]
     errors: Dict[Any, Any]
-
-
-@dataclass
-class FileResponse:
-    """Response object for the `devinstaller.file_handler.get_data`
-    """
-
-    digest: str
-    contents: str
-
-
-@dataclass
-class PathResponse:
-    """Response object for the `devinstaller.file_handler.check_path`
-    """
-
-    method: str
-    path: str
-
-
-@dataclass
-class CommandResponse:
-    """Response object for the `devinstaller.comands.check_cmd`
-    """
-
-    prog: str
-    cmd: str
 
 
 TypeAnyModule = Union[
