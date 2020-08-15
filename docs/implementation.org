@@ -1,4 +1,5 @@
 #+TITLE: The Implementation
+#+OPTIONS: author:nil
 
 * Introduction
 

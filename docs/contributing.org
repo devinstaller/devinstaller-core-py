@@ -1,4 +1,5 @@
 #+TITLE: Contributing
+#+OPTIONS: author:nil
 
 * Exporting org files :noexport:
 To export the org files use =org-pandoc-export-to-rst=.

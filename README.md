@@ -26,13 +26,13 @@ This Core package provided everything you need to read, parse and execute any `s
 
 # Full Documentation
 
-Main page: [Read the docs](https://devinstaller.readthedocs.io/en/latest/)
+Main page: [Read the docs](https://devinstaller-core.readthedocs.io/en/latest/)
 
 | Topic              | Documentation link                                                       |
 | ------------------ | ------------------------------------------------------------------------ |
 | The Design process | <https://devinstaller-core.readthedocs.io/en/latest/design_process.html> |
 | Terminology        | TODO                                                                     |
-| Specification      | <https://devinstaller-core.readthedocs.io/en/latest/specification.html>  |
+| Implementation     | <https://devinstaller-core.readthedocs.io/en/latest/implementation.html> |
 | API                | <https://devinstaller-core.readthedocs.io/en/latest/api.html>            |
 | Contributing       | <https://devinstaller-core.readthedocs.io/en/latest/contributing.html>   |
 

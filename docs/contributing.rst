@@ -2,8 +2,6 @@
 Contributing
 ============
 
-:Author: Justine Kizhakkinedath
-
 Prerequisites
 =============
 

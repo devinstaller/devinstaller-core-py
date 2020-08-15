@@ -2,8 +2,6 @@
 The Implementation
 ==================
 
-:Author: Justine Kizhakkinedath
-
 Introduction
 ============
 
