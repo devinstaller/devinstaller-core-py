@@ -2,7 +2,7 @@ style: gitlab
 template: CHANGELOG.tpl.md
 info:
   title: CHANGELOG
-  repository_url: https://gitlab.com/devinstaller/devinstaller
+  repository_url: https://gitlab.com/devinstaller/devinstaller-core-py
 options:
   commits:
     filters:

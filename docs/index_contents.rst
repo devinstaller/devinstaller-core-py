@@ -1,21 +1,11 @@
-What is Devinstaller?
-=====================
+What is Devinstaller Core?
+==========================
 
-Devinstaller is a general purpose orchestration tool for developers.
-Devinstaller started its life as a dotfile manager but now its has
-developed into a unique tool to handle developer environments and their
-tools.
+Devinstaller Core is the Python implementation for the Devinstaller
+Specification and the core library for other Devinstaller applications.
 
-Unlike other tools which are static config files and they are
-interpreted and executed by some other application, Devinstaller lets
-you handle the interpretation and its execution.
+This package is not meant to be used as is. You are supposed to create
+applications using this library.
 
-Usage
-=====
-
-Basic
------
-
-.. code:: bash
-
-   dev install
+This Core package provided everything you need to read, parse and
+execute any ``spec-file`` and ``prog-file``.

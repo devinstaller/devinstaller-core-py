@@ -1,4 +1,4 @@
-# Devinstaller
+# Devinstaller core
 
 [[_TOC_]]
 

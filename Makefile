@@ -2,7 +2,7 @@ SPHINXOPTS    ?=
 SPHINXBUILD   ?= sphinx-build
 SOURCEDIR     = docs
 BUILDDIR      = build
-ALLSPHINXOPTS = -z devinstaller
+ALLSPHINXOPTS = -z devinstaller_core
 
 # Put it first so that "make" without argument is like "make help".
 sphinx_help:

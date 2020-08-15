@@ -1,8 +1,0 @@
-========================
-CLI entry point
-========================
-
-.. automodule:: devinstaller.__main__
-   :members:
-   :undoc-members:
-   :show-inheritance:

@@ -22,7 +22,7 @@ sys.path.insert(0, os.path.abspath("../."))
 
 # -- Project information -----------------------------------------------------
 
-project = "Devinstaller"
+project = "Devinstaller Core"
 copyright = "2020, Justine Kizhakkinedath"
 author = "Justine Kizhakkinedath"
 
@@ -81,6 +81,11 @@ intersphinx_mapping = {
     # anymarkup sphinx docs N/A
 }
 
+html_theme_options = {
+    "github_banner": True,
+    "github_repo": "devinstaller-core-py",
+    "github_user": "devinstaller",
+}
 
 try:
     from StringIO import StringIO

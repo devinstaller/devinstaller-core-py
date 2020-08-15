@@ -1,22 +1,26 @@
-Welcome to Devinstaller's documentation!
+Documentation for Devinstaller Core
 ========================================
 
-.. toctree::
-   :maxdepth: 3
-   :caption: Table of Contents
+.. note::
+   If you are looking for information on how to use a Devinstaller application then you are at the wrong place.
 
-   design_process
-   specification
-   api
-   error_codes
-   main
-   contributing
+   Please refer to the docs by the respective Devinstaller application.
 
+   This doc is meant for developers who would like to create a Devinstaller Application.
 
+   `What is a Devinstaller application? <https://gitlab.com/devinstaller/deps>`__
 
 .. include:: index_contents.rst
 
+Table of Contents
+--------------------------
+.. toctree::
 
+   design_process
+   implementation
+   api
+   error_codes
+   contributing
 
 Indices and tables
 ==================
