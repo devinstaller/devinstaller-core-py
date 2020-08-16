@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Thu 28 May 2020 23:37:47 IST
-# Last-Updated: Sat 15 Aug 2020 13:49:23 IST
+# Last-Updated: Sun 16 Aug 2020 16:53:34 IST
 #
 # models.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -38,12 +38,12 @@ from typing import Any, Dict, List, Literal, Optional, TypedDict, Union
 
 from pydantic.dataclasses import dataclass
 
-from devinstaller_core.app_module import AppModule
-from devinstaller_core.file_module import FileModule
-from devinstaller_core.folder_module import FolderModule
-from devinstaller_core.group_module import GroupModule
-from devinstaller_core.link_module import LinkModule
-from devinstaller_core.phony_module import PhonyModule
+from devinstaller_core.module_app import ModuleApp
+from devinstaller_core.module_file import ModuleFile
+from devinstaller_core.module_folder import ModuleFolder
+from devinstaller_core.module_group import ModuleGroup
+from devinstaller_core.module_link import ModuleLink
+from devinstaller_core.module_phony import ModulePhony
 
 
 class TypeModuleInstallInstruction(TypedDict, total=False):
@@ -157,7 +157,7 @@ class TypeValidateResponse(TypedDict):
 
 
 TypeAnyModule = Union[
-    AppModule, FileModule, FolderModule, LinkModule, GroupModule, PhonyModule
+    ModuleApp, ModuleFile, ModuleFolder, ModuleLink, ModuleGroup, ModulePhony
 ]
 
 TypeModuleMap = Dict[str, TypeAnyModule]

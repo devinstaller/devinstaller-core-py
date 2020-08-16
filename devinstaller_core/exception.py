@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 19:06:45 IST
-# Last-Updated: Sat 25 Jul 2020 20:53:28 IST
+# Last-Updated: Sun 16 Aug 2020 14:44:20 IST
 #
 # exceptions.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -42,7 +42,11 @@ spec_errors = {
     "S101": "There was an error parsing the `file_path` statement",
 }
 
-dev_errors = {"D100": "Schema object not found.", "D101": "Invalid error code"}
+dev_errors = {
+    "D100": "Schema object not found.",
+    "D101": "Invalid error code",
+    "D102": "The Extension is not inherited from the required Base class",
+}
 
 
 class SpecificationError(Exception):

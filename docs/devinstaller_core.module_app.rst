@@ -1,7 +1,7 @@
 App module
 ======================================
 
-.. automodule:: devinstaller_core.app_module
+.. automodule:: devinstaller_core.module_app
    :members:
    :undoc-members:
    :show-inheritance:

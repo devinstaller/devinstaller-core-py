@@ -1,7 +1,7 @@
 Commands
 ============================
 
-.. automodule:: devinstaller_core.commands
+.. automodule:: devinstaller_core.command
    :members:
    :undoc-members:
    :show-inheritance:

@@ -4,8 +4,8 @@ from pydantic import validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
-from devinstaller_core import commands as c
-from devinstaller_core import exceptions as e
+from devinstaller_core import command as c
+from devinstaller_core import exception as e
 
 
 @dataclass
@@ -18,7 +18,7 @@ class ModuleInstallInstruction:
 
 
 @dataclass
-class BaseModule:
+class ModuleBase:
     """The class which will be used by all the modules
     """
 
@@ -33,8 +33,8 @@ class BaseModule:
     after: Optional[str] = None
     constants: Optional[Dict[str, str]] = None
 
+    @classmethod
     @validator("constants", pre=True)
-    @typechecked
     def convert_constant(
         cls, constants: Optional[List[Dict[str, str]]]
     ) -> Dict[str, str]:
@@ -66,10 +66,9 @@ class BaseModule:
         if self.display is None:
             self.display = self.name
 
+    @classmethod
     @typechecked
-    def execute_instructions(
-        self, instructions: List[ModuleInstallInstruction]
-    ) -> None:
+    def execute_instructions(cls, instructions: List[ModuleInstallInstruction]) -> None:
         """The function which handles installing of multi step commands.
 
         Args:
@@ -85,20 +84,22 @@ class BaseModule:
             return None
         for index, inst in enumerate(instructions):
             try:
-                c.run(inst.cmd)
+                session = c.Command()
+                session.run(inst.cmd)
             except e.CommandFailed:
                 rollback_list = instructions[:index]
                 rollback_list.reverse()
                 try:
-                    self.rollback_instructions(rollback_list)
+                    cls.rollback_instructions(rollback_list)
                 except e.ModuleRollbackFailed:
                     raise e.ModuleRollbackFailed
                 raise e.ModuleInstallationFailed
         return None
 
+    @classmethod
     @typechecked
     def rollback_instructions(
-        self, instructions: List[ModuleInstallInstruction]
+        cls, instructions: List[ModuleInstallInstruction]
     ) -> None:
         """Rollback the installation of a module
 
@@ -113,6 +114,7 @@ class BaseModule:
             if inst.rollback is not None:
                 try:
                     print(f"Rolling back `{inst.cmd}` using `{inst.rollback}`")
-                    c.run(inst.rollback)
+                    session = c.Command()
+                    session.run(inst.rollback)
                 except e.CommandFailed:
                     raise e.ModuleRollbackFailed

@@ -8,7 +8,7 @@
 [![img](https://img.shields.io/badge/license-mit-blueviolet?style=for-the-badge)]()
 [![Documentation Status](https://readthedocs.org/projects/devinstaller-core/badge/?version=latest&style=for-the-badge)](https://devinstaller-core.readthedocs.io/en/latest/?badge=latest)
 [![codecov](https://codecov.io/gl/devinstaller/devinstaller-core-py/branch/master/graph/badge.svg)](https://codecov.io/gl/devinstaller/devinstaller-core-py)
-[![pipeline](https://gitlab.com/justinekizhak/devinstaller-core/badges/master/pipeline.svg)](https://gitlab.com/devinstaller/devinstaller-core/-/commits/master)
+[![pipeline](https://gitlab.com/justinekizhak/devinstaller-core-py/badges/master/pipeline.svg)](https://gitlab.com/devinstaller/devinstaller-core-py/-/commits/master)
 
 ## Table of Contents
 

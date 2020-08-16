@@ -4,7 +4,7 @@ from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
 from devinstaller_core import common_models as c
-from devinstaller_core import exceptions as e
+from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
 
 
@@ -19,7 +19,7 @@ class Module:
 
 
 @dataclass
-class InterfaceBlock:
+class BlockInterface:
     """The class for interface
     """
 
@@ -41,7 +41,7 @@ class InterfaceBlock:
 @typechecked
 def get_interface(
     interface_list: List[c.TypeInterface], interface_name: Optional[str] = None
-) -> InterfaceBlock:
+) -> BlockInterface:
     if interface_name is None:
         interface_name = select_interface(interface_list=interface_list)
     interface_result: List[c.TypeInterface] = []
@@ -61,7 +61,7 @@ def get_interface(
             message="Your spec file has more than one interface with the same name. You need to do something about this.",
         )
     # TODO Check the `modules` key in InterfaceBlock
-    return InterfaceBlock(**interface_result[0])
+    return BlockInterface(**interface_result[0])
 
 
 def select_interface(interface_list: List[c.TypeInterface]) -> str:

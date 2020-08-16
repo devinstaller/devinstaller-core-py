@@ -7,13 +7,13 @@ from pydantic import validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
-from devinstaller_core import base_module as bm
-from devinstaller_core import commands as c
-from devinstaller_core import exceptions as e
+from devinstaller_core import command as c
+from devinstaller_core import exception as e
+from devinstaller_core import module_base as mb
 
 
 @dataclass
-class AppModule(bm.BaseModule):
+class ModuleApp(mb.ModuleBase):
     """The class which will be used by all the modules
     """
 
@@ -22,7 +22,7 @@ class AppModule(bm.BaseModule):
     executable: Optional[str] = None
     optionals: Optional[List[str]] = None
     requires: Optional[List[str]] = None
-    install_inst: Optional[List[bm.ModuleInstallInstruction]] = None
+    install_inst: Optional[List[mb.ModuleInstallInstruction]] = None
     uninstall_inst: Optional[List[str]] = None
     bind: Optional[List[str]] = None
 
@@ -70,7 +70,8 @@ class AppModule(bm.BaseModule):
             return None
         try:
             for i in self.uninstall_inst:
-                c.run(i)
+                session = c.Command()
+                session.run(i)
             return None
         except e.ModuleInstallationFailed:
             print(f"Uninstallation of {self.display} failed. Quitting program.")

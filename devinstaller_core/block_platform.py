@@ -6,11 +6,11 @@ from typing import List, Optional
 from typeguard import typechecked
 
 from devinstaller_core import common_models as cm
-from devinstaller_core import exceptions as e
+from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
 
 
-class PlatformBlock:
+class BlockPlatform:
     """Class for creating the current platform object
     """
 

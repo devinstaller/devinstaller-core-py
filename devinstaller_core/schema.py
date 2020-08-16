@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:12:48 IST
-# Last-Updated: Sat 15 Aug 2020 14:49:20 IST
+# Last-Updated: Sun 16 Aug 2020 16:54:07 IST
 #
 # schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -41,7 +41,7 @@ import cerberus
 from typeguard import typechecked
 
 from devinstaller_core import common_models as cm
-from devinstaller_core import exceptions as e
+from devinstaller_core import exception as e
 
 
 @typechecked

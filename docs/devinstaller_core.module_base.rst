@@ -1,7 +1,7 @@
-File module
+Base module
 =======================================
 
-.. automodule:: devinstaller_core.file_module
+.. automodule:: devinstaller_core.module_base
    :members:
    :undoc-members:
    :show-inheritance:

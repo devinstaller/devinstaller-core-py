@@ -1,6 +1,6 @@
 import pytest
 
-from devinstaller import file_handler as f
+from devinstaller_core import file_handler as f
 
 mock_obj = {"1": "foo", "2": "bar", "3": "baz"}
 

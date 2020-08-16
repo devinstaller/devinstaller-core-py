@@ -1,7 +1,7 @@
 Platform Block
 ==========================================
 
-.. automodule:: devinstaller_core.platform_block
+.. automodule:: devinstaller_core.block_platform
    :members:
    :undoc-members:
    :show-inheritance:

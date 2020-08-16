@@ -10,8 +10,8 @@ Utility models
 --------------------------
 .. toctree::
 
-   devinstaller_core.commands
-   devinstaller_core.exceptions
+   devinstaller_core.command
+   devinstaller_core.exception
    devinstaller_core.file_handler
    devinstaller_core.schema
    devinstaller_core.utilities
@@ -28,28 +28,45 @@ Modules
 Base module
 --------------------------
 .. toctree::
-   devinstaller_core.base_module
+   devinstaller_core.module_base
 
 Modules
 --------------------------
 .. toctree::
-   devinstaller_core.app_module
-   devinstaller_core.file_module
-   devinstaller_core.folder_module
-   devinstaller_core.group_module
-   devinstaller_core.link_module
-   devinstaller_core.phony_module
+   devinstaller_core.module_app
+   devinstaller_core.module_file
+   devinstaller_core.module_folder
+   devinstaller_core.module_group
+   devinstaller_core.module_link
+   devinstaller_core.module_phony
 
 ---------------
 Blocks
 ---------------
 .. toctree::
-   devinstaller_core.platform_block
-   devinstaller_core.interface_block
+   devinstaller_core.block_platform
+   devinstaller_core.block_interface
 
 
 ----------------------
 Module dependency
 ----------------------
 .. toctree::
-   devinstaller_core.module_dependency
+   devinstaller_core.dependency_graph
+
+
+----------------------
+Extensions
+----------------------
+
+Creating Extensions
+--------------------------
+.. toctree::
+   devinstaller_core.extension
+
+
+Builtin Extensions
+--------------------------
+.. toctree::
+   devinstaller_core.command_python
+   devinstaller_core.command_shell

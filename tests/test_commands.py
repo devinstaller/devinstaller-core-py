@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 03:00:14 IST
-# Last-Updated: Wed 22 Jul 2020 18:08:17 IST
+# Last-Updated: Sun 16 Aug 2020 18:32:22 IST
 #
 # test_commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -35,13 +35,45 @@ import shlex
 
 import pytest
 
-from devinstaller import commands as c
-from devinstaller import exceptions as e
+# from devinstaller_core import exception as e
+from devinstaller_core import command as c
+from devinstaller_core import command_python as cp
+from devinstaller_core import command_shell as cs
+from devinstaller_core import extension as ex
+
+# def test_command_run(fake_process):
+#     with pytest.raises(e.CommandFailed):
+#         command = "dev --version"
+#         mock_command = shlex.split(command)
+#         fake_process.register_subprocess(mock_command, returncode=1)
+#         c.run(command)
 
 
-def test_command_run(fake_process):
-    with pytest.raises(e.CommandFailed):
-        command = "dev --version"
-        mock_command = shlex.split(command)
-        fake_process.register_subprocess(mock_command, returncode=1)
-        c.run(command)
+class TestPythonExt:
+    def test_init(self):
+        cp.ExtCommand()
+
+    def test_parent(self):
+        assert issubclass(cp.ExtCommand, ex.BaseExt)
+        assert issubclass(cp.ExtCommand, ex.ExtCommand)
+
+    def test_command(self):
+        obj = cp.ExtCommand()
+        obj.run("print('hi')")
+
+
+class TestShellExt:
+    def test_init(self):
+        cs.ExtCommand()
+
+
+class TestCommand:
+    def test_init(self):
+        obj = c.Command()
+        obj.run("py: print('hi')")
+
+    def test_parse(self):
+        obj = c.Command()
+        res = obj.parse("py: print('hi')")
+        assert res.prog == "py"
+        assert res.cmd == "print('hi')"

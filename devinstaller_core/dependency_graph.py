@@ -4,17 +4,17 @@ from typing import Any, Dict, List, Optional, Set
 
 from typeguard import typechecked
 
-from devinstaller_core import commands as c
-from devinstaller_core import exceptions as e
+from devinstaller_core import command as c
+from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
-from devinstaller_core.app_module import AppModule
+from devinstaller_core.block_platform import BlockPlatform
 from devinstaller_core.common_models import TypeAnyModule, TypeCommonModule
-from devinstaller_core.file_module import FileModule
-from devinstaller_core.folder_module import FolderModule
-from devinstaller_core.group_module import GroupModule
-from devinstaller_core.link_module import LinkModule
-from devinstaller_core.phony_module import PhonyModule
-from devinstaller_core.platform_block import PlatformBlock
+from devinstaller_core.module_app import ModuleApp
+from devinstaller_core.module_file import ModuleFile
+from devinstaller_core.module_folder import ModuleFolder
+from devinstaller_core.module_group import ModuleGroup
+from devinstaller_core.module_link import ModuleLink
+from devinstaller_core.module_phony import ModulePhony
 
 
 class ModuleDependency:
@@ -29,7 +29,7 @@ class ModuleDependency:
     def __init__(
         self,
         module_list: List[TypeCommonModule],
-        platform_object: PlatformBlock,
+        platform_object: BlockPlatform,
         before_each: Optional[str] = None,
         after_each: Optional[str] = None,
     ) -> None:
@@ -38,15 +38,15 @@ class ModuleDependency:
         self.graph: Dict[str, TypeAnyModule] = {}
         self.orphan_modules: Set[str] = set()
         module_classes: Dict[str, Any] = {
-            "app": AppModule,
-            "file": FileModule,
-            "folder": FolderModule,
-            "link": LinkModule,
-            "group": GroupModule,
-            "phony": PhonyModule,
+            "app": ModuleApp,
+            "file": ModuleFile,
+            "folder": ModuleFolder,
+            "link": ModuleLink,
+            "group": ModuleGroup,
+            "phony": ModulePhony,
         }
         for module_object in module_list:
-            if check_platform_compatibility(platform_object, module_object):
+            if self.check_platform_compatibility(platform_object, module_object):
                 module_type = module_object["module_type"]
                 module_object["before"] = before_each
                 module_object["after"] = after_each
@@ -56,7 +56,7 @@ class ModuleDependency:
                 assert new_module.alias is not None
                 codename = new_module.alias
                 if codename in self.graph:
-                    self.graph[codename] = select_module(
+                    self.graph[codename] = self.select_module(
                         old_module=self.graph[codename], new_module=new_module
                     )
                 else:
@@ -134,7 +134,7 @@ class ModuleDependency:
             The updated orphan_list
         """
         module = self.graph[module_name]
-        if isinstance(module, PhonyModule):
+        if isinstance(module, ModulePhony):
             return None
         if module.requires is None:
             return None
@@ -162,7 +162,7 @@ class ModuleDependency:
             The updated orphan_list
         """
         module = self.graph[module_name]
-        if isinstance(module, PhonyModule):
+        if isinstance(module, ModulePhony):
             return None
         if module.optionals is None:
             return None
@@ -183,7 +183,8 @@ class ModuleDependency:
 
         def check_function_name(function_name: Optional[str]) -> None:
             if function_name is not None:
-                c.launch_python(function_name)
+                session = c.Prog()
+                session.launch(function_name, prog_file_path="", language_code="py")
 
         module = self.graph[module_name]
         try:
@@ -198,82 +199,80 @@ class ModuleDependency:
                 "And all the instructions has been rolled back."
             )
             module.status = "failed"
-            if isinstance(module, PhonyModule):
+            if isinstance(module, ModulePhony):
                 return None
             if module.requires is not None:
                 self.orphan_modules.update(module.requires)
             if module.optionals is not None:
                 self.orphan_modules.update(module.optionals)
 
+    @typechecked
+    def check_platform_compatibility(
+        self, platform_object: BlockPlatform, module: TypeCommonModule
+    ) -> bool:
+        """Checks if the given module is compatible with the current platform.
 
-@typechecked
-def check_platform_compatibility(
-    platform_object: PlatformBlock, module: TypeCommonModule
-) -> bool:
-    """Checks if the given module is compatible with the current platform.
+        Steps:
+            1. Checks if the user has provided `supported_platforms` key-value pair
+            in the module object. If it is NOT provided then it is assumed that this specific
+            module is compatible with all platforms and returns True.
+            2. Checks if the platform object is a "mock" platform object or not.
+            If the user didn't provided platforms block in the spec a "mock"
+            platform object as placeholder is generated. So it checks whether is
+            this the mock object or not. If it is then `SpecificationError` is raised.
+            3. Checks if the platform name is supported by the module. If yes then returns True.
+            4. Nothing else then returns False
 
-    Steps:
-        1. Checks if the user has provided `supported_platforms` key-value pair
-           in the module object. If it is NOT provided then it is assumed that this specific
-           module is compatible with all platforms and returns True.
-        2. Checks if the platform object is a "mock" platform object or not.
-           If the user didn't provided platforms block in the spec a "mock"
-           platform object as placeholder is generated. So it checks whether is
-           this the mock object or not. If it is then `SpecificationError` is raised.
-        3. Checks if the platform name is supported by the module. If yes then returns True.
-        4. Nothing else then returns False
+        Args:
+            platform_object: The current platform object
+            module: The module object
 
-    Args:
-        platform_object: The current platform object
-        module: The module object
+        Returns:
+            True if compatible else False
 
-    Returns:
-        True if compatible else False
+        Raises:
+            SpecificationError
+                with error code :ref:`error-code-S100`
+        """
+        if "supported_platforms" not in module:
+            return True
+        if platform_object.codename == "MOCK":
+            raise e.SpecificationError(
+                module["name"], "S100", "You are missing a platform object"
+            )
+        if platform_object.codename in module["supported_platforms"]:
+            return True
+        return False
 
-    Raises:
-        SpecificationError
-            with error code :ref:`error-code-S100`
-    """
-    if "supported_platforms" not in module:
-        return True
-    if platform_object.codename == "MOCK":
-        raise e.SpecificationError(
-            module["name"], "S100", "You are missing a platform object"
-        )
-    if platform_object.codename in module["supported_platforms"]:
-        return True
-    return False
+    @typechecked
+    def select_module(
+        self, old_module: TypeAnyModule, new_module: TypeAnyModule
+    ) -> TypeAnyModule:
+        """Sometimes the spec may have already declared two modules with same codename and for the same platform
 
+        In such cases we ask the user to select which one to use for the current session.
 
-@typechecked
-def select_module(
-    old_module: TypeAnyModule, new_module: TypeAnyModule
-) -> TypeAnyModule:
-    """Sometimes the spec may have already declared two modules with same codename and for the same platform
+        Only one can be used for the current session.
 
-    In such cases we ask the user to select which one to use for the current session.
+        Please note that the spec allows for multiple modules with same codename and usually they are for different platforms
+        but other wise you need to select one. You can't use multiple modules with same codename in the same session.
 
-    Only one can be used for the current session.
+        Args:
+            old_module: The old module which is already present in the `module_map`
+            new_module: The new module which happens to share the same codename of the `old_module`
 
-    Please note that the spec allows for multiple modules with same codename and usually they are for different platforms
-    but other wise you need to select one. You can't use multiple modules with same codename in the same session.
-
-    Args:
-        old_module: The old module which is already present in the `module_map`
-        new_module: The new module which happens to share the same codename of the `old_module`
-
-    Returns:
-        The selected module
-    """
-    print("Oops, looks like your spec has two modules with the same codename.")
-    print("But for the current session I can use only one.")
-    print("This is the first module")
-    print(old_module)
-    print("And this is the second module")
-    print(new_module)
-    title = "Do you mind selecting one?"
-    choices = ["First one", "Second one"]
-    selection = u.UserInteract.select(title, choices)
-    if selection == "First one":
-        return old_module
-    return new_module
+        Returns:
+            The selected module
+        """
+        print("Oops, looks like your spec has two modules with the same codename.")
+        print("But for the current session I can use only one.")
+        print("This is the first module")
+        print(old_module)
+        print("And this is the second module")
+        print(new_module)
+        title = "Do you mind selecting one?"
+        choices = ["First one", "Second one"]
+        selection = u.UserInteract.select(title, choices)
+        if selection == "First one":
+            return old_module
+        return new_module

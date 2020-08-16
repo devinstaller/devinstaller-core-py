@@ -1,4 +1,4 @@
-from devinstaller import models as m
+from devinstaller_core import app_module as m
 
 
 class TestConstants:
@@ -11,18 +11,18 @@ class TestConstants:
                 {"cmd": "cmd 2 {k2}"},
             ],
         }
-        obj = m.app_module.AppModule(**data)
+        obj = m.AppModule(**data)
         assert {"k1": "v1", "k2": "v2"} == obj.constants
         assert "cmd 1 v1" == obj.install_inst[0].cmd
         assert "rollback 1 v1" == obj.install_inst[0].rollback
         assert "cmd 2 v2" == obj.install_inst[1].cmd
-        assert None == obj.install_inst[1].rollback
+        assert obj.install_inst[1].rollback is None
 
     def test_2(self):
         data = {"name": "test"}
-        obj = m.app_module.AppModule(**data)
+        obj = m.AppModule(**data)
         assert {} == obj.constants
-        assert None == obj.install_inst
+        assert obj.install_inst is None
 
     def test_3(self):
         data = {
@@ -31,4 +31,4 @@ class TestConstants:
         }
         obj = m.app_module.AppModule(**data)
         assert {"k1": "v1", "k2": "v2"} == obj.constants
-        assert None == obj.install_inst
+        assert obj.install_inst is None

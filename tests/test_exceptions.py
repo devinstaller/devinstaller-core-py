@@ -1,6 +1,6 @@
 import pytest
 
-from devinstaller import exceptions as e
+from devinstaller_core import exceptions as e
 
 expected_response_for_specification = """
 Errors: test

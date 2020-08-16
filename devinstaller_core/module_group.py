@@ -4,11 +4,11 @@ from typing import List, Optional
 
 from pydantic.dataclasses import dataclass
 
-from devinstaller_core import base_module as bm
+from devinstaller_core import module_base as mb
 
 
 @dataclass
-class GroupModule(bm.BaseModule):
+class ModuleGroup(mb.ModuleBase):
     """The class which will be used by all the modules
     """
 

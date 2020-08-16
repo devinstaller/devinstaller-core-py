@@ -1,7 +1,7 @@
-Module Dependency
+Dependency Graph
 =============================================
 
-.. automodule:: devinstaller_core.module_dependency
+.. automodule:: devinstaller_core.dependency_graph
    :members:
    :undoc-members:
    :show-inheritance:

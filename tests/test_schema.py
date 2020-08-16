@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Wed 22 Jul 2020 17:21:27 IST
+# Last-Updated: Sat 15 Aug 2020 18:03:09 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -33,14 +33,14 @@
 # -----------------------------------------------------------------------------
 import pytest
 
-from devinstaller import file_handler as f
-from devinstaller import models as m
-from devinstaller import schema as s
+from devinstaller_core import common_models as cm
+from devinstaller_core import file_handler as f
+from devinstaller_core import schema as s
 
 
 @pytest.fixture(scope="class")
 def schema():
-    return m.schema()
+    return cm.schema()
 
 
 class TestSchemaValidity:
