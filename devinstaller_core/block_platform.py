@@ -33,7 +33,7 @@ class BlockPlatform:
         Returns:
             The platform object
         """
-        self.info: cm.TypePlatformInfo = get_current_platform()
+        self.info: cm.TypePlatformInfo = self.current_platform()
         self.codename: str = "MOCK"
         if not platform_codename:
             if platform_list is None:
@@ -134,18 +134,18 @@ class BlockPlatform:
         selection = u.UserInteract.select(title, choices)
         self.codename = selection
 
+    @classmethod
+    @typechecked
+    def current_platform(cls) -> cm.TypePlatformInfo:
+        """Get the current platform object
 
-@typechecked
-def get_current_platform() -> cm.TypePlatformInfo:
-    """Get the current platform object
-
-    Returns:
-        The current platform object
-    """
-    data: cm.TypePlatformInfo = {
-        "system": platform.system(),
-        "version": platform.version(),
-    }
-    if data["system"] == "Darwin":
-        data["version"] = platform.mac_ver()[0]
-    return data
+        Returns:
+            The current platform object
+        """
+        data: cm.TypePlatformInfo = {
+            "system": platform.system(),
+            "version": platform.version(),
+        }
+        if data["system"] == "Darwin":
+            data["version"] = platform.mac_ver()[0]
+        return data

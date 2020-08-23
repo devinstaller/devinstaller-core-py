@@ -5,9 +5,14 @@ from typeguard import typechecked
 
 
 class UserInteract:
-    @staticmethod
+    """All the methods you need for interacting with the users.
+
+    You can do things like ask user for confirmation, single select
+    or multiple select
+    """
+
     @typechecked
-    def confirm(title: str) -> bool:
+    def confirm(self, title: str) -> bool:
         """Wrapper function around `questionary.confirm`
 
         Asks user for yes or no response.
@@ -20,9 +25,8 @@ class UserInteract:
         """
         return questionary.confirm(title).ask()
 
-    @staticmethod
     @typechecked
-    def select(title: str, choices: List[str]) -> str:
+    def select(self, title: str, choices: List[str]) -> str:
         """Wrapper function around `questionary.select`
 
         Asks user to select one of the choices.
@@ -36,9 +40,8 @@ class UserInteract:
         """
         return questionary.select(title, choices).ask()
 
-    @staticmethod
     @typechecked
-    def checkbox(title: str, choices: List[str]) -> List[str]:
+    def checkbox(self, title: str, choices: List[str]) -> List[str]:
         """Wrapper function around `questionary.checkbox`
 
         Ask user to select all that which is applicable
@@ -53,30 +56,35 @@ class UserInteract:
         return questionary.checkbox(title, choices).ask()
 
 
-@typechecked
-def remove_key(input_dictionary: Dict[Any, Any], key: str) -> Dict[Any, Any]:
-    """Remove the key and its value from the dictionary
+class Dictionary:
+    @classmethod
+    @typechecked
+    def remove_key(cls, input_dictionary: Dict[Any, Any], key: str) -> Dict[Any, Any]:
+        """Remove the key and its value from the dictionary
 
-    The original dictionary is not modified instead a copy is made and modified and that is returned.
+        The original dictionary is not modified instead a copy is made
+        and modified and that is returned.
 
-    Args:
-        input_dictionary: Any dictionary
-        key: The key and its value you want to remove
+        Args:
+            input_dictionary: Any dictionary
+            key: The key and its value you want to remove
 
-    Returns:
-        A new dictionary without the specified key
-    """
-    if key not in input_dictionary:
-        return input_dictionary
-    new_dictionary = input_dictionary.copy()
-    new_dictionary.pop(key)
-    return new_dictionary
+        Returns:
+            A new dictionary without the specified key
+        """
+        if key not in input_dictionary:
+            return input_dictionary
+        new_dictionary = input_dictionary.copy()
+        new_dictionary.pop(key)
+        return new_dictionary
 
 
 class Compare:
-    @staticmethod
+    """All the methods you need to compare stuffs.
+    """
+
     @typechecked
-    def strings(*args: str) -> bool:
+    def strings(self, *args: str) -> bool:
         """Compare all the strings with each other (case insensitive)
 
         Takes in any number of string arguments.
@@ -90,9 +98,8 @@ class Compare:
             return False
         return True
 
-    @staticmethod
     @typechecked
-    def version(version: str, expected_version: str) -> bool:
+    def version(self, version: str, expected_version: str) -> bool:
         """Compares the version of the current platform and the version info in the spec file.
 
         TODO Works with both the platforms block and the modules block?

@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 15:40:37 IST
-# Last-Updated: Sun 16 Aug 2020 16:55:06 IST
+# Last-Updated: Sun 23 Aug 2020 00:02:43 IST
 #
 # file_handler.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -47,29 +47,134 @@ from typeguard import typechecked
 from devinstaller_core import exception as e
 
 
-@dataclass
-class FileResponse:
-    """Response object for the `devinstaller_core.file_handler.get_data`
+class FileManager:
+    """The class containing the methods require to handle files
     """
 
-    digest: str
-    contents: str
+    @classmethod
+    def read(cls, file_path: str) -> str:
+        """Reads the file at the path and returns the string representation
 
+        Args:
+            file_path: The path to the file
 
-@dataclass
-class PathResponse:
-    """Response object for the `devinstaller_core.file_handler.check_path`
-    """
+        Returns:
+            String representation of the file
+        """
+        # TODO check if the path is starting with dot or two dots
+        full_path = os.path.expanduser(file_path)
+        with open(full_path, "r") as _f:
+            return _f.read()
 
-    method: str
-    path: str
+    @classmethod
+    def download(cls, url: str) -> str:
+        """Downloads file from the internet
+
+        Args:
+            url: Url of the file
+
+        Returns:
+            String representation of file
+        """
+        response = requests.get(url)
+        return response.content.decode("utf-8")
+
+    @classmethod
+    def save(cls, file_content: str, file_path: str) -> None:
+        """Downloads file from the internet and saves to file
+        """
+        with open(file_path, "w") as f:
+            f.write(file_content)
+
+    @classmethod
+    def hash_data(cls, input_data: str) -> str:
+        """Hashes the input string and returns its digest
+        """
+        return hashlib.sha256(input_data.encode("utf-8")).hexdigest()
 
 
 class DevFile:
+    """Handles everything related to the `devfile`.
+
+    Data attributes:
+        digest: Contains the SHA-256 hash of the contents
+        contents: The Spec file Python object
+
+    Class attributes:
+        pattern: This is the regex pattern used to parse the input path
+        f_m: This is the object containing the file manager session
+        hash_method: This method is used to hash the data
+        extract: This is a dict with all the methods that is used to extract the data
+    """
+
     @typechecked
-    def parse_contents(
-        self, file_contents: str, file_format: str = "toml"
-    ) -> Dict[Any, Any]:
+    def __init__(self, file_path: str) -> None:
+        """Checks the input_str and downloads or reads the file.
+
+        Methods:
+            url:
+                downloads the file
+            file:
+                reads the file
+            data:
+                returns the data as is
+
+        Steps:
+            1. Extract the method
+            2. Use the method to get the file
+            3. hash the contents and returns the response object
+
+        Args:
+            file_path: path to file. Follows the spec format
+
+        Raises:
+            SpecificationError
+                with error code :ref:`error-code-S101`. This is bubbled up by the `parse` method.
+        """
+        self.pattern = r"^(url|file|data): (.*)"
+        self.fm = FileManager()
+        self.hash_method = self.fm.hash_data
+        self.extract: Dict[str, Callable[[str], str]] = {
+            "file": self.fm.read,
+            "url": self.fm.download,
+            "data": lambda x: x,
+        }
+        res = self.check_path(file_path)
+        file_contents = self.extract[res["method"]](res["path"])
+        self.digest = self.hash_method(str(file_contents))
+        self.contents = self.parse(file_contents)
+
+    @typechecked
+    def check_path(self, file_path: str) -> Dict[str, str]:
+        """Check if the given path is adhearing to the spec.
+
+        If it is complying with the specification then returns a dict
+        with the `method` and the `path` which can be used to access
+        the file.
+
+        Args:
+            file_path: The file path according to the spec
+
+        Returns:
+            Dict with `method` and `path`
+
+        Raises:
+            SpecificationError
+                with code :ref:`error-code-S101`
+        """
+        try:
+            result = re.match(self.pattern, file_path)
+            assert result is not None
+            return {"method": result.group(1), "path": result.group(2)}
+        except AssertionError:
+            raise e.SpecificationError(
+                error=file_path,
+                error_code="S101",
+                message="The file_path you gave didn't start with a method.",
+            )
+
+    @classmethod
+    def parse(cls, file_contents: str, file_format: str = "toml") -> Dict[Any, Any]:
         """Parse `file_contents` and returns the python object
 
         Args:
@@ -89,122 +194,4 @@ class DevFile:
                 error=file_contents,
                 error_code="S100",
                 message="There is some error in your file content",
-            )
-
-    @typechecked
-    def read_file(self, file_path: str) -> str:
-        """Reads the file at the path and returns the string representation
-
-        Args:
-            file_path: The path to the file
-
-        Returns:
-            String representation of the file
-        """
-        # TODO check if the path is starting with dot or two dots
-        full_path = os.path.expanduser(file_path)
-        with open(full_path, "r") as _f:
-            return _f.read()
-
-    @typechecked
-    def read_file_and_parse(self, file_path: str) -> Dict[Any, Any]:
-        """Reads the file at path and parse and returns the python object
-
-        It is composed of `read_file` and `parse_contents`
-
-        Args:
-            file_path: The path to the file
-
-        Returns:
-            Python object
-        """
-        file_format = file_path.split(".")[-1]
-        return self.parse_contents(self.read_file(file_path), file_format=file_format)
-
-    @typechecked
-    def download_url(self, url: str) -> str:
-        """Downloads file from the internet
-
-        Args:
-            url: Url of the file
-
-        Returns:
-            String representation of file
-        """
-        response = requests.get(url)
-        return response.content.decode("utf-8")
-
-    @typechecked
-    def write_file(self, file_content: str, file_path: str) -> None:
-        """Downloads file from the internet and saves to file
-        """
-        with open(file_path, "w") as f:
-            f.write(file_content)
-
-    @typechecked
-    def get_data(self, file_path: str) -> FileResponse:
-        """Checks the input_str and downloads or reads the file.
-
-        Methods:
-            url:
-                downloads the file
-            file:
-                reads the file
-            data:
-                returns the data as is
-
-        Steps:
-            1. Extract the method
-            2. Use the method to get the file
-            3. hash the contents and returns the response object
-
-        Args:
-            file_path: path to file. Follows the spec format
-
-        Returns:
-            Response object with digest and its contents
-
-        Raises:
-            SpecificationError
-                with error code :ref:`error-code-S101`
-        """
-        method = self.check_path(file_path).method
-        function: Dict[str, Callable[[str], str]] = {
-            "file": self.read_file,
-            "url": self.download_url,
-            "data": lambda x: x,
-        }
-        file_contents = function[method](file_path)
-        data = FileResponse(
-            digest=self.hash_data(str(file_contents)), contents=file_contents
-        )
-        return data
-
-    @typechecked
-    def hash_data(self, input_data: str) -> str:
-        """Hashes the input string and returns its digest
-        """
-        return hashlib.sha256(input_data.encode("utf-8")).hexdigest()
-
-    @typechecked
-    def check_path(self, file_path: str) -> PathResponse:
-        """Check if the given path is adhearing to the spec
-
-        Args:
-            file_path: The file path according to the spec
-
-        Returns:
-            the spec object
-        """
-        try:
-            pattern = r"^(url|file|data): (.*)"
-            result = re.match(pattern, file_path)
-            assert result is not None
-            data = PathResponse(method=result.group(1), path=result.group(2))
-            return data
-        except AssertionError:
-            raise e.SpecificationError(
-                error=file_path,
-                error_code="S101",
-                message="The file_path you gave didn't start with a method.",
             )

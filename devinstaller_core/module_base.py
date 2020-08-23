@@ -1,6 +1,6 @@
 from typing import Dict, List, Optional
 
-from pydantic import validator
+from pydantic import BaseModel, validator
 from pydantic.dataclasses import dataclass
 from typeguard import typechecked
 
@@ -24,8 +24,8 @@ class ModuleBase:
 
     # pylint: disable=too-many-instance-attributes
     name: str
-    alias: Optional[str] = None
-    display: Optional[str] = None
+    alias: str = None
+    display: str = None
     description: Optional[str] = None
     url: Optional[str] = None
     status: Optional[str] = None
@@ -33,14 +33,35 @@ class ModuleBase:
     after: Optional[str] = None
     constants: Optional[Dict[str, str]] = None
 
+    @validator("alias", pre=True, check_fields=False)
     @classmethod
-    @validator("constants", pre=True)
+    def alias_validator(cls, alias: Optional[str], values) -> str:
+        """Set the alias if it is not provided.
+        """
+        if alias is None:
+            return values["name"]
+        return alias
+
+    @validator("display", pre=True, check_fields=False)
+    @classmethod
+    def display_validator(cls, display: Optional[str], values) -> str:
+        """Set the display if it is not provided.
+        """
+        if display is None:
+            return values["name"]
+        return display
+
+    @validator("constants", pre=True, check_fields=False)
+    @classmethod
     def convert_constant(
         cls, constants: Optional[List[Dict[str, str]]]
     ) -> Dict[str, str]:
+        """Convert incomming dict into dict which can be used for
+        constants replacing.
+        """
         data: Dict[str, str] = {}
         if constants is None:
-            return data
+            return {}
         for i in constants:
             data[i["key"]] = i["value"]
         return data
@@ -59,12 +80,6 @@ class ModuleBase:
         """Abstract uninstall function for each module to be immplemented
         """
         raise NotImplementedError
-
-    def __post_init_post_parse__(self):
-        if self.alias is None:
-            self.alias = self.name
-        if self.display is None:
-            self.display = self.name
 
     @classmethod
     @typechecked

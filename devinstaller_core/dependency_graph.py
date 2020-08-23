@@ -50,8 +50,10 @@ class ModuleDependency:
                 module_type = module_object["module_type"]
                 module_object["before"] = before_each
                 module_object["after"] = after_each
-                module_object = u.remove_key(module_object, "supported_platforms")
-                module_object = u.remove_key(module_object, "module_type")
+                module_object = u.Dictionary.remove_key(
+                    module_object, "supported_platforms"
+                )
+                module_object = u.Dictionary.remove_key(module_object, "module_type")
                 new_module = module_classes[module_type](**module_object)
                 assert new_module.alias is not None
                 codename = new_module.alias

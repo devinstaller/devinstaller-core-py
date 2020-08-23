@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Wed  3 Jun 2020 18:39:27 IST
-# Last-Updated: Sat 15 Aug 2020 18:03:09 IST
+# Last-Updated: Sun 23 Aug 2020 20:56:41 IST
 #
 # test_schema.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -31,10 +31,12 @@
 #   otherwise, arising from, out of or in connection with the software or the use
 #   or other dealings in the software.
 # -----------------------------------------------------------------------------
+import json
+
 import pytest
 
 from devinstaller_core import common_models as cm
-from devinstaller_core import file_handler as f
+from devinstaller_core import file_manager as f
 from devinstaller_core import schema as s
 
 
@@ -43,133 +45,32 @@ def schema():
     return cm.schema()
 
 
-class TestSchemaValidity:
-    def test_toplevel(self, schema):
-        expected = f.read_file_and_parse("tests/data/schema/top_level_schema.json")
-        assert expected["version"] == schema["version"]
-        assert expected["author"] == schema["author"]
-        assert expected["description"] == schema["description"]
-        assert expected["url"] == schema["url"]
-        assert expected["include"] == schema["include"]
-        assert expected["prog_file"] == schema["prog_file"]
-
-    def test_platforms_block(self, schema):
-        expected = f.read_file_and_parse("tests/data/schema/platform_schema.json")
-        assert expected == schema["platforms"]
-
-    def test_modules_block(self, schema):
-        expected = f.read_file_and_parse("tests/data/schema/module_schema.json")
-        assert expected == schema["modules"]
-
-    def test_interfaces_block(self, schema):
-        expected = f.read_file_and_parse("tests/data/schema/interface_schema.json")
-        assert expected == schema["interfaces"]
-
-
-@pytest.fixture
-def mocked_system(mocker):
-    return mocker.patch("platform.system")
-
-
-@pytest.fixture
-def mocked_version(mocker):
-    return mocker.patch("platform.version")
-
-
-@pytest.fixture
-def mocked_mac_ver(mocker):
-    return mocker.patch("platform.mac_ver")
-
-
-class TestGetCurrentPlatform:
-    def test_mac(self, mocked_mac_ver, mocked_system, mocked_version):
-        expected_response = {"system": "Darwin", "version": "10.10.10"}
-        mocked_mac_ver_response = ("10.10.10", ("", "", ""), "x86_64")
-        mocked_system.return_value = expected_response["system"]
-        mocked_mac_ver.return_value = mocked_mac_ver_response
-        response = s.get_current_platform()
-        mocked_version.assert_called_once()
-        mocked_mac_ver.assert_called_once()
-        assert response == expected_response
-
-    def test_others(self, mocked_mac_ver, mocked_system, mocked_version):
-        expected_response = {"system": "Linux", "version": "10.14.6"}
-        mocked_system.return_value = expected_response["system"]
-        mocked_version.return_value = expected_response["version"]
-        response = s.get_current_platform()
-        mocked_mac_ver.assert_not_called()
-        assert response == expected_response
-
-
-class TestCompareStrings:
-    def test_no_arg(self):
-        assert s.compare_strings() is False
-
-    def test_one_arg(self):
-        assert s.compare_strings("foo") is True
-
-    def test_two_arg(self):
-        assert s.compare_strings("foo", "Foo") is True
-
-    def test_negative_arg(self):
-        assert s.compare_strings("foo", "bar") is False
-
-
-@pytest.fixture
-def full_document():
-    data = {
-        "modules": [
-            {"name": "foo", "module_type": "app", "supported_platforms": ["macos"]},
-            {"name": "bar", "module_type": "app"},
-        ]
-    }
-    return data
-
-
-class TestGenerateModuleMap:
-    def test_1(self, full_document):
-        """Testing if both foo and bar modules are returned.
-        foo is explicity supported and bar is implicitly.
-        """
-        platform_object = {"name": "macos"}
-        module_map = s.generate_module_map(full_document["modules"], platform_object)
-        expected_response = {
-            "foo": m.Module(name="foo", module_type="app", alias="foo", display="foo"),
-            "bar": m.Module(name="bar", module_type="app", alias="bar", display="bar"),
-        }
-        assert module_map == expected_response
-
-    def test_2(self, full_document):
-        """Testing if only bar module is returned.
-        foo is NOT supported and bar is supported implicitly.
-        """
-        platform_object = {"name": "test"}
-        module_map = s.generate_module_map(full_document["modules"], platform_object)
-        expected_response = {"bar": m.Module("bar", "app", "bar", "bar")}
-        assert module_map == expected_response
+def read_json(file_path: str):
+    with open(file_path, "r") as f:
+        return json.loads(f.read())
 
 
 class TestValidator:
     def test_top_level_success(self):
-        document = f.read_file_and_parse("tests/data/schema/top_level_valid.json")
-        assert s.validate(document)["valid"]
+        document = read_json("tests/data/schema/top_level_valid.json")
+        assert s.validate(document, cm.schema())["valid"]
 
     def test_top_level_fail(self):
-        document = f.read_file_and_parse("tests/data/schema/top_level_invalid.json")
-        assert not s.validate(document, m.top_level())["valid"]
+        document = read_json("tests/data/schema/top_level_invalid.json")
+        assert not s.validate(document, cm.schema())["valid"]
 
     def test_platform_success(self):
-        document = f.read_file_and_parse("tests/data/schema/platform_valid.json")
-        assert s.validate(document)["valid"]
+        document = read_json("tests/data/schema/platform_valid.json")
+        assert s.validate(document, cm.schema())["valid"]
 
     def test_module_success(self):
-        document = f.read_file_and_parse("tests/data/schema/module_valid.json")
-        assert s.validate(document)["valid"]
+        document = read_json("tests/data/schema/module_valid.json")
+        assert s.validate(document, cm.schema())["valid"]
 
     def test_interface_success(self):
-        document = f.read_file_and_parse("tests/data/schema/interface_valid.json")
-        assert s.validate(document)["valid"]
+        document = read_json("tests/data/schema/interface_valid.json")
+        assert s.validate(document, cm.schema())["valid"]
 
     def test_full_document_success(self):
-        document = f.read_file_and_parse("tests/data/schema/full_document_valid.json")
-        assert s.validate(document)["valid"]
+        document = read_json("tests/data/schema/full_document_valid.json")
+        assert s.validate(document, cm.schema())["valid"]

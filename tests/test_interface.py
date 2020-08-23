@@ -1,4 +1,4 @@
-from devinstaller import models as m
+from devinstaller_core import block_interface as m
 
 
 class TestInterfaceBlock:
@@ -8,4 +8,4 @@ class TestInterfaceBlock:
         interface = m.get_interface(
             interface_list=int_list, interface_name=interface_name
         )
-        assert isinstance(interface, m.InterfaceBlock)
+        assert isinstance(interface, m.BlockInterface)

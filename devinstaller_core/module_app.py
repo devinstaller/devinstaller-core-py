@@ -26,19 +26,38 @@ class ModuleApp(mb.ModuleBase):
     uninstall_inst: Optional[List[str]] = None
     bind: Optional[List[str]] = None
 
-    def __post_init_post_parse__(self):
-        if self.install_inst is None:
+    @validator("install_inst")
+    @classmethod
+    def replace_var_in_install_inst(
+        cls, install_inst: Optional[List[mb.ModuleInstallInstruction]], values
+    ) -> Optional[List[mb.ModuleInstallInstruction]]:
+        """The validator method which will replace all the varaibles in the
+        `install_inst` with the `constants`
+        """
+        constants = values["constants"]
+        if install_inst is None:
             return None
-        for i in self.install_inst:
-            i.cmd = i.cmd.format(**self.constants)
+        for i in install_inst:
+            i.cmd = i.cmd.format(**constants)
             i.rollback = (
-                i.rollback.format(**self.constants) if i.rollback is not None else None
+                i.rollback.format(**constants) if i.rollback is not None else None
             )
-        if self.uninstall_inst is None:
+        return install_inst
+
+    @validator("uninstall_inst")
+    @classmethod
+    def replace_var_in_uninstall_inst(
+        cls, uninstall_inst: Optional[List[str]], values
+    ) -> Optional[List[str]]:
+        """The validator method which will replace all the varaibles in the
+        `uninstall_inst` with the `constants`
+        """
+        constants = values["constants"]
+        if uninstall_inst is None:
             return None
-        for i in self.uninstall_inst:
-            i = i.format(**self.constants)
-        return None
+        for i in uninstall_inst:
+            i = i.format(**constants)
+        return uninstall_inst
 
     def install(self) -> None:
         """The function which installs app modules
