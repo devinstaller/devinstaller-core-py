@@ -83,8 +83,9 @@ class Compare:
     """All the methods you need to compare stuffs.
     """
 
+    @classmethod
     @typechecked
-    def strings(self, *args: str) -> bool:
+    def strings(cls, *args: str) -> bool:
         """Compare all the strings with each other (case insensitive)
 
         Takes in any number of string arguments.
@@ -98,8 +99,9 @@ class Compare:
             return False
         return True
 
+    @classmethod
     @typechecked
-    def version(self, version: str, expected_version: str) -> bool:
+    def version(cls, version: str, expected_version: str) -> bool:
         """Compares the version of the current platform and the version info in the spec file.
 
         TODO Works with both the platforms block and the modules block?

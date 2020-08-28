@@ -23,12 +23,16 @@ class BlockPlatform:
         """Main function to get the platform object.
 
         Steps:
-            1. If `platform_code_name` is provided then that is used to get the platform object
+            1. If `platform_codename` is provided then that is used to get the platform object
             2. If not present then current platform is checked against all the platforms defined
 
+        note.. If you give both the `platform_codename` and the `platform_list` then it will
+            just check if the `platform_codename` is present or not in the `platform_list` and
+            it will return the `platform_codename` even if the underlying OS is completely different.
+
         Args:
-            full_document: The full spec file
-            platform_code_name: name of the platform
+            platform_list: The list of platforms from the spec file
+            platform_codename: name of the platform
 
         Returns:
             The platform object
@@ -39,6 +43,8 @@ class BlockPlatform:
             if platform_list is None:
                 return None
             self.check_platform(platform_list)
+            return None
+        if platform_list is None:
             return None
         self.set_platform(platform_codename, platform_list=platform_list)
         return None
