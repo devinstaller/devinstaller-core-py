@@ -47,7 +47,6 @@ class BlockPlatform:
         if platform_list is None:
             return None
         self.set_platform(platform_codename, platform_list=platform_list)
-        return None
 
     @typechecked
     def set_platform(
@@ -80,7 +79,6 @@ class BlockPlatform:
                 message="Your spec file have more than one platform with the same name.",
             )
         self.codename = platform_codename
-        return None
 
     @typechecked
     def check_platform(self, platform_list: List[cm.TypePlatform]) -> None:

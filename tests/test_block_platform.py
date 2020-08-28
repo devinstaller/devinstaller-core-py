@@ -52,8 +52,8 @@ def mock_platform_list_2():
     """System and version doesn't match with the mocked one
     """
     return [
-        {"name": "macos", "platform_info": {"system": "test1", "version": "test"}},
-        {"name": "ubuntu", "platform_info": {"system": "test2", "version": "test"}},
+        {"name": "macos", "platform_info": {"system": "test1", "version": "test3"}},
+        {"name": "ubuntu", "platform_info": {"system": "test2", "version": "test4"}},
     ]
 
 
@@ -85,20 +85,20 @@ def assert_ran_on_linux(system, version, mac_ver):
             assert_ran_on_mac,
         ),
         (
-            pytest.lazy_fixture("mocked_system_mac"),
-            pytest.lazy_fixture("mocked_version_dummy"),
-            pytest.lazy_fixture("mocked_mac_ver"),
-            pytest.lazy_fixture("mock_platform_list"),
-            "test",
-            assert_ran_on_mac,
-        ),
-        (
             pytest.lazy_fixture("mocked_system_linux"),
             pytest.lazy_fixture("mocked_version_linux"),
             pytest.lazy_fixture("mocked_mac_ver"),
             pytest.lazy_fixture("mock_platform_list"),
             "test",
             assert_ran_on_linux,
+        ),
+        (
+            pytest.lazy_fixture("mocked_system_mac"),
+            pytest.lazy_fixture("mocked_version_dummy"),
+            pytest.lazy_fixture("mocked_mac_ver"),
+            pytest.lazy_fixture("mock_platform_list_2"),
+            "test",
+            assert_ran_on_mac,
         ),
     ],
 )
