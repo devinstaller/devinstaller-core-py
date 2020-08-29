@@ -110,7 +110,7 @@ class BlockPlatform:
             )
             self.resolve(platforms_supported)
             return None
-        if len(platforms_supported) < 1:
+        else:
             print(
                 "Hey.. I couldn't find the platform you are looking for. Can you do this manually?"
             )

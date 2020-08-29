@@ -145,6 +145,36 @@ def mock_platform_list_4():
     ]
 
 
+@pytest.fixture
+def mock_platform_list_5():
+    """Partial enty in the `platform_info` as well as version fail
+    """
+    return [
+        {
+            "name": "macos1",
+            "platform_info": {
+                "system": EXPECTED_MAC_PLATFORM_INFO["system"],
+                "version": "test",
+            },
+        },
+        {
+            "name": "macos2",
+            "platform_info": {"system": EXPECTED_MAC_PLATFORM_INFO["system"]},
+        },
+        {
+            "name": "linux1",
+            "platform_info": {
+                "system": EXPECTED_LINUX_PLATFORM_INFO["system"],
+                "version": "test",
+            },
+        },
+        {
+            "name": "linux2",
+            "platform_info": {"system": EXPECTED_LINUX_PLATFORM_INFO["system"]},
+        },
+    ]
+
+
 def assert_ran_on_mac(system, version, mac_ver):
     """Run all the assertions if the test was ran on mac
     """
@@ -307,6 +337,47 @@ def test_multiple_selected(
     assertion_fun(
         system=system, version=version, mac_ver=mac_ver, user_input=user_input
     )
+    assert obj.codename == expected_response
+
+
+@pytest.mark.parametrize(
+    "system, version, mac_ver, platform_list, assertion_fun, expected_response",
+    [
+        (
+            pytest.lazy_fixture("mocked_system_mac"),
+            pytest.lazy_fixture("mocked_version_dummy"),
+            pytest.lazy_fixture("mocked_mac_ver"),
+            pytest.lazy_fixture("mock_platform_list_5"),
+            assert_ran_on_mac,
+            "macos2",
+        ),
+        (
+            pytest.lazy_fixture("mocked_system_linux"),
+            pytest.lazy_fixture("mocked_version_linux"),
+            pytest.lazy_fixture("mocked_mac_ver"),
+            pytest.lazy_fixture("mock_platform_list_5"),
+            assert_ran_on_linux,
+            "linux2",
+        ),
+    ],
+)
+def test_partial_platform_info(
+    system, version, mac_ver, platform_list, assertion_fun, expected_response
+):
+    """Testing if only the `system` attribute is provided as well as `version` failing.
+
+    In the `platform_info` only the `system` attribute is mandatory, the `version` is not.
+
+    Testing if the version doesn't satisfy the required conditions.
+
+    The `version` attribute lets us drill down if the detected OS is satisfing
+    the required conditions.
+
+    This will test if only the `system` attribute satisfies but the `version` attribute
+    fails.
+    """
+    obj = s.BlockPlatform(platform_list=platform_list)
+    assertion_fun(system=system, version=version, mac_ver=mac_ver)
     assert obj.codename == expected_response
 
 
@@ -506,8 +577,3 @@ class TestInitPlatform:
         obj = s.BlockPlatform()
         assertion_fun(system=system, version=version, mac_ver=mac_ver)
         assert obj.codename == expected_output
-
-
-class TestPlatform:
-    """Testing core functionalities of the Platform class
-    """
