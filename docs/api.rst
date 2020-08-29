@@ -12,7 +12,7 @@ Utility models
 
    devinstaller_core.command
    devinstaller_core.exception
-   devinstaller_core.file_handler
+   devinstaller_core.file_manager
    devinstaller_core.schema
    devinstaller_core.utilities
 
@@ -49,7 +49,7 @@ Blocks
 
 
 ----------------------
-Module dependency
+Dependency Graph
 ----------------------
 .. toctree::
    devinstaller_core.dependency_graph

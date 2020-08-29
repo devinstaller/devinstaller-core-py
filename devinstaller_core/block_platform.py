@@ -21,7 +21,8 @@ class BlockPlatform:
         1. If `platform_codename` is provided then that is used to get the platform object
         2. If not present then current platform is checked against all the platforms defined
 
-    note.. If you give both the `platform_codename` and the `platform_list` then it will
+    .. note::
+        If you give both the `platform_codename` and the `platform_list` then it will
         just check if the `platform_codename` is present or not in the `platform_list` and
         it will return the `platform_codename` even if the underlying OS is completely different.
 
