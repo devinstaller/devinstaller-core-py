@@ -12,6 +12,19 @@ from devinstaller_core import utilities as u
 
 class BlockPlatform:
     """Class for creating the current platform object
+
+    Args:
+        platform_list: The list of platforms from the spec file
+        platform_codename: name of the platform
+
+    Steps:
+        1. If `platform_codename` is provided then that is used to get the platform object
+        2. If not present then current platform is checked against all the platforms defined
+
+    note.. If you give both the `platform_codename` and the `platform_list` then it will
+        just check if the `platform_codename` is present or not in the `platform_list` and
+        it will return the `platform_codename` even if the underlying OS is completely different.
+
     """
 
     @typechecked
@@ -21,18 +34,6 @@ class BlockPlatform:
         platform_codename: Optional[str] = None,
     ) -> None:
         """Main function to get the platform object.
-
-        Steps:
-            1. If `platform_codename` is provided then that is used to get the platform object
-            2. If not present then current platform is checked against all the platforms defined
-
-        note.. If you give both the `platform_codename` and the `platform_list` then it will
-            just check if the `platform_codename` is present or not in the `platform_list` and
-            it will return the `platform_codename` even if the underlying OS is completely different.
-
-        Args:
-            platform_list: The list of platforms from the spec file
-            platform_codename: name of the platform
 
         Returns:
             The platform object
@@ -114,8 +115,6 @@ class BlockPlatform:
                 "Hey.. I couldn't find the platform you are looking for. Can you do this manually?"
             )
             self.resolve(platform_list)
-            return None
-        return None
 
     @typechecked
     def resolve(self, platforms_supported: List[cm.TypePlatform]) -> None:
@@ -135,7 +134,7 @@ class BlockPlatform:
         """
         title = "Can you select one platform for me?"
         choices = [p["name"] for p in platforms_supported]
-        selection = u.UserInteract.select(title, choices)
+        selection = u.UserInteract.select(title=title, choices=choices)
         self.codename = selection
 
     @classmethod

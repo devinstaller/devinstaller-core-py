@@ -11,8 +11,9 @@ class UserInteract:
     or multiple select
     """
 
+    @classmethod
     @typechecked
-    def confirm(self, title: str) -> bool:
+    def confirm(cls, title: str) -> bool:
         """Wrapper function around `questionary.confirm`
 
         Asks user for yes or no response.
@@ -25,8 +26,9 @@ class UserInteract:
         """
         return questionary.confirm(title).ask()
 
+    @classmethod
     @typechecked
-    def select(self, title: str, choices: List[str]) -> str:
+    def select(cls, title: str, choices: List[str]) -> str:
         """Wrapper function around `questionary.select`
 
         Asks user to select one of the choices.
@@ -40,8 +42,9 @@ class UserInteract:
         """
         return questionary.select(title, choices).ask()
 
+    @classmethod
     @typechecked
-    def checkbox(self, title: str, choices: List[str]) -> List[str]:
+    def checkbox(cls, title: str, choices: List[str]) -> List[str]:
         """Wrapper function around `questionary.checkbox`
 
         Ask user to select all that which is applicable
