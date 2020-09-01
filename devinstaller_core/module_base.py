@@ -1,3 +1,4 @@
+from abc import ABC, abstractmethod
 from typing import Dict, List, Optional
 
 from pydantic import BaseModel, validator
@@ -17,7 +18,7 @@ class ModuleInstallInstruction:
 
 
 @dataclass
-class ModuleBase:
+class ModuleBase(ABC):
     """The class which will be used by all the modules"""
 
     # pylint: disable=too-many-instance-attributes
@@ -67,13 +68,15 @@ class ModuleBase:
             return f"{self.display}"
         return f"{self.display} - {self.description}"
 
+    @abstractmethod
     def install(self) -> None:
         """Abstract install function for each module to be immplemented"""
-        raise NotImplementedError
+        pass
 
+    @abstractmethod
     def uninstall(self) -> None:
         """Abstract uninstall function for each module to be immplemented"""
-        raise NotImplementedError
+        pass
 
     @classmethod
     @typechecked

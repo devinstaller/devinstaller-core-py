@@ -112,15 +112,15 @@ class DevinstallerError(Exception):
         return response
 
 
-class ModuleRollbackFailed(Exception):
+class ModuleRollbackFailed(DevinstallerError):
     pass
 
 
-class ModuleInstallationFailed(Exception):
+class ModuleInstallationFailed(DevinstallerError):
     pass
 
 
-class CommandFailed(subprocess.CalledProcessError):
+class CommandFailed(subprocess.CalledProcessError, DevinstallerError):
     """Wrapper exception around the standard `subprocess.CalledProcessError`
     exception.
     """
