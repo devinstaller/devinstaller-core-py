@@ -69,6 +69,13 @@ def mocked_user_input_first(mocked_user_input):
     return mocked_user_input
 
 
+@pytest.fixture
+def mocked_user_input_second(mocked_user_input):
+    """Mocking user input and return mock value"""
+    mocked_user_input.return_value = "Second one"
+    return mocked_user_input
+
+
 def get_platform_object(codename=None):
     obj = m.BlockPlatform()
     if codename is None:
@@ -110,6 +117,11 @@ def test_graph_gen(platform_object, modules_list, expected_response):
         ),
         (
             m.BlockPlatform(),
+            pytest.lazy_fixture("mock_modules_list_2"),
+            pytest.lazy_fixture("mocked_user_input_second"),
+        ),
+        (
+            m.BlockPlatform(),
             pytest.lazy_fixture("mock_modules_list_3"),
             pytest.lazy_fixture("mocked_user_input_first"),
         ),
@@ -127,16 +139,10 @@ def test_duplicate_modules(platform_object, modules_list, user_input):
 
 
 @pytest.mark.parametrize(
-    "platform_object, modules_list, expected_response",
-    [
-        (
-            get_platform_object(),
-            pytest.lazy_fixture("mock_modules_list"),
-            {"foo": m.ModuleApp(name="foo"), "bar": m.ModuleApp(name="bar")},
-        )
-    ],
+    "platform_object, modules_list",
+    [(get_platform_object(), pytest.lazy_fixture("mock_modules_list"))],
 )
-def test_platform_compatibility(platform_object, modules_list, expected_response):
+def test_platform_compatibility(platform_object, modules_list):
     """Testing if the platform compatibility error is raised
 
     If any of the modules has any information about the platform it can support in the
