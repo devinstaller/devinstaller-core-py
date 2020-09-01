@@ -62,8 +62,7 @@ ExtBase = TypeVar("ExtBase", bound=ex.BaseExt)
 
 
 class BaseCommand(Generic[ExtBase]):
-    """Base class for importing extensions
-    """
+    """Base class for importing extensions"""
 
     def __init__(self, extensions: List[str], ext_class: str) -> None:
         self.prog: Dict[str, ExtBase] = {}
@@ -109,10 +108,12 @@ class Command(BaseCommand[ex.ExtCommand]):
     def run(self, command: str) -> None:
         """Run shell or python command
 
+        Examples:
+            - run(`'sh: echo "Hello world"'`)
+            - run(`'py: print("Hello world")'`)
+
         Args:
             command: The full spec based command string
-                Ex: `sh: echo 'Hello world'`
-                    `py: print('Hello world')`
         """
         res = self.parse(command)
         lang_obj = self.prog[res.prog]
@@ -120,8 +121,7 @@ class Command(BaseCommand[ex.ExtCommand]):
 
     @classmethod
     def parse(cls, command: str) -> CommandResponse:
-        """Check the command and returns the command response object
-        """
+        """Check the command and returns the command response object"""
         try:
             pattern = r"^(.*): (.*)"
             result = re.match(pattern, command)
@@ -137,8 +137,7 @@ class Command(BaseCommand[ex.ExtCommand]):
 
 
 class Prog(BaseCommand[ex.ExtProg]):
-    """Create a session for executing prog files
-    """
+    """Create a session for executing prog files"""
 
     def __init__(self) -> None:
         ext_class = "ExtProg"

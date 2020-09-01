@@ -98,16 +98,13 @@ class DevFileManager:
     Creates a object which contains the spec as Python object and its
     digest.
 
-    :Extraction methods:
-        - url
-            downloads the file
-        - file
-            reads the file
-        - data
-            returns the data as is
+    Extraction methods:
+        - *url* :  downloads the file
+        - *file* : reads the file
+        - *data* : returns the data as is
 
-    :Steps:
-        1. Find the *Extraction method* for the input
+    Steps:
+        1. Find the extraction method for the input
         2. Use the method to get the file
         3. hash the contents and returns the response object
 
