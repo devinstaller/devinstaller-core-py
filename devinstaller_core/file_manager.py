@@ -33,11 +33,13 @@
 # use or other dealings in the software.
 # -----------------------------------------------------------------------------
 
-"""Handles everything file_handler"""
+"""Includes "manager" for handling the `devfile` and your system files
+"""
 import hashlib
 import os
 import re
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Any, Callable, Dict
 
 import anymarkup
@@ -48,8 +50,7 @@ from devinstaller_core import exception as e
 
 
 class FileManager:
-    """The class containing the methods require to handle files
-    """
+    """The "manager" for handling your system files."""
 
     @classmethod
     def read(cls, file_path: str) -> str:
@@ -61,9 +62,9 @@ class FileManager:
         Returns:
             String representation of the file
         """
-        # TODO check if the path is starting with dot or two dots
         full_path = os.path.expanduser(file_path)
-        with open(full_path, "r") as _f:
+        full_path = Path(full_path).resolve()
+        with open(str(full_path), "r") as _f:
             return _f.read()
 
     @classmethod
@@ -81,64 +82,69 @@ class FileManager:
 
     @classmethod
     def save(cls, file_content: str, file_path: str) -> None:
-        """Downloads file from the internet and saves to file
-        """
+        """Downloads file from the internet and saves to file"""
         with open(file_path, "w") as f:
             f.write(file_content)
 
     @classmethod
     def hash_data(cls, input_data: str) -> str:
-        """Hashes the input string and returns its digest
-        """
+        """Hashes the input string and returns its digest"""
         return hashlib.sha256(input_data.encode("utf-8")).hexdigest()
 
 
-class DevFile:
-    """Handles everything related to the `devfile`.
+class DevFileManager:
+    """The `devfile` manager.
 
-    Data attributes:
+    Creates a object which contains the spec as Python object and its
+    digest.
+
+    :Extraction methods:
+        - url
+            downloads the file
+        - file
+            reads the file
+        - data
+            returns the data as is
+
+    :Steps:
+        1. Find the *Extraction method* for the input
+        2. Use the method to get the file
+        3. hash the contents and returns the response object
+
+    Args:
+        file_path: path to file. Follows the spec format
+
+    Raises:
+        SpecificationError
+            with error code :ref:`error-code-S101`. This is bubbled up by the `parse` method.
+
+    Attributes:
         digest: Contains the SHA-256 hash of the contents
         contents: The Spec file Python object
+    """
 
-    Class attributes:
-        pattern: This is the regex pattern used to parse the input path
-        f_m: This is the object containing the file manager session
-        hash_method: This method is used to hash the data
-        extract: This is a dict with all the methods that is used to extract the data
+    pattern = r"^(url|file|data): (.*)"
+    """pattern: This is the regex pattern used to parse the input path
+    """
+
+    fm = FileManager()
+    """This is the object containing the file manager session
+    """
+
+    hash_method = fm.hash_data
+    """This method is used to hash the data
+    """
+
+    extract: Dict[str, Callable[[str], str]] = {
+        "file": fm.read,
+        "url": fm.download,
+        "data": lambda x: x,
+    }
+    """This is a dict with all the methods that is used to extract the data
     """
 
     @typechecked
     def __init__(self, file_path: str) -> None:
-        """Checks the input_str and downloads or reads the file.
-
-        Methods:
-            url:
-                downloads the file
-            file:
-                reads the file
-            data:
-                returns the data as is
-
-        Steps:
-            1. Extract the method
-            2. Use the method to get the file
-            3. hash the contents and returns the response object
-
-        Args:
-            file_path: path to file. Follows the spec format
-
-        Raises:
-            SpecificationError
-                with error code :ref:`error-code-S101`. This is bubbled up by the `parse` method.
-        """
-        self.pattern = r"^(url|file|data): (.*)"
-        self.fm = FileManager()
-        self.hash_method = self.fm.hash_data
-        self.extract: Dict[str, Callable[[str], str]] = {
-            "file": self.fm.read,
-            "url": self.fm.download,
-            "data": lambda x: x,
-        }
         res = self.check_path(file_path)
         file_contents = self.extract[res["method"]](res["path"])
         self.digest = self.hash_method(str(file_contents))

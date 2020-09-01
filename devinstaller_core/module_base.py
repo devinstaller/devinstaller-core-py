@@ -10,8 +10,7 @@ from devinstaller_core import exception as e
 
 @dataclass
 class ModuleInstallInstruction:
-    """The class used to convert `init`, `command` and `config` into objects
-    """
+    """The class used to convert `init`, `command` and `config` into objects"""
 
     cmd: str
     rollback: Optional[str] = None
@@ -19,13 +18,12 @@ class ModuleInstallInstruction:
 
 @dataclass
 class ModuleBase:
-    """The class which will be used by all the modules
-    """
+    """The class which will be used by all the modules"""
 
     # pylint: disable=too-many-instance-attributes
     name: str
-    alias: str = None
-    display: str = None
+    alias: Optional[str] = None
+    display: Optional[str] = None
     description: Optional[str] = None
     url: Optional[str] = None
     status: Optional[str] = None
@@ -36,8 +34,7 @@ class ModuleBase:
     @validator("alias", pre=True, check_fields=False)
     @classmethod
     def alias_validator(cls, alias: Optional[str], values) -> str:
-        """Set the alias if it is not provided.
-        """
+        """Set the alias if it is not provided."""
         if alias is None:
             return values["name"]
         return alias
@@ -45,8 +42,7 @@ class ModuleBase:
     @validator("display", pre=True, check_fields=False)
     @classmethod
     def display_validator(cls, display: Optional[str], values) -> str:
-        """Set the display if it is not provided.
-        """
+        """Set the display if it is not provided."""
         if display is None:
             return values["name"]
         return display
@@ -72,13 +68,11 @@ class ModuleBase:
         return f"{self.display} - {self.description}"
 
     def install(self) -> None:
-        """Abstract install function for each module to be immplemented
-        """
+        """Abstract install function for each module to be immplemented"""
         raise NotImplementedError
 
     def uninstall(self) -> None:
-        """Abstract uninstall function for each module to be immplemented
-        """
+        """Abstract uninstall function for each module to be immplemented"""
         raise NotImplementedError
 
     @classmethod
