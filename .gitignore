@@ -255,7 +255,7 @@ ipython_config.py
 
 ### VisualStudioCode ###
 .vscode/*
-!.vscode/settings.json
+!.vscode/settings.default.json
 !.vscode/tasks.json
 !.vscode/launch.json
 !.vscode/extensions.json
