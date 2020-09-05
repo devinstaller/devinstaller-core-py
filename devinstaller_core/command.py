@@ -34,13 +34,12 @@
 # -----------------------------------------------------------------------------
 
 """Handles everything related to running shell commands"""
-import importlib
-import pkgutil
 import re
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Dict, Generic, List, TypeVar, cast
 
+from devinstaller_core import constants as c
 from devinstaller_core import exception as e
 from devinstaller_core import extension as ex
 
@@ -58,52 +57,18 @@ class CommandResponse:
     cmd: str
 
 
-ExtBase = TypeVar("ExtBase", bound=ex.BaseExt)
-
-
-class BaseCommand(Generic[ExtBase]):
-    """Base class for importing extensions"""
-
-    def __init__(self, extensions: List[str], ext_class: str) -> None:
-        self.prog: Dict[str, ExtBase] = {}
-        self.extensions = extensions
-        self.ext_class = ext_class
-        for finder, name, ispkg in pkgutil.iter_modules():
-            if name.startswith("devinstaller_ext_"):
-                self.extensions.append(name)
-        for ext_path in self.extensions:
-            ext = self.import_ext(ext_path, self.ext_class)
-            self.prog[ext.LANGUAGE_CODE] = ext
-
-    @classmethod
-    def import_ext(cls, module_name: str, ext_class_name: str) -> ExtBase:
-        """Import Extension using the name of the module and the class where it is defined
-
-        Returns:
-            Instance of the class
-        """
-        module = importlib.import_module(module_name)
-        ext_class = getattr(module, ext_class_name)
-        try:
-            assert issubclass(ext_class, ex.BaseExt)
-            return ext_class()
-        except AssertionError:
-            raise e.DevinstallerError(ext_class, "D102")
-
-
-class Command(BaseCommand[ex.ExtCommand]):
-    """Create a session object for running prog commands
+class SessionSpec(ex.BaseExtension[ex.ExtSpec]):
+    """Using this class you can create a session object for running
+    commands in spec file
 
     Create a session using this class and use the `run` method to run the commands
     """
 
     def __init__(self) -> None:
-        ext_class = "ExtCommand"
-        extensions = [
-            "devinstaller_core.command_python",
-            "devinstaller_core.command_shell",
-        ]
-        super().__init__(extensions=extensions, ext_class=ext_class)
+        ext_class = c.SessionSpec.EXTENSION_CLASS
+        builtin_extensions = c.SessionSpec.BUILTIN_EXTENSIONS
+        self.prog: Dict[str, ex.ExtSpec] = {}
+        super().__init__(builtin_extensions=builtin_extensions, ext_class=ext_class)
 
     def run(self, command: str) -> None:
         """Run shell or python command
@@ -115,7 +80,7 @@ class Command(BaseCommand[ex.ExtCommand]):
         Args:
             command: The full spec based command string
         """
-        res = self.parse(command)
+        res: CommandResponse = self.parse(command)
         lang_obj = self.prog[res.prog]
         lang_obj.run(res.cmd)
 
@@ -123,7 +88,7 @@ class Command(BaseCommand[ex.ExtCommand]):
     def parse(cls, command: str) -> CommandResponse:
         """Check the command and returns the command response object"""
         try:
-            pattern = r"^(.*): (.*)"
+            pattern = c.SessionSpec.PARSE_PATTERN
             result = re.match(pattern, command)
             assert result is not None
             data = CommandResponse(prog=result.group(1), cmd=result.group(2))
@@ -135,16 +100,27 @@ class Command(BaseCommand[ex.ExtCommand]):
                 message="The command didn't conform to the spec",
             )
 
+    def load_extension(self, extension: ex.ExtSpec):
+        """Loading extension
+        """
+        self.prog[extension.LANGUAGE_CODE] = extension
 
-class Prog(BaseCommand[ex.ExtProg]):
+
+class SessionProg(ex.BaseExtension[ex.ExtProg]):
     """Create a session for executing prog files"""
 
     def __init__(self) -> None:
-        ext_class = "ExtProg"
-        extensions = ["devinstaller_core.command_python"]
-        super().__init__(extensions=extensions, ext_class=ext_class)
+        ext_class = c.SessionProg.EXTENSION_CLASS
+        builtin_extensions = c.SessionProg.BUILTIN_EXTENSIONS
+        self.prog: Dict[str, ex.ExtSpec] = {}
+        super().__init__(builtin_extensions=builtin_extensions, ext_class=ext_class)
 
     def launch(
         self, function_name: str, prog_file_path: str, language_code: str = "py"
     ) -> None:
         pass
+
+    def load_extension(self, extension: ex.ExtProg):
+        """Loading extension
+        """
+        self.prog[extension.LANGUAGE_CODE] = extension

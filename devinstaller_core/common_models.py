@@ -50,7 +50,7 @@ class TypeModuleInstallInstruction(TypedDict, total=False):
     """Type declaration for the instruction for `init`, `command` and `config`
     """
 
-    install: str
+    cmd: str
     rollback: Optional[str]
 
 
@@ -59,7 +59,8 @@ class TypeCommonModule(TypedDict, total=False):
     """
 
     alias: str
-    command: Union[TypeModuleInstallInstruction, str]
+    commands: Union[TypeModuleInstallInstruction, str]
+    install_inst: List[TypeModuleInstallInstruction]
     config: List[Union[TypeModuleInstallInstruction, str]]
     content: str
     create: bool

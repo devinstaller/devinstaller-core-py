@@ -4,7 +4,7 @@ CODE = "py"
 NAME = "Python"
 
 
-class ExtCommand(ex.ExtCommand):
+class ExtSpec(ex.ExtSpec):
     LANGUAGE_CODE = CODE
     LANGUAGE_NAME = NAME
 

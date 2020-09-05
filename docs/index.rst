@@ -17,6 +17,7 @@ Table of Contents
 .. toctree::
 
    design_process
+   user_guide
    implementation
    api
    error_codes

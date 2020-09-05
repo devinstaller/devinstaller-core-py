@@ -96,7 +96,7 @@ class ModuleBase(ABC):
             return None
         for index, inst in enumerate(instructions):
             try:
-                session = c.Command()
+                session = c.SessionSpec()
                 session.run(inst.cmd)
             except e.CommandFailed:
                 rollback_list = instructions[:index]

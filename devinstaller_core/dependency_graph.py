@@ -17,7 +17,7 @@ from devinstaller_core.module_link import ModuleLink
 from devinstaller_core.module_phony import ModulePhony
 
 
-class ModuleDependency:
+class DependencyGraph:
     """Module dependency class
 
     Args:
@@ -215,14 +215,23 @@ class ModuleDependency:
         """Checks if the given module is compatible with the current platform.
 
         Steps:
-            1. Checks if the user has provided `supported_platforms` key-value pair
-            in the module object. If it is NOT provided then it is assumed that this specific
-            module is compatible with all platforms and returns True.
+            1. Checks if the user has provided `supported_platforms` key-value
+               pair in the module object.
+
+               If it is NOT provided then it is assumed that this specific
+               module is compatible with all platforms and returns True.
+
             2. Checks if the platform object is a "mock" platform object or not.
-            If the user didn't provided platforms block in the spec a "mock"
-            platform object as placeholder is generated. So it checks whether is
-            this the mock object or not. If it is then `SpecificationError` is raised.
-            3. Checks if the platform name is supported by the module. If yes then returns True.
+
+               If the user didn't provided platforms block in the spec a "mock"
+               platform object as placeholder is generated.
+
+               So it checks whether is this the mock object or not. If it is
+               then :class:`~devinstaller_core.exception.SpecificationError` is raised.
+
+            3. Checks if the platform name is supported by the module. If yes
+               then returns True.
+
             4. Nothing else then returns False
 
         Args:
@@ -250,18 +259,27 @@ class ModuleDependency:
     def select_module(
         self, old_module: TypeAnyModule, new_module: TypeAnyModule
     ) -> TypeAnyModule:
-        """Sometimes the spec may have already declared two modules with same codename and for the same platform
+        """Sometimes the spec may have already declared two modules with
+        same codename and for the same platform
 
-        In such cases we ask the user to select which one to use for the current session.
+        In such cases we ask the user to select which one to use for the
+        current session.
 
         Only one can be used for the current session.
 
-        Please note that the spec allows for multiple modules with same codename and usually they are for different platforms
-        but other wise you need to select one. You can't use multiple modules with same codename in the same session.
+        Note:
+            Please note that the spec allows for multiple modules with same
+            codename and usually they are for different platforms
+            but other wise you need to select one.
+
+            You can't use multiple
+            modules with same codename in the same session.
 
         Args:
-            old_module: The old module which is already present in the `module_map`
-            new_module: The new module which happens to share the same codename of the `old_module`
+            old_module: The old module which is already present in the
+               `module_map`
+            new_module: The new module which happens to share the same
+               codename of the `old_module`
 
         Returns:
             The selected module

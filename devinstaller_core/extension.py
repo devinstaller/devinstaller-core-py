@@ -1,15 +1,37 @@
 """The Module for creating extensions
 """
+import importlib
+import pkgutil
 from abc import ABC, abstractmethod
+from typing import Dict, Generic, List, TypeVar, cast
+
+from devinstaller_core import exception as e
 
 
 class BaseExt(ABC):
     """Base class for creating Abstract class for Extensions
 
-    .. warning::
-        Don't inherit this class for creating Extensions.
+    Warning:
+        Don't inherit this class for creating any Extensions.
         This class is for creating other classes which is what you need to create
         base class for Extensions.
+    """
+
+
+class BaseExtLang(BaseExt):
+    """Base class for creating Extensions for different programming languages
+
+
+    Warning:
+        Don't inherit this class for creating Extensions for supporting different
+        programming languages.
+        You are probably looking for either of these:
+            - :class:`.ExtSpec`
+                This is used to create programming language extensions to run
+                commands in spec file.
+            - :class:`.ExtProg`
+                This is used to create programming language extensions to run
+                commands in the prog file.
     """
 
     @property
@@ -25,8 +47,11 @@ class BaseExt(ABC):
         """
 
 
-class ExtCommand(BaseExt):
-    """Base class for creating Extensions for running commands
+class ExtSpec(BaseExtLang):
+    """Base class for creating Extensions for running commands in spec file
+
+    This is used to create programming language extensions to run commands
+    in spec file.
     """
 
     @abstractmethod
@@ -35,11 +60,62 @@ class ExtCommand(BaseExt):
         """
 
 
-class ExtProg(BaseExt):
+class ExtProg(BaseExtLang):
     """Base class for creating Extensions for executing prog files
+
+    This is used to create programming language extensions to run
+    commands in the prog file.
     """
 
     @abstractmethod
     def launch(self, launch: str) -> None:
         """Execute the given `launch` attribute using the prog module
         """
+
+
+ExtensionModule = TypeVar("ExtensionModule", bound=BaseExt)
+
+
+class BaseExtension(Generic[ExtensionModule], ABC):
+    """Base class for importing extensions"""
+
+    def __init__(self, builtin_extensions: List[str], ext_class: str) -> None:
+        """
+
+        Args:
+            builtin_extensions: The list of all the builtin extensions
+            ext_class: The name of the class which will be imported and
+                used
+        """
+        self.extensions = builtin_extensions
+        self.ext_class = ext_class
+        for finder, name, ispkg in pkgutil.iter_modules():
+            if name.startswith("devinstaller_ext_"):
+                self.extensions.append(name)
+        for ext_path in self.extensions:
+            ext = self.import_ext(ext_path, self.ext_class)
+            self.load_extension(ext)
+
+    @abstractmethod
+    def load_extension(self, extension: ExtensionModule):
+        """Logic for loading the extension
+
+        This method recieves the Extension class parsed and ready to be loaded.
+
+        It is how you inherit and define this method the Extension will be loaded.
+        """
+
+    @classmethod
+    def import_ext(cls, module_path: str, ext_class_name: str) -> ExtensionModule:
+        """Import Extension using the name of the module and the class where it is defined
+
+        Returns:
+            Instance of the class
+        """
+        module = importlib.import_module(module_path)
+        ext_class = getattr(module, ext_class_name)
+        try:
+            assert issubclass(ext_class, BaseExt)
+            return ext_class()
+        except AssertionError:
+            raise e.DevinstallerError(ext_class, "D102")

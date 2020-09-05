@@ -51,29 +51,29 @@ from devinstaller_core import extension as ex
 
 class TestPythonExt:
     def test_init(self):
-        cp.ExtCommand()
+        cp.ExtSpec()
 
     def test_parent(self):
-        assert issubclass(cp.ExtCommand, ex.BaseExt)
-        assert issubclass(cp.ExtCommand, ex.ExtCommand)
+        assert issubclass(cp.ExtSpec, ex.BaseExt)
+        assert issubclass(cp.ExtSpec, ex.ExtSpec)
 
     def test_command(self):
-        obj = cp.ExtCommand()
+        obj = cp.ExtSpec()
         obj.run("print('hi')")
 
 
 class TestShellExt:
     def test_init(self):
-        cs.ExtCommand()
+        cs.ExtSpec()
 
 
 class TestCommand:
     def test_init(self):
-        obj = c.Command()
+        obj = c.SessionSpec()
         obj.run("py: print('hi')")
 
     def test_parse(self):
-        obj = c.Command()
+        obj = c.SessionSpec()
         res = obj.parse("py: print('hi')")
         assert res.prog == "py"
         assert res.cmd == "print('hi')"

@@ -5,7 +5,7 @@ from devinstaller_core import exception as e
 from devinstaller_core import extension as ex
 
 
-class ExtCommand(ex.ExtCommand):
+class ExtSpec(ex.ExtSpec):
     LANGUAGE_CODE = "sh"
     LANGUAGE_NAME = "Shell"
 

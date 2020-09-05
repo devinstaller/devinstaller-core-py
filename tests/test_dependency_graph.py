@@ -57,6 +57,18 @@ def mock_modules_list_4():
 
 
 @pytest.fixture
+def mock_modules_list_5():
+    """Module list for testing dependency"""
+    return [
+        {
+            "name": "foo",
+            "module_type": "app",
+            "install_inst": [{"cmd": "sh: echo 'hi'"}],
+        }
+    ]
+
+
+@pytest.fixture
 def mocked_user_input(mocker):
     """Mocking user input"""
     return mocker.patch("devinstaller_core.utilities.UserInteract.select")
@@ -101,7 +113,7 @@ def get_platform_object(codename=None):
 )
 def test_graph_gen(platform_object, modules_list, expected_response):
     """Testing if the graph generated respects the platform codename"""
-    module_map = m.ModuleDependency(
+    module_map = m.DependencyGraph(
         module_list=modules_list, platform_object=platform_object
     )
     assert module_map.graph == expected_response
@@ -134,7 +146,7 @@ def test_graph_gen(platform_object, modules_list, expected_response):
 )
 def test_duplicate_modules(platform_object, modules_list, user_input):
     """Testing if there are more than 1 module with same codename"""
-    m.ModuleDependency(module_list=modules_list, platform_object=platform_object)
+    m.DependencyGraph(module_list=modules_list, platform_object=platform_object)
     user_input.assert_called_once()
 
 
@@ -157,7 +169,7 @@ def test_platform_compatibility(platform_object, modules_list):
     This "mock" object given by the `BlockPlatform` is in turn used for this.
     """
     with pytest.raises(e.SpecificationError):
-        m.ModuleDependency(module_list=modules_list, platform_object=platform_object)
+        m.DependencyGraph(module_list=modules_list, platform_object=platform_object)
 
 
 @pytest.mark.parametrize(
@@ -169,5 +181,14 @@ def test_platform_compatibility(platform_object, modules_list):
 )
 def test_module_list_method(platform_object, modules_list, expected_response):
     """Testing if the data returned by the `module_list`"""
-    obj = m.ModuleDependency(module_list=modules_list, platform_object=platform_object)
+    obj = m.DependencyGraph(module_list=modules_list, platform_object=platform_object)
     assert len(obj.module_list()) == expected_response
+
+
+@pytest.mark.parametrize(
+    "platform_object, module_list, requirement_list",
+    [(get_platform_object(), pytest.lazy_fixture("mock_modules_list_5"), ["foo"])],
+)
+def test_graph_install(platform_object, module_list, requirement_list):
+    obj = m.DependencyGraph(module_list=module_list, platform_object=platform_object)
+    obj.install(requirement_list)
