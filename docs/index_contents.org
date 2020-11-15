@@ -1,15 +1,14 @@
-#+OPTIONS: author:nil
+#+OPTIONS: toc:nil author:nil
 
 * What is Devinstaller Core?
 
-Devinstaller Core is the Python implementation for the Devinstaller Specification and the core library for other Devinstaller applications.
+*Devinstaller Core* is a Python based Application Engine for the Devinstaller system.
 
-This package is not meant to be used as is. You are supposed to create applications using this library.
+This library is used to create your end user applications.
 
-This Core package provided everything you need to read, parse and execute any =spec-file= and =prog-file=.
-
+#+RST: :doc:`user_guide`
 
 * Local Variables :noexport:
 # Local variables:
-# eval: (add-hook 'after-save-hook 'org-pandoc-export-to-rst t t)
+# eval: (add-hook 'after-save-hook 'org-rst-export-to-rst t t)
 # end:

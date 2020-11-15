@@ -2,53 +2,8 @@
 User Guide
 ==========
 
-What is this library?
-=====================
-
-This library is an application engine which you can use to create
-applications which can create, read, modify and execute the
-``devinstaller files``.
-
-This library is the primary engine behind the **Devinstaller** family of
-applications.
-
-Nicknamed: ``Devin``
-
-What are the ``devinstaller files``?
-------------------------------------
-
-The Devinstaller files is a pair of
-
--  Static config file and
--  Dynamic script (Example: Python script file)
-
-How it works?
--------------
-
-Step 1: Identify your needs
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you want to do something programatically like installing bunch of
-softwares in your machine, migrating files folders and applications from
-one machine to another. Setup the developer environment for your new
-recruit on your project and any other needs like that.
-
-Step 2: Install a Devinstaller application for that need
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-All Devinstaller application are not the same. Some does one thing
-another does completely different thing.
-
-But one thing is sure all the Devinstaller applications can handle the
-``devinstaller files``. All of them can read the same but all of them
-may not interpret it the same.
-
-These applications are powered by ``Devin``.
-
-Once you find the application install it by refering its install guide.
-
-Step 3: Write the ``spec`` file to execute your instructions
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+What is the Devinstaller system?
+================================
 
 The ``spec`` file is where all your instructions are written. Some
 people call it the config file, others the bootstrap script but we call
@@ -123,6 +78,54 @@ application from scratch.
 You can import ``Devin,`` you can customize it to suit your needs and
 you can use your new customized Devinstaller engine to create a whole
 brand of applications for your needs specifcally.
+
+What is this library?
+=====================
+
+This library is an application engine which you can use to create
+applications which can create, read, modify and execute the
+``devinstaller files``.
+
+This library is the primary engine behind the **Devinstaller** family of
+applications.
+
+Nicknamed: ``Devin``
+
+What is ``devinstaller files``?
+-------------------------------
+
+The Devinstaller files is a pair of
+
+-  Static config file and
+-  Dynamic script (Example: Python script file)
+
+How it works?
+-------------
+
+Step 1: Identify your needs
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to do something programatically like installing bunch of
+softwares in your machine, migrating files folders and applications from
+one machine to another. Setup the developer environment for your new
+recruit on your project and any other needs like that.
+
+Step 2: Install a Devinstaller application for that need
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+All Devinstaller application are not the same. Some does one thing
+another does completely different thing.
+
+But one thing is sure all the Devinstaller applications can handle the
+``devinstaller files``. All of them can read the same but all of them
+may not interpret it the same.
+
+These applications are powered by ``Devin``.
+
+Once you find the application install it by referring its install guide.
+
+Step 3: Write the ``spec`` file to execute your instructions
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 You create a simple config file in one of the file format below:
 

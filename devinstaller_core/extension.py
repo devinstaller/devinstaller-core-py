@@ -21,17 +21,13 @@ class BaseExt(ABC):
 class BaseExtLang(BaseExt):
     """Base class for creating Extensions for different programming languages
 
-
     Warning:
         Don't inherit this class for creating Extensions for supporting different
         programming languages.
-        You are probably looking for either of these:
-            - :class:`.ExtSpec`
-                This is used to create programming language extensions to run
-                commands in spec file.
-            - :class:`.ExtProg`
-                This is used to create programming language extensions to run
-                commands in the prog file.
+
+    See Also:
+        - :class:`.ExtSpec`
+        - :class:`.ExtProg`
     """
 
     @property
