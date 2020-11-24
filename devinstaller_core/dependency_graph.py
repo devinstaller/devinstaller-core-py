@@ -16,6 +16,8 @@ from devinstaller_core.module_group import ModuleGroup
 from devinstaller_core.module_link import ModuleLink
 from devinstaller_core.module_phony import ModulePhony
 
+ui = u.UserInteraction()
+
 
 class DependencyGraph:
     """Module dependency class
@@ -141,7 +143,7 @@ class DependencyGraph:
         for index, child_name in enumerate(module.requires):
             self.traverse(child_name)
             if self.graph[child_name].status == "failed":
-                print(
+                ui.print(
                     f"The module {child_name} in the requires of {module.alias} has failed"
                 )
                 module.status = "failed"
@@ -169,7 +171,7 @@ class DependencyGraph:
         for child_name in module.optionals:
             self.traverse(child_name)
             if self.graph[child_name].status == "failed":
-                print(
+                ui.print(
                     f"The module {child_name} in the optionals of {module.alias} has failed, "
                     "but the installation for remaining modules will continue"
                 )
@@ -194,7 +196,7 @@ class DependencyGraph:
             module.status = "success"
             return None
         except e.ModuleInstallationFailed:
-            print(
+            ui.print(
                 f"The installation for the module: {module.alias} failed. "
                 "And all the instructions has been rolled back."
             )
@@ -282,15 +284,14 @@ class DependencyGraph:
         Returns:
             The selected module
         """
-        print("Oops, looks like your spec has two modules with the same codename.")
-        print("But for the current session I can use only one.")
-        print("This is the first module")
-        print(old_module)
-        print("And this is the second module")
-        print(new_module)
+        ui.print("Oops, looks like your spec has two modules with the same codename.")
+        ui.print("But for the current session I can use only one.")
+        ui.print("This is the first module")
+        ui.print(old_module)
+        ui.print("And this is the second module")
+        ui.print(new_module)
         title = "Do you mind selecting one?"
         choices = ["First one", "Second one"]
-        ui = u.UserInteraction()
         selection = ui.select(title, choices)
         if selection == "First one":
             return old_module

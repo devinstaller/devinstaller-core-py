@@ -7,6 +7,9 @@ from typeguard import typechecked
 
 from devinstaller_core import command as c
 from devinstaller_core import exception as e
+from devinstaller_core import utilities as u
+
+ui = u.UserInteraction()
 
 
 @dataclass
@@ -125,7 +128,7 @@ class ModuleBase(ABC):
         for inst in instructions:
             if inst.rollback is not None:
                 try:
-                    print(f"Rolling back `{inst.cmd}` using `{inst.rollback}`")
+                    ui.print(f"Rolling back `{inst.cmd}` using `{inst.rollback}`")
                     session = c.SessionSpec()
                     session.run(inst.rollback)
                 except e.CommandFailed:
