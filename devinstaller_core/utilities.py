@@ -19,6 +19,10 @@ class UserInteraction(ex.BaseExtension[ex.ExtUserInteraction]):
     def select(self, title: str, choices: List[str]) -> str:
         pass
 
+    def print(self, message: Any) -> None:
+        """Prints the given object into console using rich-text
+        """
+
     def load_extension(self, extension: ex.ExtUserInteraction):
         """Loading extension"""
         self.return_object = extension

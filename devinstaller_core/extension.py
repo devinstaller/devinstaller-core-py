@@ -3,7 +3,7 @@
 import importlib
 import pkgutil
 from abc import ABC, abstractmethod
-from typing import Dict, Generic, List, TypeVar, cast
+from typing import Any, Generic, List, TypeVar, cast
 
 from devinstaller_core import exception as e
 
@@ -80,7 +80,16 @@ class ExtUserInteraction(BaseExtApplication):
 
     @abstractmethod
     def select(self, title: str, choices: List[str]) -> str:
-        pass
+        """Ask user to select a option from the given choices
+
+        Returns:
+            The selected choice
+        """
+
+    @abstractmethod
+    def print(self, message: Any) -> None:
+        """Prints the given object to the console in rich-text format
+        """
 
 
 ExtensionModule = TypeVar("ExtensionModule", bound=BaseExt)

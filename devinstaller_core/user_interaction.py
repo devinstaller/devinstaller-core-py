@@ -1,6 +1,7 @@
-from typing import List
+from typing import Any, List
 
 import questionary
+import rich
 from typeguard import typechecked
 
 from devinstaller_core import extension as ex
@@ -56,3 +57,7 @@ class ExtUserInteraction(ex.ExtUserInteraction):
             The list of statements which have been selected by the user
         """
         return questionary.checkbox(title, choices).ask()
+
+    @typechecked
+    def print(self, message: Any) -> None:
+        rich.print(message)
