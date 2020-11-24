@@ -20,3 +20,9 @@ class SessionProg:
 
     EXTENSION_CLASS = "ExtProg"
     BUILTIN_EXTENSIONS = ["devinstaller_core.command_python"]
+
+
+class UserInteraction:
+
+    EXTENSION_CLASS = "ExtUserInteraction"
+    BUILTIN_EXTENSIONS = ["devinstaller_core.user_interaction"]

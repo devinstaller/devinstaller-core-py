@@ -18,6 +18,11 @@ class BaseExt(ABC):
     """
 
 
+class BaseExtApplication(BaseExt):
+    """Base extension class for creating extentions for the application
+    """
+
+
 class BaseExtLang(BaseExt):
     """Base class for creating Extensions for different programming languages
 
@@ -67,6 +72,15 @@ class ExtProg(BaseExtLang):
     def launch(self, launch: str) -> None:
         """Execute the given `launch` attribute using the prog module
         """
+
+
+class ExtUserInteraction(BaseExtApplication):
+    """Extension class for creating extensions for the user interaction facility
+    """
+
+    @abstractmethod
+    def select(self, title: str, choices: List[str]) -> str:
+        pass
 
 
 ExtensionModule = TypeVar("ExtensionModule", bound=BaseExt)

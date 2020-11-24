@@ -1,62 +1,27 @@
 from typing import Any, Dict, List
 
-import questionary
 from typeguard import typechecked
 
+from devinstaller_core import constants as c
+from devinstaller_core import extension as ex
 
-class UserInteraction:
-    """All the methods you need for interacting with the users.
 
-    You can do things like ask user for confirmation, single select
-    or multiple select
-    """
+class UserInteraction(ex.BaseExtension[ex.ExtUserInteraction]):
+    """Create a session for executing prog files"""
 
-    @classmethod
-    @typechecked
-    def confirm(cls, title: str) -> bool:
-        """Wrapper function around `questionary.confirm`
+    def __init__(self) -> None:
+        ext_class = c.UserInteraction.EXTENSION_CLASS
+        builtin_extensions = c.UserInteraction.BUILTIN_EXTENSIONS
+        super().__init__(builtin_extensions=builtin_extensions, ext_class=ext_class)
+        for method in list(ex.ExtUserInteraction.__abstractmethods__):
+            setattr(self, method, getattr(self.return_object, method))
 
-        Asks user for yes or no response.
+    def select(self, title: str, choices: List[str]) -> str:
+        pass
 
-        Args:
-            title: The title you want to show to the user
-
-        Returns:
-            yes or no in boolean
-        """
-        return questionary.confirm(title).ask()
-
-    @classmethod
-    @typechecked
-    def select(cls, title: str, choices: List[str]) -> str:
-        """Wrapper function around `questionary.select`
-
-        Asks user to select one of the choices.
-
-        Args:
-            title: The title for the choices
-            choices: The statement for each choice
-
-        Returns:
-            The statement of the selected choice
-        """
-        return questionary.select(title, choices).ask()
-
-    @classmethod
-    @typechecked
-    def checkbox(cls, title: str, choices: List[str]) -> List[str]:
-        """Wrapper function around `questionary.checkbox`
-
-        Ask user to select all that which is applicable
-
-        Args:
-            title: The title for the choices
-            choices: The statement for each choice
-
-        Returns:
-            The list of statements which have been selected by the user
-        """
-        return questionary.checkbox(title, choices).ask()
+    def load_extension(self, extension: ex.ExtUserInteraction):
+        """Loading extension"""
+        self.return_object = extension
 
 
 class Dictionary:
