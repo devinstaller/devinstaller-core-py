@@ -10,8 +10,7 @@ from devinstaller_core import utilities as u
 
 @dataclass
 class Module:
-    """The class for interface modules
-    """
+    """The class for interface modules"""
 
     name: str
     before: Optional[str] = None
@@ -20,8 +19,7 @@ class Module:
 
 @dataclass
 class BlockInterface:
-    """The class for interface
-    """
+    """The class for interface"""
 
     # pylint: disable=too-many-instance-attributes
     name: str
@@ -61,13 +59,14 @@ def get_interface(
             message="Your spec file has more than one interface with the same name. You need to do something about this.",
         )
     # TODO Check the `modules` key in InterfaceBlock
-    return BlockInterface(**interface_result[0])
+    obj = interface_result[0]
+    return BlockInterface(**obj)
 
 
 def select_interface(interface_list: List[c.TypeInterface]) -> str:
-    """Ask user to select one interface
-    """
+    """Ask user to select one interface"""
     title = "Can you select one interface for me?"
     choices = [i["name"] for i in interface_list]
-    selection = u.UserInteract.select(title, choices)
+    ui = u.UserInteraction()
+    selection = ui.select(title, choices)
     return selection

@@ -33,8 +33,7 @@ class DependencyGraph:
         before_each: Optional[str] = None,
         after_each: Optional[str] = None,
     ) -> None:
-        """Create dependency graph
-        """
+        """Create dependency graph"""
         self.graph: Dict[str, TypeAnyModule] = {}
         self.orphan_modules: Set[str] = set()
         module_classes: Dict[str, Any] = {
@@ -73,8 +72,7 @@ class DependencyGraph:
             self.graph[module_name].uninstall()
 
     def module_list(self) -> List[TypeAnyModule]:
-        """Returns the list of all the modules that have been initialized by the Module dependency
-        """
+        """Returns the list of all the modules that have been initialized by the Module dependency"""
         return list(self.graph.values())
 
     def install(self, requirement_list: List[str]) -> None:
@@ -125,7 +123,7 @@ class DependencyGraph:
 
     @typechecked
     def traverse_requires(self, module_name: str) -> None:
-        """Recusively traverse the requires field of the module for its dependencies
+        """Recursively traverse the requires field of the module for its dependencies
 
         Args:
             module_map: The module map for the current platform
@@ -153,7 +151,7 @@ class DependencyGraph:
 
     @typechecked
     def traverse_optionals(self, module_name: str) -> None:
-        """Recusively traverse the optionals field of the module for its dependencies
+        """Recursively traverse the optionals field of the module for its dependencies
 
         Args:
             module_map: The module map for the current platform
@@ -185,7 +183,7 @@ class DependencyGraph:
 
         def check_function_name(function_name: Optional[str]) -> None:
             if function_name is not None:
-                session = c.Prog()
+                session = c.SessionProg()
                 session.launch(function_name, prog_file_path="", language_code="py")
 
         module = self.graph[module_name]
@@ -292,7 +290,8 @@ class DependencyGraph:
         print(new_module)
         title = "Do you mind selecting one?"
         choices = ["First one", "Second one"]
-        selection = u.UserInteract.select(title, choices)
+        ui = u.UserInteraction()
+        selection = ui.select(title, choices)
         if selection == "First one":
             return old_module
         return new_module

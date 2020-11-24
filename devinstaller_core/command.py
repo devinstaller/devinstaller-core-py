@@ -1,6 +1,6 @@
 # -----------------------------------------------------------------------------
 # Created: Mon 25 May 2020 16:55:05 IST
-# Last-Updated: Sun 16 Aug 2020 22:19:52 IST
+# Last-Updated: Tue 24 Nov 2020 15:44:35 IST
 #
 # commands.py is part of devinstaller
 # URL: https://gitlab.com/justinekizhak/devinstaller
@@ -101,8 +101,7 @@ class SessionSpec(ex.BaseExtension[ex.ExtSpec]):
             )
 
     def load_extension(self, extension: ex.ExtSpec):
-        """Loading extension
-        """
+        """Loading extension"""
         self.prog[extension.LANGUAGE_CODE] = extension
 
 
@@ -112,7 +111,7 @@ class SessionProg(ex.BaseExtension[ex.ExtProg]):
     def __init__(self) -> None:
         ext_class = c.SessionProg.EXTENSION_CLASS
         builtin_extensions = c.SessionProg.BUILTIN_EXTENSIONS
-        self.prog: Dict[str, ex.ExtSpec] = {}
+        self.prog: Dict[str, ex.ExtProg] = {}
         super().__init__(builtin_extensions=builtin_extensions, ext_class=ext_class)
 
     def launch(
@@ -121,6 +120,5 @@ class SessionProg(ex.BaseExtension[ex.ExtProg]):
         pass
 
     def load_extension(self, extension: ex.ExtProg):
-        """Loading extension
-        """
+        """Loading extension"""
         self.prog[extension.LANGUAGE_CODE] = extension

@@ -4,7 +4,7 @@ import questionary
 from typeguard import typechecked
 
 
-class UserInteract:
+class UserInteraction:
     """All the methods you need for interacting with the users.
 
     You can do things like ask user for confirmation, single select
@@ -109,7 +109,7 @@ class Compare:
 
         TODO Works with both the platforms block and the modules block?
         TODO How to compare using the semver specification.
-        TODO What about the modules which doesnt' use the semver spec?
+        TODO What about the modules which doesn't' use the semver spec?
 
         Uses the semver specification to compare.
         """

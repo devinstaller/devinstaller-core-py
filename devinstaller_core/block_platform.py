@@ -135,7 +135,8 @@ class BlockPlatform:
         """
         title = "Can you select one platform for me?"
         choices = [p["name"] for p in platforms_supported]
-        selection = u.UserInteract.select(title=title, choices=choices)
+        ui = u.UserInteraction()
+        selection = ui.select(title=title, choices=choices)
         self.codename = selection
 
     @classmethod

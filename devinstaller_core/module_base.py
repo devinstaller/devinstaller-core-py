@@ -126,7 +126,7 @@ class ModuleBase(ABC):
             if inst.rollback is not None:
                 try:
                     print(f"Rolling back `{inst.cmd}` using `{inst.rollback}`")
-                    session = c.Command()
+                    session = c.SessionSpec()
                     session.run(inst.rollback)
                 except e.CommandFailed:
                     raise e.ModuleRollbackFailed

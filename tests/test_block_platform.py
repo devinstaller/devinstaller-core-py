@@ -10,15 +10,13 @@ EXPECTED_LINUX_PLATFORM_INFO = {"system": "Linux", "version": "10.14.6"}
 
 @pytest.fixture
 def mocked_system(mocker):
-    """Mocking `plaform.system`
-    """
+    """Mocking `plaform.system`"""
     return mocker.patch("platform.system")
 
 
 @pytest.fixture
 def mocked_version(mocker):
-    """Mocking `plaform.version`
-    """
+    """Mocking `plaform.version`"""
     return mocker.patch("platform.version")
 
 
@@ -36,31 +34,27 @@ def mocked_mac_ver(mocker):
 
 @pytest.fixture
 def mocked_user_input(mocker):
-    """Mocking user input
-    """
-    return mocker.patch("devinstaller_core.utilities.UserInteract.select")
+    """Mocking user input"""
+    return mocker.patch("devinstaller_core.utilities.UserInteraction.select")
 
 
 @pytest.fixture
 def mocked_user_input_dummy(mocked_user_input):
-    """Mocking user input and return mock value
-    """
+    """Mocking user input and return mock value"""
     mocked_user_input.return_value = MOCKED_PLATFORM_CODE
     return mocked_user_input
 
 
 @pytest.fixture
 def mocked_user_input_macos(mocked_user_input):
-    """Mocking user input and return `macos`
-    """
+    """Mocking user input and return `macos`"""
     mocked_user_input.return_value = "macos"
     return mocked_user_input
 
 
 @pytest.fixture
 def mocked_user_input_linux(mocked_user_input):
-    """Mocking user input and return `macos`
-    """
+    """Mocking user input and return `macos`"""
     mocked_user_input.return_value = "linux"
     return mocked_user_input
 
@@ -103,8 +97,7 @@ def mocked_version_linux(mocked_version):
 
 @pytest.fixture
 def mock_platform_list():
-    """Standard platform list. This list doesn't have any issues and conforms to the spec.
-    """
+    """Standard platform list. This list doesn't have any issues and conforms to the spec."""
     data = [
         {"name": "macos", "platform_info": EXPECTED_MAC_PLATFORM_INFO},
         {"name": "ubuntu", "platform_info": EXPECTED_LINUX_PLATFORM_INFO},
@@ -114,8 +107,7 @@ def mock_platform_list():
 
 @pytest.fixture
 def mock_platform_list_2():
-    """System and version doesn't match with the mocked one
-    """
+    """System and version doesn't match with the mocked one"""
     return [
         {"name": "macos", "platform_info": {"system": "test1", "version": "test3"}},
         {"name": "ubuntu", "platform_info": {"system": "test2", "version": "test4"}},
@@ -124,8 +116,7 @@ def mock_platform_list_2():
 
 @pytest.fixture
 def mock_platform_list_3():
-    """System and version doesn't match with the mocked one
-    """
+    """System and version doesn't match with the mocked one"""
     return [
         {"name": "macos", "platform_info": {"system": "test1", "version": "test3"}},
         {"name": "macos", "platform_info": {"system": "test1.1", "version": "test3.1"}},
@@ -135,8 +126,7 @@ def mock_platform_list_3():
 
 @pytest.fixture
 def mock_platform_list_4():
-    """Platform list where multiple platforms defined matches
-    """
+    """Platform list where multiple platforms defined matches"""
     return [
         {"name": "macos", "platform_info": EXPECTED_MAC_PLATFORM_INFO},
         {"name": "macos2", "platform_info": EXPECTED_MAC_PLATFORM_INFO},
@@ -147,8 +137,7 @@ def mock_platform_list_4():
 
 @pytest.fixture
 def mock_platform_list_5():
-    """Partial enty in the `platform_info` as well as version fail
-    """
+    """Partial enty in the `platform_info` as well as version fail"""
     return [
         {
             "name": "macos1",
@@ -176,8 +165,7 @@ def mock_platform_list_5():
 
 
 def assert_ran_on_mac(system, version, mac_ver):
-    """Run all the assertions if the test was ran on mac
-    """
+    """Run all the assertions if the test was ran on mac"""
     system.assert_called_once()
     version.assert_called_once()
     mac_ver.assert_called_once()
@@ -192,16 +180,14 @@ def assert_ran_on_mac_2(system, version, mac_ver, user_input):
 
 
 def assert_ran_on_linux(system, version, mac_ver):
-    """Run all the assertions if the test was ran on ubuntu
-    """
+    """Run all the assertions if the test was ran on ubuntu"""
     system.assert_called_once()
     version.assert_called_once()
     mac_ver.assert_not_called()
 
 
 def assert_ran_on_linux_2(system, version, mac_ver, user_input):
-    """Run all the assertions if the test was ran on ubuntu
-    """
+    """Run all the assertions if the test was ran on ubuntu"""
     assert_ran_on_linux(system=system, version=version, mac_ver=mac_ver)
     user_input.assert_called_once()
 
@@ -238,8 +224,7 @@ def assert_ran_on_linux_2(system, version, mac_ver, user_input):
 def test_invalid_platform_codename(
     system, version, mac_ver, platform_list, platform_codename, assertion_fun
 ):
-    """Testing if the `platform_codename` provided is valid or not
-    """
+    """Testing if the `platform_codename` provided is valid or not"""
     with pytest.raises(e.SpecificationError):
         _ = s.BlockPlatform(
             platform_codename=platform_codename, platform_list=platform_list
@@ -263,8 +248,7 @@ def test_invalid_platform_codename(
 def test_duplicate_platforms(
     system, version, mac_ver, platform_list, platform_codename, assertion_fun
 ):
-    """Testing if there is more than one platform with the same codename
-    """
+    """Testing if there is more than one platform with the same codename"""
     with pytest.raises(e.SpecificationError):
         _ = s.BlockPlatform(
             platform_codename=platform_codename, platform_list=platform_list
@@ -292,8 +276,7 @@ def test_duplicate_platforms(
     ],
 )
 def test_platform_info(system, version, mac_ver, assertion_fun, expected_output):
-    """Testing if the current platform by the `BlockPlatform.current_platform` is accurate
-    """
+    """Testing if the current platform by the `BlockPlatform.current_platform` is accurate"""
     obj = s.BlockPlatform()
     assertion_fun(system=system, version=version, mac_ver=mac_ver)
     assert obj.info == expected_output
@@ -331,8 +314,7 @@ def test_multiple_selected(
     assertion_fun,
     expected_response,
 ):
-    """Testing if multiple platforms defined in the spec are satisfying the conditions
-    """
+    """Testing if multiple platforms defined in the spec are satisfying the conditions"""
     obj = s.BlockPlatform(platform_list=platform_list)
     assertion_fun(
         system=system, version=version, mac_ver=mac_ver, user_input=user_input
@@ -413,8 +395,7 @@ def test_none_selected(
     assertion_fun,
     expected_response,
 ):
-    """Testing if no platforms defined in the spec file is satisfying the condition
-    """
+    """Testing if no platforms defined in the spec file is satisfying the condition"""
     obj = s.BlockPlatform(platform_list=platform_list)
     assertion_fun(
         system=system, version=version, mac_ver=mac_ver, user_input=user_input
@@ -423,8 +404,7 @@ def test_none_selected(
 
 
 class TestInitPlatform:
-    """Testing the init for the Platform
-    """
+    """Testing the init for the Platform"""
 
     @pytest.mark.parametrize(
         "system, version, mac_ver, platform_list, assertion_fun, expected_output",
@@ -450,8 +430,7 @@ class TestInitPlatform:
     def test_plat_list(
         self, system, version, mac_ver, platform_list, assertion_fun, expected_output
     ):
-        """Testing if only passed the `platform_list`
-        """
+        """Testing if only passed the `platform_list`"""
         obj = s.BlockPlatform(platform_list=platform_list)
         assertion_fun(system=system, version=version, mac_ver=mac_ver)
         assert obj.codename == expected_output
@@ -489,8 +468,7 @@ class TestInitPlatform:
         assertion_fun,
         expected_output,
     ):
-        """Testing if only passed the `platform_codename`
-        """
+        """Testing if only passed the `platform_codename`"""
         obj = s.BlockPlatform(platform_codename=platform_codename)
         assertion_fun(system=system, version=version, mac_ver=mac_ver)
         assert obj.codename == expected_output
@@ -537,8 +515,7 @@ class TestInitPlatform:
         assertion_fun,
         expected_output,
     ):
-        """Testing if both `platform_code` and `platform_list` is passed
-        """
+        """Testing if both `platform_code` and `platform_list` is passed"""
         obj = s.BlockPlatform(
             platform_codename=platform_codename, platform_list=platform_list
         )
@@ -572,8 +549,7 @@ class TestInitPlatform:
         ],
     )
     def test_no_args(self, system, version, mac_ver, assertion_fun, expected_output):
-        """Testing if no argument is passed
-        """
+        """Testing if no argument is passed"""
         obj = s.BlockPlatform()
         assertion_fun(system=system, version=version, mac_ver=mac_ver)
         assert obj.codename == expected_output

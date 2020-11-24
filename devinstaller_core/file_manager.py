@@ -63,8 +63,8 @@ class FileManager:
             String representation of the file
         """
         full_path = os.path.expanduser(file_path)
-        full_path = Path(full_path).resolve()
-        with open(str(full_path), "r") as _f:
+        full_path_object = Path(full_path).resolve()
+        with open(str(full_path_object), "r") as _f:
             return _f.read()
 
     @classmethod
@@ -128,7 +128,7 @@ class DevFileManager:
     """This is the object containing the file manager session
     """
 
-    hash_method = fm.hash_data
+    # hash_method: Callable[[str], str] = fm.hash_data
     """This method is used to hash the data
     """
 
@@ -144,7 +144,12 @@ class DevFileManager:
     def __init__(self, file_path: str) -> None:
         res = self.check_path(file_path)
         file_contents = self.extract[res["method"]](res["path"])
-        self.digest = self.hash_method(str(file_contents))
+        f = self.fm.hash_data
+        if not callable(f):
+            raise AttributeError(
+                "I was expecting `hash_method` to be a function, but it is not."
+            )
+        self.digest = f(str(file_contents))
         self.contents = self.parse(file_contents)
 
     @typechecked

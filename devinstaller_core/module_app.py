@@ -89,7 +89,7 @@ class ModuleApp(mb.ModuleBase):
             return None
         try:
             for i in self.uninstall_inst:
-                session = c.Command()
+                session = c.SessionSpec()
                 session.run(i)
             return None
         except e.ModuleInstallationFailed:
