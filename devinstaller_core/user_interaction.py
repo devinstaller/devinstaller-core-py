@@ -60,4 +60,9 @@ class ExtUserInteraction(ex.ExtUserInteraction):
 
     @typechecked
     def print(self, message: Any) -> None:
+        """Wrapper for printing rich text in the console
+
+        Args:
+            message: The object you want to display
+        """
         rich.print(message)

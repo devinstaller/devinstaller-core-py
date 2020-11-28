@@ -10,6 +10,9 @@ from typeguard import typechecked
 from devinstaller_core import command as c
 from devinstaller_core import exception as e
 from devinstaller_core import module_base as mb
+from devinstaller_core import utilities as u
+
+ui = u.UserInteraction()
 
 
 @dataclass
@@ -31,7 +34,7 @@ class ModuleApp(mb.ModuleBase):
     def replace_var_in_install_inst(
         cls, install_inst: Optional[List[mb.ModuleInstallInstruction]], values
     ) -> Optional[List[mb.ModuleInstallInstruction]]:
-        """The validator method which will replace all the varaibles in the
+        """The validator method which will replace all the variables in the
         `install_inst` with the `constants`
         """
         constants = values["constants"]
@@ -49,7 +52,7 @@ class ModuleApp(mb.ModuleBase):
     def replace_var_in_uninstall_inst(
         cls, uninstall_inst: Optional[List[str]], values
     ) -> Optional[List[str]]:
-        """The validator method which will replace all the varaibles in the
+        """The validator method which will replace all the variables in the
         `uninstall_inst` with the `constants`
         """
         constants = values["constants"]
@@ -68,13 +71,15 @@ class ModuleApp(mb.ModuleBase):
         Returns:
             The response object of the module
         """
-        print(f"Installing module: {self.display}...")
+        ui.print(f"Installing module: {self.display}...")
         # installation_steps = create_instruction_list(self.install_inst)
         try:
             self.execute_instructions(self.install_inst)
             return None
         except e.ModuleRollbackFailed:
-            print(f"Rollback instructions for {self.display} failed. Quitting program.")
+            ui.print(
+                f"Rollback instructions for {self.display} failed. Quitting program."
+            )
             sys.exit(1)
 
     def uninstall(self) -> None:
@@ -83,9 +88,9 @@ class ModuleApp(mb.ModuleBase):
         Args:
             module: The module which you want to uninstall
         """
-        print(f"Uninstalling module: {self.display}...")
+        ui.print(f"Uninstalling module: {self.display}...")
         if self.uninstall_inst is None:
-            print(f"No uninstallation instructions found for {self.display}.")
+            ui.print(f"No un-installation instructions found for {self.display}.")
             return None
         try:
             for i in self.uninstall_inst:
@@ -93,5 +98,5 @@ class ModuleApp(mb.ModuleBase):
                 session.run(i)
             return None
         except e.ModuleInstallationFailed:
-            print(f"Uninstallation of {self.display} failed. Quitting program.")
+            ui.print(f"Un-installation of {self.display} failed. Quitting program.")
             sys.exit(1)

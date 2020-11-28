@@ -9,6 +9,8 @@ from devinstaller_core import common_models as cm
 from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
 
+ui = u.UserInteraction()
+
 
 class BlockPlatform:
     """Class for creating the current platform object
@@ -102,17 +104,17 @@ class BlockPlatform:
                 elif u.Compare.version(_p_info["version"], self.info["version"]):
                     platforms_supported.append(_p)
         if len(platforms_supported) == 1:
-            print(f"I see you are using {platforms_supported[0]['name']}")
+            ui.print(f"I see you are using {platforms_supported[0]['name']}")
             self.codename = platforms_supported[0]["name"]
             return None
         if len(platforms_supported) > 1:
-            print(
+            ui.print(
                 'Hey.. your current platform supports multiple "platform" declared in the spec file'
             )
             self.resolve(platforms_supported)
             return None
         else:
-            print(
+            ui.print(
                 "Hey.. I couldn't find the platform you are looking for. Can you do this manually?"
             )
             self.resolve(platform_list)
