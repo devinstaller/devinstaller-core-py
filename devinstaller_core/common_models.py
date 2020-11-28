@@ -34,9 +34,8 @@
 # -----------------------------------------------------------------------------
 
 """All the models including the schema as well as graph models"""
+from dataclasses import dataclass
 from typing import Any, Dict, List, Literal, Optional, TypedDict, Union
-
-from pydantic.dataclasses import dataclass
 
 from devinstaller_core.module_app import ModuleApp
 from devinstaller_core.module_file import ModuleFile
@@ -155,6 +154,19 @@ class TypeValidateResponse(TypedDict):
     valid: bool
     document: Dict[Any, Any]
     errors: Dict[Any, Any]
+
+
+TypeMethod = Literal["file", "url", "data"]
+
+
+@dataclass
+class TypeCheckPathResponse:
+    """Type declaration for the response of the
+    `devinstaller.file_manager.DevFileManager.check_path` method
+    """
+
+    method: TypeMethod
+    path: str
 
 
 TypeAnyModule = Union[

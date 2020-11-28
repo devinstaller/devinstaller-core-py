@@ -13,19 +13,28 @@ class UserInteraction(ex.BaseExtension[ex.ExtUserInteraction]):
         ext_class = c.UserInteraction.EXTENSION_CLASS
         builtin_extensions = c.UserInteraction.BUILTIN_EXTENSIONS
         super().__init__(builtin_extensions=builtin_extensions, ext_class=ext_class)
-        for method in list(ex.ExtUserInteraction.__abstractmethods__):
+        abs_methods = getattr(ex.ExtUserInteraction, "__abstractmethods__")
+        for method in list(abs_methods):
             setattr(self, method, getattr(self.return_object, method))
 
     def select(self, title: str, choices: List[str]) -> str:
-        pass
+        """Ask user to select one of the choices"""
 
     def print(self, message: Any) -> None:
-        """Prints the given object into console using rich-text
-        """
+        """Prints the given object into console using rich-text"""
+
+    def checkbox(self, title: str, choices: List[str]) -> List[str]:
+        """Ask user to select one or more choices"""
+
+    def confirm(self, title: str) -> bool:
+        """Ask user to confirm a decision"""
 
     def load_extension(self, extension: ex.ExtUserInteraction):
         """Loading extension"""
         self.return_object = extension
+
+
+ui = UserInteraction()
 
 
 class Dictionary:
@@ -52,8 +61,7 @@ class Dictionary:
 
 
 class Compare:
-    """All the methods you need to compare stuffs.
-    """
+    """All the methods you need to compare stuffs."""
 
     @classmethod
     @typechecked

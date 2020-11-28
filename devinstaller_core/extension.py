@@ -91,6 +91,14 @@ class ExtUserInteraction(BaseExtApplication):
         """Prints the given object to the console in rich-text format
         """
 
+    @abstractmethod
+    def checkbox(self, title: str, choices: List[str]) -> List[str]:
+        """Ask user to select one or more choices"""
+
+    @abstractmethod
+    def confirm(self, title: str) -> bool:
+        """Ask user to confirm a decision"""
+
 
 ExtensionModule = TypeVar("ExtensionModule", bound=BaseExt)
 

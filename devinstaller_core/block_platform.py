@@ -8,8 +8,7 @@ from typeguard import typechecked
 from devinstaller_core import common_models as cm
 from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
-
-ui = u.UserInteraction()
+from devinstaller_core.utilities import ui
 
 
 class BlockPlatform:
@@ -112,7 +111,6 @@ class BlockPlatform:
                 'Hey.. your current platform supports multiple "platform" declared in the spec file'
             )
             self.resolve(platforms_supported)
-            return None
         else:
             ui.print(
                 "Hey.. I couldn't find the platform you are looking for. Can you do this manually?"
@@ -137,7 +135,6 @@ class BlockPlatform:
         """
         title = "Can you select one platform for me?"
         choices = [p["name"] for p in platforms_supported]
-        ui = u.UserInteraction()
         selection = ui.select(title=title, choices=choices)
         self.codename = selection
 

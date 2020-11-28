@@ -40,12 +40,13 @@ import os
 import re
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Callable, Dict
+from typing import Any, Callable, Dict, cast
 
 import anymarkup
 import requests
 from typeguard import typechecked
 
+from devinstaller_core import common_models as m
 from devinstaller_core import exception as e
 
 
@@ -143,7 +144,7 @@ class DevFileManager:
     @typechecked
     def __init__(self, file_path: str) -> None:
         res = self.check_path(file_path)
-        file_contents = self.extract[res["method"]](res["path"])
+        file_contents = self.extract[res.method](res.path)
         f = self.fm.hash_data
         if not callable(f):
             raise AttributeError(
@@ -152,9 +153,10 @@ class DevFileManager:
         self.digest = f(str(file_contents))
         self.contents = self.parse(file_contents)
 
+    @classmethod
     @typechecked
-    def check_path(self, file_path: str) -> Dict[str, str]:
-        """Check if the given path is adhearing to the spec.
+    def check_path(cls, file_path: str) -> m.TypeCheckPathResponse:
+        """Check if the given path is conforming to the spec.
 
         If it is complying with the specification then returns a dict
         with the `method` and the `path` which can be used to access
@@ -171,9 +173,11 @@ class DevFileManager:
                 with code :ref:`error-code-S101`
         """
         try:
-            result = re.match(self.pattern, file_path)
+            result = re.match(cls.pattern, file_path)
             assert result is not None
-            return {"method": result.group(1), "path": result.group(2)}
+            method = cast(m.TypeMethod, result.group(1))
+            res = m.TypeCheckPathResponse(method=method, path=result.group(2))
+            return res
         except AssertionError:
             raise e.SpecificationError(
                 error=file_path,
@@ -181,8 +185,8 @@ class DevFileManager:
                 message="The file_path you gave didn't start with a method.",
             )
 
-    @classmethod
-    def parse(cls, file_contents: str, file_format: str = "toml") -> Dict[Any, Any]:
+    @typechecked
+    def parse(self, file_contents: str, file_format: str = "toml") -> Dict[Any, Any]:
         """Parse `file_contents` and returns the python object
 
         Args:

@@ -35,7 +35,7 @@ def mocked_mac_ver(mocker):
 @pytest.fixture
 def mocked_user_input(mocker):
     """Mocking user input"""
-    return mocker.patch("devinstaller_core.user_interaction.ExtUserInteraction.select")
+    return mocker.patch("devinstaller_core.utilities.ui.select")
 
 
 @pytest.fixture
@@ -172,8 +172,10 @@ def assert_ran_on_mac(system, version, mac_ver):
 
 
 def assert_ran_on_mac_2(system, version, mac_ver, user_input):
-    """Run all the assertions if the test was ran on mac as well as it used the
-    `BlockPlatform.resolve` method to resolve ambiguious platform selection
+    """Check if the test was ran on mac as well.
+
+    It should have used the `BlockPlatform.resolve` method
+    to resolve ambiguious platform selection
     """
     assert_ran_on_mac(system=system, version=version, mac_ver=mac_ver)
     user_input.assert_called_once()

@@ -71,7 +71,7 @@ def mock_modules_list_5():
 @pytest.fixture
 def mocked_user_input(mocker):
     """Mocking user input"""
-    return mocker.patch("devinstaller_core.user_interaction.ExtUserInteraction.select")
+    return mocker.patch("devinstaller_core.utilities.ui.select")
 
 
 @pytest.fixture

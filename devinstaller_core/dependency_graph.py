@@ -15,8 +15,7 @@ from devinstaller_core.module_folder import ModuleFolder
 from devinstaller_core.module_group import ModuleGroup
 from devinstaller_core.module_link import ModuleLink
 from devinstaller_core.module_phony import ModulePhony
-
-ui = u.UserInteraction()
+from devinstaller_core.utilities import ui
 
 
 class DependencyGraph:
