@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "devinstaller_core"
-version = "0.5.2"
+version = "0.5.4"
 description = "The core library for creating a Devinstaller application."
 authors = ["Justine Kizhakkinedath <justine@kizhak.com>"]
 license = "MIT License"

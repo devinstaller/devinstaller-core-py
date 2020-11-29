@@ -49,7 +49,12 @@ dev_errors = {
 }
 
 
-class SpecificationError(Exception):
+class DevinstallerBaseException(Exception):
+    """Base Exception for the Devinstaller `SpecificationError` and `DevinstallerError`
+    """
+
+
+class SpecificationError(DevinstallerBaseException):
     """Exception when there is a violation of the Specification.
 
     These errors are unique to the specification. All programs implementing devinstaller
@@ -81,10 +86,10 @@ class SpecificationError(Exception):
         return response
 
 
-class DevinstallerError(Exception):
+class DevinstallerError(DevinstallerBaseException):
     """Exception when there is a runtime error.
 
-    These errors are unique to the implementaion of devinstaller runtime.
+    These errors are unique to the implementation of devinstaller runtime.
 
     If the `error_code` itself is not valid then it will raise `DevinstallerError` exception
 
