@@ -58,7 +58,7 @@ class TypeCommonModule(TypedDict, total=False):
     """
 
     alias: str
-    commands: Union[TypeModuleInstallInstruction, str]
+    commands: List[Union[TypeModuleInstallInstruction, str]]
     install_inst: List[TypeModuleInstallInstruction]
     config: List[Union[TypeModuleInstallInstruction, str]]
     content: str
@@ -196,7 +196,7 @@ Values allowed:
 
 
 def convert_to_instruction_dict(installation_str: str) -> Dict[str, str]:
-    return {"install": installation_str}
+    return {"cmd": installation_str}
 
 
 def module() -> Dict[str, Any]:
@@ -277,7 +277,7 @@ def module() -> Dict[str, Any]:
                 "permission": {"type": "string"},
                 "requires": {"type": "list", "schema": {"type": "string"}},
                 "url": {"type": "string"},
-                "version": {"type": "string"},
+                "version": {"type": "string", "coerce": str},
                 "source": {"type": "string"},
                 "target": {"type": "string"},
                 "symbolic": {"type": "boolean"},
@@ -303,7 +303,7 @@ def platform() -> Dict[str, Any]:
                     "type": "dict",
                     "schema": {
                         "system": {"type": "string", "required": True},
-                        "version": {"type": "string"},
+                        "version": {"type": "string", "coerce": str},
                     },
                 },
             },
@@ -376,7 +376,7 @@ def top_level() -> Dict[str, Any]:
         Schema for validating the top level block
     """
     data = {
-        "version": {"type": "string"},
+        "version": {"type": "string", "coerce": str},
         "author": {"type": "string"},
         "description": {"type": "string"},
         "url": {"type": "string"},

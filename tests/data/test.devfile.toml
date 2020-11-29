@@ -1,0 +1,49 @@
+version = "v1"
+
+# [[platforms]]
+# name = "macos"
+
+# [platforms.platform_info]
+# version = "10.0"
+
+[[modules]]
+module_type = "group"
+name = "full"
+requires = [
+  "dotfiles",
+  "zsh",
+]
+
+[[modules]]
+install_inst = [
+  "sh: echo 'Testing app'",
+]
+module_type = "app"
+name = "zsh"
+requires = [
+  "private_var",
+]
+version = "5.3"
+
+[[modules]]
+alias = "dotfiles"
+init = [
+  "sh: echo 'Testing folder'",
+]
+module_type = "folder"
+name = "dotfiles"
+owner = "justine"
+parent_dir = "./"
+permission = "v744"
+requires = [
+  "git",
+]
+
+[[modules]]
+alias = "private_var"
+module_type = "file"
+name = "test_file.txt"
+parent_dir = "./test"
+
+[[modules]]
+name = "git"

@@ -129,3 +129,8 @@ class CommandFailed(subprocess.CalledProcessError, DevinstallerError):
     """Wrapper exception around the standard `subprocess.CalledProcessError`
     exception.
     """
+
+
+class FileNotFound(FileNotFoundError, DevinstallerError):
+    """Wrapper exception around the standard `FileNotFoundError` exception.
+    """

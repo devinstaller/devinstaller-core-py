@@ -65,8 +65,11 @@ class FileManager:
         """
         full_path = os.path.expanduser(file_path)
         full_path_object = Path(full_path).resolve()
-        with open(str(full_path_object), "r") as _f:
-            return _f.read()
+        try:
+            with open(str(full_path_object), "r") as _f:
+                return _f.read()
+        except FileNotFoundError:
+            raise e.FileNotFound
 
     @classmethod
     def download(cls, url: str) -> str:

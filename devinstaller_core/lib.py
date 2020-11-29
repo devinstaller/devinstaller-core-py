@@ -80,7 +80,7 @@ def load_python_module(
 
 @typechecked
 def create_dependency_graph(
-    schema_object: m.TypeFullDocument, platform_codename: str
+    schema_object: m.TypeFullDocument, platform_codename: Optional[str]
 ) -> dg.DependencyGraph:
     platform_object = get_platform_object(
         full_document=schema_object, platform_codename=platform_codename
@@ -106,7 +106,8 @@ def core(
         schema_object = spec_object
     else:
         raise e.DevinstallerError("Schema object not found", "D100")
-    return s.get_validated_document(schema_object)
+    res = s.get_validated_document(schema_object)
+    return res
 
 
 @typechecked
