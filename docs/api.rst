@@ -2,11 +2,11 @@
 API
 ===============
 
----------------
-Models
----------------
+------------------------------
+:term:`Modules<Python module>`
+------------------------------
 
-Utility models
+Utility modules
 --------------------------
 .. toctree::
 
@@ -16,16 +16,16 @@ Utility models
    devinstaller_core.schema
    devinstaller_core.utilities
 
-Common models
+------------------------------
+:term:`Modules<Devinstaller Module>`
+------------------------------
+
+Common Module
 --------------------------
 .. toctree::
    devinstaller_core.common_models
 
----------------
-Modules
----------------
-
-Base module
+Base Module
 --------------------------
 .. toctree::
    devinstaller_core.module_base

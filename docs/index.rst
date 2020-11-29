@@ -22,6 +22,7 @@ Table of Contents
    api
    error_codes
    contributing
+   glossary
 
 Indices and tables
 ==================
