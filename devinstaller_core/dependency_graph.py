@@ -54,7 +54,15 @@ class DependencyGraph:
                     module_object, "supported_platforms"
                 )
                 module_object = u.Dictionary.remove_key(module_object, "module_type")
-                new_module = module_classes[module_type](**module_object)
+                try:
+                    new_module = module_classes[module_type](**module_object)
+                except TypeError as err:
+                    error = str(err).split(" ")[-1]
+                    raise e.SpecificationError(
+                        error=error,
+                        error_code="S100",
+                        message="You added an attribute which is not supported by the module type.",
+                    )
                 assert new_module.alias is not None
                 codename = new_module.alias
                 if codename in self.graph:
