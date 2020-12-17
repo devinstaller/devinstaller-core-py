@@ -80,7 +80,7 @@ def load_python_module(
 
 @typechecked
 def create_dependency_graph(
-    schema_object: m.TypeFullDocument, platform_codename: Optional[str]
+    schema_object: m.TypeFullDocument, platform_codename: Optional[str] = None
 ) -> dg.DependencyGraph:
     platform_object = get_platform_object(
         full_document=schema_object, platform_codename=platform_codename

@@ -258,7 +258,15 @@ def module() -> Dict[str, Any]:
                         },
                     },
                 },
-                "commands": {"type": "list", "schema": {"type": "string"}},
+                # "commands": {"type": "list", "schema": {"type": "string"}},
+                "commands": {
+                    "type": "list",
+                    "schema": {
+                        "type": "dict",
+                        "coerce": (str, convert_to_instruction_dict),
+                        "schema": {"cmd": {"type": "string", "required": True}},
+                    },
+                },
                 "uninstall_inst": {"type": "list", "schema": {"type": "string"}},
                 "content": {
                     "type": "dict",

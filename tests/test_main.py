@@ -1,8 +1,19 @@
 from typing import Any, Dict, List, Optional, Set
 
+from devinstaller_core import dependency_graph as dg
 from devinstaller_core import lib
 
 # from typeguard import typechecked
+
+
+def get_req_list(dependency_graph: dg.DependencyGraph, requirements_list: List[str]):
+    list_of_deps = list(dependency_graph.graph.keys())
+    if len(list_of_deps) == 1:
+        return list_of_deps
+    elif requirements_list is not None:
+        return requirements_list
+    else:
+        return lib.get_requirement_list(dependency_graph.module_list())
 
 
 def install(
@@ -17,13 +28,11 @@ def install(
     validated_schema_object = lib.core(
         file_path=spec_file_path, spec_object=spec_object
     )
-    dependency_graph = lib.create_dependency_graph(
+    dependency_graph: dg.DependencyGraph = lib.create_dependency_graph(
         schema_object=validated_schema_object, platform_codename=platform_codename
     )
-    req_list = (
-        requirements_list
-        if requirements_list is not None
-        else lib.get_requirement_list(dependency_graph.module_list())
+    req_list = get_req_list(
+        dependency_graph=dependency_graph, requirements_list=requirements_list
     )
     dependency_graph.install(req_list)
     orphan_modules_names = dependency_graph.orphan_modules
