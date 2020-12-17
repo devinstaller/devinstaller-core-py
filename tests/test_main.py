@@ -1,8 +1,8 @@
 from typing import Any, Dict, List, Optional, Set
 
-from typeguard import typechecked
-
 from devinstaller_core import lib
+
+# from typeguard import typechecked
 
 
 def install(

@@ -35,15 +35,10 @@ name = "dotfiles"
 owner = "justine"
 parent_dir = "./"
 permission = "v744"
-requires = [
-  "git",
-]
+requires = []
 
 [[modules]]
 alias = "private_var"
 module_type = "file"
 name = "test_file.txt"
 parent_dir = "./test"
-
-[[modules]]
-name = "git"

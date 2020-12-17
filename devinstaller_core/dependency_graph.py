@@ -187,7 +187,7 @@ class DependencyGraph:
                 session = c.SessionProg()
                 session.launch(function_name, prog_file_path="", language_code="py")
 
-        module = self.graph[module_name]
+        module: TypeAnyModule = self.graph[module_name]
         try:
             check_function_name(module.before)
             module.install()

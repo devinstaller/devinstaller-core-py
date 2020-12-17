@@ -81,9 +81,10 @@ class ModuleBase(ABC):
         """Abstract uninstall function for each module to be immplemented"""
         pass
 
-    @classmethod
     @typechecked
-    def execute_instructions(cls, instructions: List[ModuleInstallInstruction]) -> None:
+    def execute_instructions(
+        self, instructions: List[ModuleInstallInstruction]
+    ) -> None:
         """The function which handles installing of multi step commands.
 
         Args:
@@ -105,11 +106,10 @@ class ModuleBase(ABC):
                 rollback_list = instructions[:index]
                 rollback_list.reverse()
                 try:
-                    cls.rollback_instructions(rollback_list)
+                    self.rollback_instructions(rollback_list)
                 except e.ModuleRollbackFailed:
                     raise e.ModuleRollbackFailed
                 raise e.ModuleInstallationFailed
-        return None
 
     @classmethod
     @typechecked

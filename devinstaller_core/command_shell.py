@@ -19,6 +19,6 @@ class ExtSpec(ex.ExtSpec):
             CommandFailed
         """
         try:
-            subprocess.run(shlex.split(command), capture_output=True, check=True)
+            subprocess.run(shlex.split(command))
         except subprocess.CalledProcessError as err:
             raise e.CommandFailed(returncode=err.returncode, cmd=err.cmd)
