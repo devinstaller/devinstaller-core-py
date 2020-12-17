@@ -2,20 +2,24 @@
 module_type = "group"
 name = "group_test_1"
 requires = [
-  "test_2",
-  "test_1",
+  "python_commands",
+  "shell_commands",
 ]
 
 [[modules]]
 commands = [
   "py: print('python command 1')",
+  "py: print('python command 2')",
+  "py: print('python command 3')",
 ]
 module_type = "phony"
-name = "test_1"
+name = "python_commands"
 
 [[modules]]
 commands = [
-  "sh: echo 'shell command 1'",
+  "echo 'shell command 1'",
+  "sh: echo 'shell command 2'",
+  "sh: echo 'shell command 3'",
 ]
 module_type = "phony"
-name = "test_2"
+name = "shell_commands"

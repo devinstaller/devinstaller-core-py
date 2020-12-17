@@ -12,6 +12,7 @@ class SessionSpec:
         "devinstaller_core.command_shell",
     ]
     PARSE_PATTERN = r"^(.*): (.*)"
+    DEFAULT_LANG = "sh"
 
 
 class SessionProg:

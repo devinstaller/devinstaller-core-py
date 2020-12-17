@@ -87,18 +87,18 @@ class SessionSpec(ex.BaseExtension[ex.ExtSpec]):
     @classmethod
     def parse(cls, command: str) -> CommandResponse:
         """Check the command and returns the command response object"""
-        try:
-            pattern = c.SessionSpec.PARSE_PATTERN
-            result = re.match(pattern, command)
-            assert result is not None
-            data = CommandResponse(prog=result.group(1), cmd=result.group(2))
-            return data
-        except AssertionError:
-            raise e.SpecificationError(
-                error=command,
-                error_code="S100",
-                message="The command didn't conform to the spec",
-            )
+        # try:
+        pattern = c.SessionSpec.PARSE_PATTERN
+        result = re.match(pattern, command)
+        if result is None:
+            return CommandResponse(prog=c.SessionSpec.DEFAULT_LANG, cmd=command)
+        return CommandResponse(prog=result.group(1), cmd=result.group(2))
+        # except AssertionError:
+        #     raise e.SpecificationError(
+        #         error=command,
+        #         error_code="S100",
+        #         message="The command didn't conform to the spec",
+        #     )
 
     def load_extension(self, extension: ex.ExtSpec):
         """Loading extension"""
