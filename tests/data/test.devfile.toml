@@ -1,7 +1,21 @@
 [[modules]]
+module_type = "group"
+name = "group_test_1"
+requires = [
+  "test_2",
+  "test_1",
+]
+
+[[modules]]
 commands = [
-  "py: print('testing python cmd 1')",
-  "sh: echo 'testing shell cmd 1'",
+  "py: print('python command 1')",
 ]
 module_type = "phony"
 name = "test_1"
+
+[[modules]]
+commands = [
+  "sh: echo 'shell command 1'",
+]
+module_type = "phony"
+name = "test_2"

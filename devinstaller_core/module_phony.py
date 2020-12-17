@@ -40,7 +40,6 @@ class ModulePhony(mb.ModuleBase):
         """
         ui.print(f"Running commands in: {self.display}...")
         self.execute_instructions(self.commands)
-        sys.exit(1)
 
     def uninstall(self):
         """Dummy method. Not part of the specification but here for initializing

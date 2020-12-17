@@ -120,7 +120,6 @@ class DependencyGraph:
         self.traverse_requires(module_name)
         self.traverse_optionals(module_name)
         self.traverse_install(module_name)
-        return None
 
     @typechecked
     def traverse_requires(self, module_name: str) -> None:
@@ -147,8 +146,6 @@ class DependencyGraph:
                 )
                 module.status = "failed"
                 self.orphan_modules.update(module.requires[:index])
-                return None
-        return None
 
     @typechecked
     def traverse_optionals(self, module_name: str) -> None:
@@ -174,7 +171,6 @@ class DependencyGraph:
                     f"The module {child_name} in the optionals of {module.alias} has failed, "
                     "but the installation for remaining modules will continue"
                 )
-        return None
 
     @typechecked
     def traverse_install(self, module_name: str) -> None:
