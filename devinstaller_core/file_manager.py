@@ -49,6 +49,8 @@ from typeguard import typechecked
 from devinstaller_core import common_models as m
 from devinstaller_core import exception as e
 
+file_format_ext = {"yml": "yaml"}
+
 
 class FileManager:
     """The "manager" for handling your system files."""
@@ -154,7 +156,10 @@ class DevFileManager:
                 "I was expecting `hash_method` to be a function, but it is not."
             )
         self.digest = f(str(file_contents))
-        self.contents = self.parse(file_contents)
+        file_ext = file_path.split(".")[-1]
+        self.contents = self.parse(
+            file_contents, file_format=file_format_ext.get(file_ext, file_ext)
+        )
 
     @classmethod
     @typechecked
@@ -188,8 +193,9 @@ class DevFileManager:
                 message="The file_path you gave didn't start with a method.",
             )
 
+    @classmethod
     @typechecked
-    def parse(self, file_contents: str) -> Dict[Any, Any]:
+    def parse(cls, file_contents: str, file_format: str = "toml") -> Dict[Any, Any]:
         """Parse `file_contents` and returns the python object
 
         Args:
@@ -203,7 +209,7 @@ class DevFileManager:
                 with code :ref:`error-code-S100`
         """
         try:
-            return anymarkup.parse(file_contents)
+            return anymarkup.parse(file_contents, format=file_format)
         except Exception:
             raise e.SpecificationError(
                 error=file_contents,
