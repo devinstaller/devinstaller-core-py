@@ -189,7 +189,7 @@ class DevFileManager:
             )
 
     @typechecked
-    def parse(self, file_contents: str, file_format: str = "toml") -> Dict[Any, Any]:
+    def parse(self, file_contents: str) -> Dict[Any, Any]:
         """Parse `file_contents` and returns the python object
 
         Args:
@@ -203,7 +203,7 @@ class DevFileManager:
                 with code :ref:`error-code-S100`
         """
         try:
-            return anymarkup.parse(file_contents, format=file_format)
+            return anymarkup.parse(file_contents)
         except Exception:
             raise e.SpecificationError(
                 error=file_contents,

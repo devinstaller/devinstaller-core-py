@@ -1,0 +1,18 @@
+modules:
+  - module_type: group
+    name: group_test_1
+    requires:
+      - python_commands
+      - shell_commands
+  - commands:
+      - "py: print('python command 1')"
+      - "py: print('python command 2')"
+      - "py: print('python command 3')"
+    module_type: phony
+    name: python_commands
+  - commands:
+      - "echo 'shell command 1'"
+      - "echo 'shell command 2'"
+      - "sh: echo 'shell command 3'"
+    module_type: phony
+    name: shell_commands

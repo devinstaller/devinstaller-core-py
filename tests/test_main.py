@@ -43,3 +43,4 @@ def install(
 
 
 install(spec_file_path="file: tests/data/test.devfile.toml")
+install(spec_file_path="file: tests/data/test.devfile.yaml")
