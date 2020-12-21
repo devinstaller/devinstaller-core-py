@@ -42,5 +42,7 @@ def install(
         dependency_graph.uninstall_orphan_modules()
 
 
-install(spec_file_path="file: tests/data/test.devfile.toml")
 install(spec_file_path="file: tests/data/test.devfile.yaml")
+install(spec_file_path="file: tests/data/test.devfile.toml")
+install(spec_file_path="file: tests/data/test2.devfile.toml")
+install(spec_file_path="file: tests/data/test3.devfile.toml")

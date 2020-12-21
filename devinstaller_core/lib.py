@@ -86,7 +86,7 @@ def create_dependency_graph(
         full_document=schema_object, platform_codename=platform_codename
     )
     dependency_graph = dg.DependencyGraph(
-        module_list=schema_object["modules"], platform_object=platform_object
+        schema_object=schema_object, platform_object=platform_object
     )
     return dependency_graph
 

@@ -8,7 +8,13 @@ from devinstaller_core import command as c
 from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
 from devinstaller_core.block_platform import BlockPlatform
-from devinstaller_core.common_models import TypeAnyModule, TypeCommonModule
+from devinstaller_core.common_models import (
+    TypeAnyModule,
+    TypeCommonModule,
+    TypeConstant,
+    TypeConstantData,
+    TypeFullDocument,
+)
 from devinstaller_core.module_app import ModuleApp
 from devinstaller_core.module_file import ModuleFile
 from devinstaller_core.module_folder import ModuleFolder
@@ -29,12 +35,13 @@ class DependencyGraph:
     @typechecked
     def __init__(
         self,
-        module_list: List[TypeCommonModule],
+        schema_object: TypeFullDocument,
         platform_object: BlockPlatform,
         before_each: Optional[str] = None,
         after_each: Optional[str] = None,
     ) -> None:
         """Create dependency graph"""
+        module_list: List[TypeCommonModule] = schema_object["modules"]
         self.graph: Dict[str, TypeAnyModule] = {}
         self.orphan_modules: Set[str] = set()
         module_classes: Dict[str, Any] = {
@@ -54,6 +61,14 @@ class DependencyGraph:
                     module_object, "supported_platforms"
                 )
                 module_object = u.Dictionary.remove_key(module_object, "module_type")
+                self.generate_global_constants_graph(schema_object.get("constants", []))
+                patched_constants = self.patch_constants(
+                    bind_constants=module_object.get("binds", None),
+                    local_constants=module_object.get("constants", []),
+                )
+                module_object["constants"] = patched_constants
+                # Removing binds key as it is not longer needed
+                module_object = u.Dictionary.remove_key(module_object, "binds")
                 try:
                     new_module = module_classes[module_type](**module_object)
                 except TypeError as err:
@@ -71,6 +86,115 @@ class DependencyGraph:
                     )
                 else:
                     self.graph[codename] = new_module
+
+    def generate_global_constants_graph(self, constants: List[TypeConstant]) -> None:
+        """Generate the graph for global constants
+        """
+        constants_graph = {}
+        for i in constants:
+            constants_graph[i["name"]] = i
+        self.constants_graph = constants_graph
+
+    def patch_constants(
+        self,
+        bind_constants: Optional[List[str]],
+        local_constants: List[TypeConstantData],
+    ) -> List[TypeConstantData]:
+        """Patch all constants using the hierarchy and the local constants
+        """
+        if bind_constants is None:
+            return local_constants
+
+        visited = []
+
+        def get_constants_dict(key: str) -> Dict[str, str]:
+            """Get the current constants of the given `key` and serialize it into a simple dict
+            and return that.
+            Runs only on child nodes. If any parent is present the that should be resolved first.
+
+            Args:
+                key (str): The key of the current object
+
+            Returns:
+                Dict[str, str]: Serialized constants object
+            """
+            constants = self.constants_graph[key]["data"]
+            result = {}
+            for i in constants:
+                result[i["key"]] = i["value"]
+            return result
+
+        def go_to_parent(key: str) -> Dict[str, str]:
+            """Check for each parent and resolve it
+
+            Args:
+                key (str): The key of the parent to be resolved
+
+            Returns:
+                Dict[str, str]: Returns a resolved and serialized dict
+            """
+            if key in visited:
+                return {}
+            visited.append(key)
+            constants_object: Dict[str, Any] = self.constants_graph[key]
+            parent_keys = constants_object.get("inherits", None)
+            if not parent_keys:
+                return get_constants_dict(key)
+            parent_constants = {}
+            for parent_key in parent_keys:
+                parent_constants = parent_constants | go_to_parent(parent_key)
+            current_constants = get_constants_dict(key)
+            merged_constants = parent_constants | current_constants
+            return merged_constants
+
+        def deserialize(data: Dict[str, str]) -> List[TypeConstantData]:
+            """For the merging process we have converted into a simple dict. But the module constructors
+            uses the TypeConstantData
+
+            Args:
+                data (Dict[str, str]): The full data that needs to be deserialized back
+
+            Returns:
+                List[TypeConstantData]: Deserialized object
+            """
+            result: List[TypeConstantData] = []
+            for key, value in data.items():
+                result.append({"key": key, "value": value})
+            return result
+
+        def serialize_and_merge(
+            bind_constants: List[str], local_constants: List[TypeConstantData]
+        ) -> Dict[str, str]:
+            """For the computation purpose we serialize everything into a simple dict and
+            later on we will deserialize it back.
+
+            Args:
+                bind_constants: The list of all the global constants that needs to be bound to
+                    the current module
+                local_constants (List[TypeConstant]): The local constants which will have
+                    the highest priority
+
+            Returns:
+                Dict[str, str]: The final serialized object
+            """
+            temp = {}
+            for i in local_constants:
+                temp[i["key"]] = i["value"]
+            local_constants = temp
+            merged_global_const = {}
+            visited = []
+            for i in bind_constants:
+                if i not in visited:
+                    visited.append(i)
+                    merged_global_const = merged_global_const | go_to_parent(i)
+            final_merge = merged_global_const | local_constants
+            return final_merge
+
+        d = serialize_and_merge(
+            bind_constants=bind_constants, local_constants=local_constants
+        )
+        d = deserialize(d)
+        return d
 
     def uninstall_orphan_modules(self) -> None:
         """Uninstall orphan modules

@@ -1,0 +1,57 @@
+[[constants]]
+name = "g1"
+[[constants.data]]
+key = "k1"
+value = "k1v1"
+
+[[constants.data]]
+key = "k2"
+value = "k2v1"
+
+[[constants]]
+inherits = ["g1"]
+name = "g2"
+
+[[constants.data]]
+key = "k1"
+value = "k1v2"
+
+[[modules]]
+binds = ["g1"]
+commands = [
+  "echo '{k1} {k2} {k3}'",
+]
+module_type = "phony"
+name = "m1"
+
+[[modules.constants]]
+key = "k3"
+value = "k3v1"
+
+[[modules]]
+binds = ["g2"]
+commands = [
+  "echo '{k1} {k2} {k3}'",
+]
+module_type = "phony"
+name = "m2"
+
+[[modules.constants]]
+key = "k3"
+value = "k3v1"
+
+[[modules]]
+binds = ["g1", "g2"]
+commands = [
+  "echo '{k1} {k2}'",
+]
+module_type = "phony"
+name = "m3"
+
+[[modules]]
+binds = ["g2", "g1"]
+commands = [
+  "echo '{k1} {k2}'",
+]
+module_type = "phony"
+name = "m4"

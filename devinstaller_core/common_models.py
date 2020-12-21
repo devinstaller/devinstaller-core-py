@@ -53,6 +53,13 @@ class TypeModuleInstallInstruction(TypedDict, total=False):
     rollback: Optional[str]
 
 
+class TypeConstantData(TypedDict):
+    """Type declaration for the `data` block in the constants block"""
+
+    key: str
+    value: str
+
+
 class TypeCommonModule(TypedDict, total=False):
     """Type declaration for all the block
     """
@@ -83,6 +90,8 @@ class TypeCommonModule(TypedDict, total=False):
     version: str
     before: Optional[str]
     after: Optional[str]
+    constants: Optional[List[TypeConstantData]]
+    binds: Optional[List[str]]
 
 
 class TypeInterfaceModule(TypedDict, total=False):
@@ -105,6 +114,15 @@ class TypeInterface(TypedDict, total=False):
     before_each: str
     after_each: str
     modules: List[TypeInterfaceModule]
+
+
+class TypeConstant(TypedDict, total=False):
+    """Type declaration for constants block
+    """
+
+    name: str
+    inherits: List[str]
+    data: List[TypeConstantData]
 
 
 class TypePlatformInfo(TypedDict, total=False):
@@ -145,6 +163,7 @@ class TypeFullDocument(TypedDict, total=False):
     platforms: List[TypePlatform]
     modules: List[TypeCommonModule]
     interfaces: List[TypeInterface]
+    constants: List[TypeConstant]
 
 
 class TypeValidateResponse(TypedDict):
@@ -215,12 +234,16 @@ def module() -> Dict[str, Any]:
                     "allowed": ["app", "file", "folder", "link", "group", "phony"],
                 },
                 "supported_platforms": {"type": "list", "schema": {"type": "string"}},
-                "bind": {"type": "list", "schema": {"type": "string"}},
+                "binds": {"type": "list", "schema": {"type": "string"}},
+                # `binds`: Is this for binding constants to each module?
                 "constants": {
                     "type": "list",
                     "schema": {
-                        "key": {"type": "string", "required": True},
-                        "value": {"type": "string", "required": True},
+                        "type": "dict",
+                        "schema": {
+                            "key": {"type": "string", "required": True},
+                            "value": {"type": "string", "required": True},
+                        },
                     },
                 },
                 "alias": {"type": "string"},
@@ -364,12 +387,15 @@ def constant() -> Dict[str, Any]:
             "type": "dict",
             "schema": {
                 "name": {"type": "string", "required": True},
-                "inherit": {"type": "list", "schema": {"type": "string"}},
+                "inherits": {"type": "list", "schema": {"type": "string"}},
                 "data": {
                     "type": "list",
                     "schema": {
-                        "key": {"type": "string", "required": True},
-                        "value": {"type": "string", "required": True},
+                        "type": "dict",
+                        "schema": {
+                            "key": {"type": "string", "required": True},
+                            "value": {"type": "string", "required": True},
+                        },
                     },
                 },
             },

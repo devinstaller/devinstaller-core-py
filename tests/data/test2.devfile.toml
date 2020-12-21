@@ -1,0 +1,14 @@
+[[modules]]
+commands = [
+  "echo '{k1} {k2}'",
+]
+module_type = "phony"
+name = "m1"
+
+[[modules.constants]]
+key = "k1"
+value = "v1"
+
+[[modules.constants]]
+key = "k2"
+value = "v2"
