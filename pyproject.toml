@@ -16,7 +16,7 @@ license = "MIT License"
 name = "devinstaller_core"
 readme = "README.md"
 repository = "https://gitlab.com/justinekizhak/devinstaller-core-py"
-version = "0.6.0"
+version = "0.6.1"
 
 [tool.poetry.dependencies]
 anymarkup = "^0.8.1"
