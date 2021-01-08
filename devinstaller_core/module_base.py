@@ -8,8 +8,11 @@ from typeguard import typechecked
 from devinstaller_core import command as c
 from devinstaller_core import exception as e
 from devinstaller_core import utilities as u
+from devinstaller_core import settings as s
+from devinstaller_core import messages as m
 
 ui = u.UserInteraction()
+session = c.SessionSpec()
 
 
 @dataclass
@@ -96,25 +99,36 @@ class ModuleBase(ABC):
             ModuleRollbackFailed
                 if the rollback command fails
         """
+
+        def core_logic(task=None):
+            for index in range(len(instructions)):
+                inst = instructions[index]
+                try:
+                    session.run(inst.cmd)
+                    self.progress.update(task, advance=1)
+                except e.CommandFailed:
+                    rollback_list = instructions[:index]
+                    rollback_list.reverse()
+                    self.progress.remove_task(task)
+                    self.rollback_instructions(instructions, rollback_list)
+                    raise e.ModuleInstallationFailed(error=inst.cmd, error_code="D103")
+
         if instructions == []:
             return None
-        for index, inst in enumerate(instructions):
-            try:
-                session = c.SessionSpec()
-                session.run(inst.cmd)
-            except e.CommandFailed:
-                rollback_list = instructions[:index]
-                rollback_list.reverse()
-                try:
-                    self.rollback_instructions(rollback_list)
-                except e.ModuleRollbackFailed:
-                    raise e.ModuleRollbackFailed
-                raise e.ModuleInstallationFailed
+        self.progress = ui.track(transient=True)
+        show_message = s.settings.DDOT_VERBOSE
+        if show_message:
+            core_logic()
+            return
+        with self.progress:
+            task = self.progress.add_task("Running...", total=len(instructions))
+            core_logic(task)
 
-    @classmethod
     @typechecked
     def rollback_instructions(
-        cls, instructions: List[ModuleInstallInstruction]
+        self,
+        instructions: List[ModuleInstallInstruction],
+        rollback_instructions: List[ModuleInstallInstruction],
     ) -> None:
         """Rollback the installation of a module
 
@@ -125,11 +139,26 @@ class ModuleBase(ABC):
             ModuleRollbackFailed
                 if the rollback instructions fails
         """
-        for inst in instructions:
+        show_message = s.settings.DDOT_VERBOSE
+        ui.print(
+            "\n"
+            + m.error_message(
+                f"There was some error in installing module: [red]{self.name}[/red],\n"
+                "because of that I am rolling back all the changes so far."
+            )
+            + "\n"
+        )
+        task = self.progress.add_task("Rolling back...", total=len(instructions))
+        self.progress.update(task, advance=len(rollback_instructions))
+        for inst in rollback_instructions:
             if inst.rollback is not None:
                 try:
-                    ui.print(f"Rolling back `{inst.cmd}` using `{inst.rollback}`")
-                    session = c.SessionSpec()
+                    ui.print(
+                        m.warning_message(
+                            f"Rolling back `{inst.cmd}` using `{inst.rollback}`"
+                        )
+                    ) if show_message else None
                     session.run(inst.rollback)
                 except e.CommandFailed:
                     raise e.ModuleRollbackFailed
+            self.progress.update(task, advance=-1)

@@ -20,7 +20,7 @@ class UserInteraction(ex.BaseExtension[ex.ExtUserInteraction]):
     def select(self, title: str, choices: List[str]) -> str:
         """Ask user to select one of the choices"""
 
-    def print(self, message: Any) -> None:
+    def print(self, *args, **kwargs) -> None:
         """Prints the given object into console using rich-text"""
 
     def checkbox(self, title: str, choices: List[str]) -> List[str]:
@@ -32,6 +32,14 @@ class UserInteraction(ex.BaseExtension[ex.ExtUserInteraction]):
     def load_extension(self, extension: ex.ExtUserInteraction):
         """Loading extension"""
         self.return_object = extension
+
+    def status(self, *args, **kwargs):
+        """Show a spinner for tasks whose progress is difficult to calculate
+        """
+
+    def track(self, *args, **kwargs) -> Any:
+        """Track the progress of a list of tasks
+        """
 
 
 ui = UserInteraction()

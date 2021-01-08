@@ -46,6 +46,7 @@ dev_errors = {
     "D100": "Schema object not found.",
     "D101": "Invalid error code",
     "D102": "The Extension is not inherited from the required Base class",
+    "D103": "Error in executing instructions",
 }
 
 

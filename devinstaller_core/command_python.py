@@ -1,4 +1,6 @@
 from devinstaller_core import extension as ex
+from devinstaller_core import settings as s
+from devinstaller_core import utilities as u
 
 CODE = "py"
 NAME = "Python"
@@ -11,7 +13,20 @@ class ExtSpec(ex.ExtSpec):
     def run(self, command: str):
         """Execute the given string in python
         """
-        exec(command)
+
+        def new_print(*args, **kwargs):
+            verbose = s.settings.DDOT_VERBOSE
+            if verbose:
+                print(*args, **kwargs)
+            return None
+
+        # safe_python = s.settings.DDOT_SAFE_PYTHON
+        # safe_python = True
+        # if safe_python:
+        #     proceed = u.ui.confirm(f"Proceed with: {command}")
+        #     if not proceed:
+        #         return
+        exec(command, {"print": new_print})
 
 
 class ExtProg(ex.ExtProg):

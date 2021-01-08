@@ -17,7 +17,9 @@ class ModuleGroup(mb.ModuleBase):
     requires: Optional[List[str]] = None
 
     def install(self):
-        pass
+        """This method is not available for the `group` module
+        """
 
     def uninstall(self):
-        pass
+        """This method is not available for the `group` module
+        """

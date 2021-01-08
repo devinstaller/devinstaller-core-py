@@ -20,6 +20,9 @@ from devinstaller_core.utilities import ui
 # dfm = f.DevFileManager()
 fm = f.FileManager()
 
+SELECTION_TITLE = """Hey... You haven't selected which module to be installed
+Do you mind selected a few for me?"""
+
 
 @typechecked
 def load_devfile(
@@ -133,16 +136,15 @@ def get_requirement_list(module_objects: List[m.TypeAnyModule],) -> List[str]:
     Returns:
         List of the objects of all the modules to be installed.
     """
-    ui.print("Hey... You haven't selected which module to be installed")
-    title = "Do you mind selected a few for me?"
-    choices = {str(mod): mod for mod in module_objects}
-    selections = ui.checkbox(title, choices=list(choices.keys()))
-    data: List[str] = []
-    for _s in selections:
-        _m = choices[_s]
-        assert _m.alias is not None
-        data.append(_m.alias)
-    return data
+    with ui.status(SELECTION_TITLE):
+        choices = {str(mod): mod for mod in module_objects}
+        selections = ui.checkbox("", choices=list(choices.keys()))
+        data: List[str] = []
+        for _s in selections:
+            _m = choices[_s]
+            assert _m.alias is not None
+            data.append(_m.alias)
+        return data
 
 
 @typechecked

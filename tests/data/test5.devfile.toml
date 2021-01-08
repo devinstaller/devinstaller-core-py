@@ -1,0 +1,16 @@
+version = "v1"
+
+[[modules]]
+module_type = "group"
+name = "g1"
+optionals = ["p1", "p2"]
+
+[[modules]]
+commands = ["exit 1"]
+module_type = "phony"
+name = "p1"
+
+[[modules]]
+commands = ["echo \"This should run\""]
+module_type = "phony"
+name = "p2"

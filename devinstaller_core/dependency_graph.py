@@ -22,6 +22,7 @@ from devinstaller_core.module_group import ModuleGroup
 from devinstaller_core.module_link import ModuleLink
 from devinstaller_core.module_phony import ModulePhony
 from devinstaller_core.utilities import ui
+from devinstaller_core.messages import WARNING_COLOR_HEX, error_message, warning_message
 
 
 class DependencyGraph:
@@ -272,12 +273,16 @@ class DependencyGraph:
             return None
         for index, child_name in enumerate(module.requires):
             self.traverse(child_name)
-            if self.graph[child_name].status == "failed":
-                ui.print(
-                    f"The module {child_name} in the requires of {module.alias} has failed"
+            if self.graph[child_name].status != "failed":
+                continue
+            ui.print(
+                error_message(
+                    f"The module [red]{child_name}[/red] in the requires of [red]{module.alias}[/red] has failed."
                 )
-                module.status = "failed"
-                self.orphan_modules.update(module.requires[:index])
+            )
+            module.status = "failed"
+            self.orphan_modules.update(module.requires[:index])
+            return None
 
     @typechecked
     def traverse_optionals(self, module_name: str) -> None:
@@ -300,8 +305,10 @@ class DependencyGraph:
             self.traverse(child_name)
             if self.graph[child_name].status == "failed":
                 ui.print(
-                    f"The module {child_name} in the optionals of {module.alias} has failed, "
-                    "but the installation for remaining modules will continue"
+                    warning_message(
+                        f"The module [{WARNING_COLOR_HEX}]{child_name}[/{WARNING_COLOR_HEX}] in the optionals of [{WARNING_COLOR_HEX}]{module.alias}[/{WARNING_COLOR_HEX}] has failed, \n"
+                        "but the installation for remaining modules will continue."
+                    )
                 )
 
     @typechecked
@@ -324,8 +331,10 @@ class DependencyGraph:
             return None
         except e.ModuleInstallationFailed:
             ui.print(
-                f"The installation for the module: {module.alias} failed. "
-                "And all the instructions has been rolled back."
+                error_message(
+                    f"The installation for the module: [red]{module.alias}[/red] failed. \n"
+                    "And all the instructions has been rolled back."
+                )
             )
             module.status = "failed"
             if isinstance(module, ModulePhony):

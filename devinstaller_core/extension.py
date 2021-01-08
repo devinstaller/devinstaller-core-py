@@ -87,7 +87,7 @@ class ExtUserInteraction(BaseExtApplication):
         """
 
     @abstractmethod
-    def print(self, message: Any) -> None:
+    def print(self, *args, **kwargs) -> None:
         """Prints the given object to the console in rich-text format
         """
 
@@ -98,6 +98,14 @@ class ExtUserInteraction(BaseExtApplication):
     @abstractmethod
     def confirm(self, title: str) -> bool:
         """Ask user to confirm a decision"""
+
+    @abstractmethod
+    def status(self, *args, **kwargs) -> Any:
+        """Show an indefinite spinner"""
+
+    @abstractmethod
+    def track(self, *args, **kwargs) -> Any:
+        """Track the progress of list of tasks"""
 
 
 ExtensionModule = TypeVar("ExtensionModule", bound=BaseExt)

@@ -3,8 +3,12 @@ from typing import Any, List
 import questionary
 import rich
 from typeguard import typechecked
+from rich.progress import Progress
 
 from devinstaller_core import extension as ex
+
+
+console = rich.console.Console()
 
 
 class ExtUserInteraction(ex.ExtUserInteraction):
@@ -58,11 +62,24 @@ class ExtUserInteraction(ex.ExtUserInteraction):
         """
         return questionary.checkbox(title, choices).ask()
 
-    @typechecked
-    def print(self, message: Any) -> None:
+    def print(self, *args, **kwargs) -> None:
         """Wrapper for printing rich text in the console
 
         Args:
             message: The object you want to display
         """
-        rich.print(message)
+        console.print(*args, **kwargs)
+
+    def status(self, *args, **kwargs):
+        """Wrapper for `rich.status`.
+
+        Show a spinner for tasks whose progress is difficult to calculate.
+        """
+        return console.status(*args, **kwargs)
+
+    def track(self, *args, **kwargs):
+        """Wrapper for `rich.track`.
+
+        Track the progress for a list of tasks
+        """
+        return Progress(*args, **kwargs)
