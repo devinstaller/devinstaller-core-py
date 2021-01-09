@@ -7,9 +7,9 @@ from typeguard import typechecked
 
 from devinstaller_core import command as c
 from devinstaller_core import exception as e
-from devinstaller_core import utilities as u
-from devinstaller_core import settings as s
 from devinstaller_core import messages as m
+from devinstaller_core import settings as s
+from devinstaller_core import utilities as u
 
 ui = u.UserInteraction()
 session = c.SessionSpec()
@@ -105,11 +105,13 @@ class ModuleBase(ABC):
                 inst = instructions[index]
                 try:
                     session.run(inst.cmd)
-                    self.progress.update(task, advance=1)
+                    if task is not None:
+                        self.progress.update(task, advance=1)
                 except e.CommandFailed:
                     rollback_list = instructions[:index]
                     rollback_list.reverse()
-                    self.progress.remove_task(task)
+                    if task is not None:
+                        self.progress.remove_task(task)
                     self.rollback_instructions(instructions, rollback_list)
                     raise e.ModuleInstallationFailed(error=inst.cmd, error_code="D103")
 
@@ -148,8 +150,10 @@ class ModuleBase(ABC):
             )
             + "\n"
         )
-        task = self.progress.add_task("Rolling back...", total=len(instructions))
-        self.progress.update(task, advance=len(rollback_instructions))
+        show_message = s.settings.DDOT_VERBOSE
+        if not show_message:
+            task = self.progress.add_task("Rolling back...", total=len(instructions))
+            self.progress.update(task, advance=len(rollback_instructions))
         for inst in rollback_instructions:
             if inst.rollback is not None:
                 try:
@@ -161,4 +165,5 @@ class ModuleBase(ABC):
                     session.run(inst.rollback)
                 except e.CommandFailed:
                     raise e.ModuleRollbackFailed
-            self.progress.update(task, advance=-1)
+            if not show_message:
+                self.progress.update(task, advance=-1)
