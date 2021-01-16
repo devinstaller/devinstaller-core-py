@@ -46,7 +46,7 @@ from devinstaller_core.module_phony import ModulePhony
 
 
 class TypeModuleInstallInstruction(TypedDict, total=False):
-    """Type declaration for the instruction for `init`, `command` and `config`
+    """Type declaration for the instruction for `inits`, `command` and `configs`
     """
 
     cmd: str
@@ -67,13 +67,13 @@ class TypeCommonModule(TypedDict, total=False):
     alias: str
     commands: List[Union[TypeModuleInstallInstruction, str]]
     install_inst: List[TypeModuleInstallInstruction]
-    config: List[Union[TypeModuleInstallInstruction, str]]
+    configs: List[Union[TypeModuleInstallInstruction, str]]
     content: str
     create: bool
     description: str
     display: str
     executable: str
-    init: List[Union[TypeModuleInstallInstruction, str]]
+    inits: List[Union[TypeModuleInstallInstruction, str]]
     module_type: str
     name: str
     optionals: List[str]
@@ -195,7 +195,7 @@ TypeAnyModule = Union[
 TypeModuleMap = Dict[str, TypeAnyModule]
 
 ModuleInstallStatus = ["success", "failed", "in progress"]
-"""Status allowed for each modules. None is also included in Moduel status
+"""Status allowed for each modules. None is also included in Module status
 
 Values allowed:
     1. `success`
@@ -203,14 +203,14 @@ Values allowed:
     3. `in progress`
 """
 
-ModuleInstallInstructionKeys = Literal["init", "commands", "config"]
+ModuleInstallInstructionKeys = Literal["inits", "commands", "configs"]
 """These are the keys allowed for converting installation steps into
 `ModuleInstallInstruction` object
 
 Values allowed:
-    1. `init`
+    1. `inits`
     2. `commands`
-    3. `config`
+    3. `configs`
 """
 
 
@@ -248,7 +248,7 @@ def module() -> Dict[str, Any]:
                 },
                 "alias": {"type": "string"},
                 "create": {"type": "boolean"},
-                "init": {
+                "inits": {
                     "type": "list",
                     "schema": {
                         "type": "dict",
@@ -270,7 +270,7 @@ def module() -> Dict[str, Any]:
                         },
                     },
                 },
-                "config": {
+                "configs": {
                     "type": "list",
                     "schema": {
                         "type": "dict",

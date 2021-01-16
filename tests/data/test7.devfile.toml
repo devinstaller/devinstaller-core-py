@@ -1,0 +1,6 @@
+description = "Testing File module"
+
+[[modules]]
+module_type = "file"
+inits = [ { cmd = "py: print('hi')" } ]
+name = "test"
