@@ -1,6 +1,8 @@
 description = "Testing File module"
 
 [[modules]]
+content = "test2"
+create = "False"
+file_path = "~/testing2.txt"
 module_type = "file"
-inits = [ { cmd = "py: print('hi')" } ]
-name = "test"
+name = "testing.txt"

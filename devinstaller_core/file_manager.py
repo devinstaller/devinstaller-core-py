@@ -48,6 +48,7 @@ from typeguard import typechecked
 
 from devinstaller_core import common_models as m
 from devinstaller_core import exception as e
+from devinstaller_core import utilities
 
 file_format_ext = {"yml": "yaml"}
 
@@ -65,10 +66,9 @@ class FileManager:
         Returns:
             String representation of the file
         """
-        full_path = os.path.expanduser(file_path)
-        full_path_object = Path(full_path).resolve()
+        full_path = utilities.resolve_path(file_path)
         try:
-            with open(str(full_path_object), "r") as _f:
+            with open(str(full_path), "r") as _f:
                 return _f.read()
         except FileNotFoundError:
             raise e.FileNotFound

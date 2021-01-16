@@ -86,7 +86,7 @@ class ModuleBase(ABC):
 
     @typechecked
     def execute_instructions(
-        self, instructions: List[ModuleInstallInstruction]
+        self, instructions: Optional[List[ModuleInstallInstruction]]
     ) -> None:
         """The function which handles installing of multi step commands.
 
@@ -115,7 +115,7 @@ class ModuleBase(ABC):
                     self.rollback_instructions(instructions, rollback_list)
                     raise e.ModuleInstallationFailed(error=inst.cmd, error_code="D103")
 
-        if instructions == []:
+        if instructions == [] or instructions is None:
             return None
         self.progress = ui.track(transient=True)
         show_message = s.settings.DDOT_VERBOSE

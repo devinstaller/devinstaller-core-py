@@ -1,3 +1,5 @@
+import os
+from pathlib import Path
 from typing import Any, Dict, List
 
 from typeguard import typechecked
@@ -101,3 +103,17 @@ class Compare:
         if version == expected_version:
             return True
         return False
+
+
+def resolve_path(file_path: str) -> str:
+    """Resovle a given path string
+
+    Args:
+        file_path (str): Input path string
+
+    Returns:
+        str: Full path for the given file
+    """
+    full_path = os.path.expanduser(file_path)
+    full_path_object = Path(full_path).resolve()
+    return str(full_path_object)

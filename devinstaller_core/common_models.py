@@ -78,7 +78,8 @@ class TypeCommonModule(TypedDict, total=False):
     name: str
     optionals: List[str]
     owner: str
-    parent_dir: str
+    file_path: str
+    group: str
     permission: str
     requires: List[str]
     rollback: bool
@@ -215,6 +216,14 @@ Values allowed:
 
 
 def convert_to_instruction_dict(installation_str: str) -> Dict[str, str]:
+    """Convert given string to dict.
+
+    Args:
+        installation_str (str): The string to be converted.
+
+    Returns:
+        Dict[str, str]: Expected dict
+    """
     return {"cmd": installation_str}
 
 
@@ -252,7 +261,6 @@ def module() -> Dict[str, Any]:
                     "type": "list",
                     "schema": {
                         "type": "dict",
-                        "coerce": (str, convert_to_instruction_dict),
                         "schema": {
                             "cmd": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
@@ -263,7 +271,6 @@ def module() -> Dict[str, Any]:
                     "type": "list",
                     "schema": {
                         "type": "dict",
-                        "coerce": (str, convert_to_instruction_dict),
                         "schema": {
                             "cmd": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
@@ -274,7 +281,6 @@ def module() -> Dict[str, Any]:
                     "type": "list",
                     "schema": {
                         "type": "dict",
-                        "coerce": (str, convert_to_instruction_dict),
                         "schema": {
                             "cmd": {"type": "string", "required": True},
                             "rollback": {"type": "string"},
@@ -291,20 +297,22 @@ def module() -> Dict[str, Any]:
                     },
                 },
                 "uninstall_inst": {"type": "list", "schema": {"type": "string"}},
-                "content": {
-                    "type": "dict",
-                    "schema": {
-                        "digest": {"type": "string"},
-                        "path": {"type": "string"},
-                    },
-                },
+                # "content": {
+                #     "type": "dict",
+                #     "schema": {
+                #         "digest": {"type": "string"},
+                #         "path": {"type": "string"},
+                #     },
+                # },
+                "content": {"type": "string"},
                 "description": {"type": "string"},
                 "display": {"type": "string"},
                 "executable": {"type": "string"},
                 "name": {"type": "string", "required": True},
                 "optionals": {"type": "list", "schema": {"type": "string"}},
                 "owner": {"type": "string"},
-                "parent_dir": {"type": "string"},
+                "group": {"type": "string"},
+                "file_path": {"type": "string"},
                 "permission": {"type": "string"},
                 "requires": {"type": "list", "schema": {"type": "string"}},
                 "url": {"type": "string"},
