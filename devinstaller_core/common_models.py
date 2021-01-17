@@ -87,7 +87,7 @@ class TypeCommonModule(TypedDict, total=False):
     source: str
     supported_platforms: List[str]
     symbolic: bool
-    target: str
+    dest: str
     url: str
     version: str
     before: Optional[str]
@@ -320,7 +320,7 @@ def module() -> Dict[str, Any]:
                 "url": {"type": "string"},
                 "version": {"type": "string", "coerce": str},
                 "source": {"type": "string"},
-                "target": {"type": "string"},
+                "dest": {"type": "string"},
                 "symbolic": {"type": "boolean"},
             },
         },
