@@ -75,7 +75,6 @@ class ModuleApp(mb.ModuleBase):
         # installation_steps = create_instruction_list(self.install_inst)
         try:
             self.execute_instructions(self.install_inst)
-            return None
         except e.ModuleRollbackFailed:
             ui.print(
                 f"Rollback instructions for {self.display} failed. Quitting program."
@@ -96,7 +95,6 @@ class ModuleApp(mb.ModuleBase):
             for i in self.uninstall_inst:
                 session = c.SessionSpec()
                 session.run(i)
-            return None
         except e.ModuleInstallationFailed:
             ui.print(f"Un-installation of {self.display} failed. Quitting program.")
             sys.exit(1)

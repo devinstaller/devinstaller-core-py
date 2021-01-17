@@ -82,6 +82,8 @@ class ModuleFile(mb.ModuleBase):
     def uninstall(self):
         """Method to rollback if the installation failed and this module is now
         an orphan module.
-
-        # TODO Add code for uninstalling
         """
+        if self.rollback:
+            raw_path = self.file_path if self.file_path else self.name
+            path = u.resolve_path(raw_path)
+            os.remove(path)

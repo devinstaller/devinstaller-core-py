@@ -79,6 +79,7 @@ class TypeCommonModule(TypedDict, total=False):
     optionals: List[str]
     owner: str
     file_path: str
+    folder_path: str
     group: str
     permission: str
     requires: List[str]
@@ -313,6 +314,7 @@ def module() -> Dict[str, Any]:
                 "owner": {"type": "string"},
                 "group": {"type": "string"},
                 "file_path": {"type": "string"},
+                "folder_path": {"type": "string"},
                 "permission": {"type": "string"},
                 "requires": {"type": "list", "schema": {"type": "string"}},
                 "url": {"type": "string"},
