@@ -1,12 +1,11 @@
-from typing import Any, List
+from typing import List
 
 import questionary
 import rich
-from typeguard import typechecked
 from rich.progress import Progress
+from typeguard import typechecked
 
 from devinstaller_core import extension as ex
-
 
 console = rich.console.Console()
 
@@ -33,7 +32,7 @@ class ExtUserInteraction(ex.ExtUserInteraction):
         return questionary.confirm(title).ask()
 
     @typechecked
-    def select(self, title: str, choices: List[str]) -> str:
+    def select(self, title: str, choices) -> str:
         """Wrapper function around `questionary.select`
 
         Asks user to select one of the choices.
@@ -48,7 +47,7 @@ class ExtUserInteraction(ex.ExtUserInteraction):
         return questionary.select(title, choices).ask()
 
     @typechecked
-    def checkbox(self, title: str, choices: List[str]) -> List[str]:
+    def checkbox(self, title: str, choices) -> List[str]:
         """Wrapper function around `questionary.checkbox`
 
         Ask user to select all that which is applicable

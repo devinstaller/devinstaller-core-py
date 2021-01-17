@@ -15,6 +15,7 @@ from devinstaller_core.common_models import (
     TypeConstantData,
     TypeFullDocument,
 )
+from devinstaller_core.messages import WARNING_COLOR_HEX, error_message, warning_message
 from devinstaller_core.module_app import ModuleApp
 from devinstaller_core.module_file import ModuleFile
 from devinstaller_core.module_folder import ModuleFolder
@@ -22,7 +23,6 @@ from devinstaller_core.module_group import ModuleGroup
 from devinstaller_core.module_link import ModuleLink
 from devinstaller_core.module_phony import ModulePhony
 from devinstaller_core.utilities import ui
-from devinstaller_core.messages import WARNING_COLOR_HEX, error_message, warning_message
 
 
 class DependencyGraph:
@@ -69,9 +69,11 @@ class DependencyGraph:
                 )
                 module_object["constants"] = patched_constants
                 # Removing binds key as it is not longer needed
-                module_object = u.Dictionary.remove_key(module_object, "binds")
+                cleaned_object: Dict[str, Any] = u.Dictionary.remove_key(
+                    module_object, "binds"
+                )
                 try:
-                    new_module = module_classes[module_type](**module_object)
+                    new_module = module_classes[module_type](**cleaned_object)
                 except TypeError as err:
                     error = str(err).split(" ")[-1]
                     raise e.SpecificationError(
@@ -91,23 +93,26 @@ class DependencyGraph:
     def generate_global_constants_graph(self, constants: List[TypeConstant]) -> None:
         """Generate the graph for global constants
         """
-        constants_graph = {}
+        constants_graph: Dict[str, TypeConstant] = {}
         for i in constants:
             constants_graph[i["name"]] = i
         self.constants_graph = constants_graph
 
+    @typechecked
     def patch_constants(
         self,
-        bind_constants: Optional[List[str]],
-        local_constants: List[TypeConstantData],
+        bind_constants: Optional[List[str]] = [],
+        local_constants: Optional[List[TypeConstantData]] = [],
     ) -> List[TypeConstantData]:
         """Patch all constants using the hierarchy and the local constants
         """
-        if bind_constants is None:
+        local_constants = [] if local_constants is None else local_constants
+        if bind_constants is None or bind_constants == []:
             return local_constants
 
         visited = []
 
+        @typechecked
         def get_constants_dict(key: str) -> Dict[str, str]:
             """Get the current constants of the given `key` and serialize it into a simple dict
             and return that.
@@ -125,6 +130,7 @@ class DependencyGraph:
                 result[i["key"]] = i["value"]
             return result
 
+        @typechecked
         def go_to_parent(key: str) -> Dict[str, str]:
             """Check for each parent and resolve it
 
@@ -137,17 +143,18 @@ class DependencyGraph:
             if key in visited:
                 return {}
             visited.append(key)
-            constants_object: Dict[str, Any] = self.constants_graph[key]
+            constants_object = self.constants_graph[key]
             parent_keys = constants_object.get("inherits", None)
             if not parent_keys:
                 return get_constants_dict(key)
-            parent_constants = {}
+            parent_constants: Dict[str, str] = {}
             for parent_key in parent_keys:
-                parent_constants = parent_constants | go_to_parent(parent_key)
+                parent_constants = dict(parent_constants, **go_to_parent(parent_key))
             current_constants = get_constants_dict(key)
-            merged_constants = parent_constants | current_constants
+            merged_constants = dict(parent_constants, **current_constants)
             return merged_constants
 
+        @typechecked
         def deserialize(data: Dict[str, str]) -> List[TypeConstantData]:
             """For the merging process we have converted into a simple dict. But the module constructors
             uses the TypeConstantData
@@ -163,6 +170,7 @@ class DependencyGraph:
                 result.append({"key": key, "value": value})
             return result
 
+        @typechecked
         def serialize_and_merge(
             bind_constants: List[str], local_constants: List[TypeConstantData]
         ) -> Dict[str, str]:
@@ -178,24 +186,24 @@ class DependencyGraph:
             Returns:
                 Dict[str, str]: The final serialized object
             """
-            temp = {}
+            temp: Dict[str, str] = {}
             for i in local_constants:
                 temp[i["key"]] = i["value"]
-            local_constants = temp
-            merged_global_const = {}
-            visited = []
-            for i in bind_constants:
-                if i not in visited:
-                    visited.append(i)
-                    merged_global_const = merged_global_const | go_to_parent(i)
-            final_merge = merged_global_const | local_constants
+            merged_global_const: Dict[str, str] = {}
+            visited: List[str] = []
+            assert type(bind_constants) == List[str]
+            for _i in bind_constants:
+                if _i not in visited:
+                    visited.append(_i)
+                    merged_global_const = dict(merged_global_const, **go_to_parent(_i))
+            final_merge = dict(merged_global_const, **temp)
             return final_merge
 
         d = serialize_and_merge(
             bind_constants=bind_constants, local_constants=local_constants
         )
-        d = deserialize(d)
-        return d
+        e = deserialize(d)
+        return e
 
     def uninstall_orphan_modules(self) -> None:
         """Uninstall orphan modules

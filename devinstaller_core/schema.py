@@ -82,6 +82,6 @@ def get_validated_document(document: Dict[Any, Any]) -> cm.TypeFullDocument:
     """
     data = validate(document, schema=cm.schema())
     if data["valid"]:
-        d = cm.TypeFullDocument(data["document"])
-        return d
+        d = data["document"]
+        return cm.TypeFullDocument(d)
     raise e.SpecificationError(str(data["errors"]), "S100")

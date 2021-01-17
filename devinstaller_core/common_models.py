@@ -173,7 +173,7 @@ class TypeValidateResponse(TypedDict):
     """
 
     valid: bool
-    document: Dict[Any, Any]
+    document: Dict[str, Any]
     errors: Dict[Any, Any]
 
 
