@@ -82,4 +82,4 @@ class ModuleFolder(mb.ModuleBase):
         if self.rollback:
             raw_path = self.folder_path if self.folder_path else self.name
             path = u.resolve_path(raw_path)
-            os.remove(path)
+            os.removedirs(path)

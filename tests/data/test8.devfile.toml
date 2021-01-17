@@ -1,0 +1,6 @@
+description = "Testing Folder module"
+
+[[modules]]
+folder_path = "~/tests/testing_folder_2"
+module_type = "folder"
+name = "testing_folder"
