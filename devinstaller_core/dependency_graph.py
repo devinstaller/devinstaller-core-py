@@ -191,7 +191,6 @@ class DependencyGraph:
                 temp[i["key"]] = i["value"]
             merged_global_const: Dict[str, str] = {}
             visited: List[str] = []
-            assert type(bind_constants) == List[str]
             for _i in bind_constants:
                 if _i not in visited:
                     visited.append(_i)

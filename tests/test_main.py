@@ -46,12 +46,12 @@ files = [
     # "file: tests/data/test.devfile.toml",
     # "file: tests/data/test.devfile.yaml",
     # "file: tests/data/test2.devfile.toml",
-    # "file: tests/data/test3.devfile.toml",
+    "file: tests/data/test3.devfile.toml",
     # "file: tests/data/test4.devfile.toml",
     # "file: tests/data/test5.devfile.toml",
     # "file: tests/data/test6.devfile.toml"
     # "file: tests/data/test7.devfile.toml"
-    "file: tests/data/test8.devfile.toml"
+    # "file: tests/data/test8.devfile.toml"
 ]
 
 for f in files:
